@@ -71,4 +71,6 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
 
+    // dependency for firebase authentication
+    implementation("com.google.firebase:firebase-auth")
 }
