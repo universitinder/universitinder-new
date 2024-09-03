@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.home.HomeActivity
 import com.universitinder.app.login.LoginActivity
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
@@ -61,10 +62,16 @@ class RegistrationViewModel(
             .addOnSuccessListener {
                 _uiState.value = _uiState.value.copy(registrationLoading = false)
                 showMessage(ResultMessageType.SUCCESS, "Successfully registered your account")
+                startHomeActivity()
             }
             .addOnFailureListener {
                 _uiState.value = _uiState.value.copy(registrationLoading = false)
                 showMessage(ResultMessageType.FAILED, it.message.toString())
             }
+    }
+
+    private fun startHomeActivity() {
+        val intent = Intent(activityStarterHelper.getContext(), HomeActivity::class.java)
+        activityStarterHelper.startActivity(intent)
     }
 }
