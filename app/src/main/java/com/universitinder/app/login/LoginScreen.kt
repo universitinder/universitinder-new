@@ -12,7 +12,9 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,10 +23,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.universitinder.app.models.ResultMessageType
 
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel) {
@@ -77,13 +82,18 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                         fontSize = 16.sp
                     )
                 }
+                if (uiState.resultMessage.show)
+                    Text(text = uiState.resultMessage.message, color = if (uiState.resultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, fontSize = 12.sp)
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 40.dp),
                     onClick = loginViewModel::login
                 ) {
-                    Text("Login")
+                    if (uiState.loginLoading)
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+                    else
+                        Text("Login")
                 }
             }
             Column(
