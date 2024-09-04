@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.cronet.embedded)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,4 +78,7 @@ dependencies {
 
     // dependency for firebase authentication
     implementation("com.google.firebase:firebase-auth")
+
+    // dependency for firebase firestore
+    implementation("com.google.firebase:firebase-firestore")
 }
