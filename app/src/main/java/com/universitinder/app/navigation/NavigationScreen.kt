@@ -75,7 +75,7 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
             ) {
                 composable("Filters") { FiltersScreen() }
                 composable("Home") { HomeScreen(homeViewModel = navigationViewModel.homeViewModel) }
-                composable("Profile") { ProfileScreen() }
+                composable("Profile") { ProfileScreen(profileViewModel = navigationViewModel.profileViewModel) }
             }
         }
     }
