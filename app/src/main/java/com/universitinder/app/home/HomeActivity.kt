@@ -23,11 +23,13 @@ import kotlinx.coroutines.launch
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var profileViewModel : ProfileViewModel
+    private lateinit var navigationViewModel : NavigationViewModel
 
     override fun onRestart() {
         super.onRestart()
         lifecycleScope.launch{
             profileViewModel.refreshUser(this@HomeActivity)
+            navigationViewModel.refreshUser()
         }
     }
 
@@ -54,7 +56,7 @@ class HomeActivity : AppCompatActivity() {
         val activityStarterHelper = ActivityStarterHelper(this)
         val homeViewModel = HomeViewModel()
         profileViewModel = ProfileViewModel(auth = auth, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
-        val navigationViewModel = NavigationViewModel(homeViewModel = homeViewModel, profileViewModel = profileViewModel)
+        navigationViewModel = NavigationViewModel(homeViewModel = homeViewModel, profileViewModel = profileViewModel)
 
         setContent {
             UniversitinderTheme {

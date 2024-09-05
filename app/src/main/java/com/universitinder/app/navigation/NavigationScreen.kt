@@ -16,6 +16,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -26,10 +27,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.universitinder.app.filters.FiltersScreen
 import com.universitinder.app.home.HomeScreen
+import com.universitinder.app.models.UserType
 import com.universitinder.app.profile.ProfileScreen
 
 @Composable
 fun NavigationScreen(navigationViewModel: NavigationViewModel) {
+    val uiState by navigationViewModel.uiState.collectAsState()
     val navController = rememberNavController()
     var selectedIndex by remember { mutableIntStateOf(1) }
 
@@ -37,33 +40,67 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
         bottomBar = {
             BottomAppBar {
                 NavigationBar {
-                    NavigationBarItem(
-                        selected = selectedIndex == 0,
-                        onClick = {
-                            selectedIndex = 0
-                            navController.navigate("Filters")
-                        },
-                        icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "Filters")},
-                        label = { Text(text = "Filters") }
-                    )
-                    NavigationBarItem(
-                        selected = selectedIndex == 1,
-                        onClick = {
-                            selectedIndex = 1
-                            navController.navigate("Home")
-                        },
-                        icon = { Icon(if (selectedIndex == 1) Icons.Filled.Home else Icons.Outlined.Home, "Home")},
-                        label = { Text(text = "Home") }
-                    )
-                    NavigationBarItem(
-                        selected = selectedIndex == 2,
-                        onClick = {
-                            selectedIndex = 2
-                            navController.navigate("Profile")
-                        },
-                        icon = { Icon(if (selectedIndex == 2) Icons.Filled.AccountCircle else Icons.Outlined.AccountCircle, "Profile")},
-                        label = { Text(text = "Profile") }
-                    )
+                    when (uiState.user.type) {
+                        UserType.STUDENT -> {
+                            NavigationBarItem(
+                                selected = selectedIndex == 0,
+                                onClick = {
+                                    selectedIndex = 0
+                                    navController.navigate("Filters")
+                                },
+                                icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "Filters")},
+                                label = { Text(text = "Filters") }
+                            )
+                            NavigationBarItem(
+                                selected = selectedIndex == 1,
+                                onClick = {
+                                    selectedIndex = 1
+                                    navController.navigate("Home")
+                                },
+                                icon = { Icon(if (selectedIndex == 1) Icons.Filled.Home else Icons.Outlined.Home, "Home")},
+                                label = { Text(text = "Home") }
+                            )
+                            NavigationBarItem(
+                                selected = selectedIndex == 2,
+                                onClick = {
+                                    selectedIndex = 2
+                                    navController.navigate("Profile")
+                                },
+                                icon = { Icon(if (selectedIndex == 2) Icons.Filled.AccountCircle else Icons.Outlined.AccountCircle, "Profile")},
+                                label = { Text(text = "Profile") }
+                            )
+                        }
+                        UserType.INSTITUTION -> {
+                            NavigationBarItem(
+                                selected = selectedIndex == 0,
+                                onClick = {
+                                    selectedIndex = 0
+                                    navController.navigate("School")
+                                },
+                                icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "School")},
+                                label = { Text(text = "School") }
+                            )
+                            NavigationBarItem(
+                                selected = selectedIndex == 1,
+                                onClick = {
+                                    selectedIndex = 1
+                                    navController.navigate("Home")
+                                },
+                                icon = { Icon(if (selectedIndex == 1) Icons.Filled.Home else Icons.Outlined.Home, "Home")},
+                                label = { Text(text = "Home") }
+                            )
+                            NavigationBarItem(
+                                selected = selectedIndex == 2,
+                                onClick = {
+                                    selectedIndex = 2
+                                    navController.navigate("Profile")
+                                },
+                                icon = { Icon(if (selectedIndex == 2) Icons.Filled.AccountCircle else Icons.Outlined.AccountCircle, "Profile")},
+                                label = { Text(text = "Profile") }
+                            )
+                        }
+                        UserType.UNKNOWN -> {  }
+                    }
                 }
             }
         }
@@ -74,6 +111,7 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                 startDestination = "Home"
             ) {
                 composable("Filters") { FiltersScreen() }
+                composable("School") { FiltersScreen() }
                 composable("Home") { HomeScreen(homeViewModel = navigationViewModel.homeViewModel) }
                 composable("Profile") { ProfileScreen(profileViewModel = navigationViewModel.profileViewModel) }
             }
