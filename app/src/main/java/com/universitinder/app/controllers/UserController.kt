@@ -47,4 +47,18 @@ class UserController {
             .addOnFailureListener{ response.complete(false) }
         return response.await()
     }
+
+    suspend fun updateUser(user: User) : Boolean {
+        val response = CompletableDeferred<Boolean>(null)
+        firestore.collection("users").document(user.email)
+            .update(
+                "name", user.name,
+                "address", user.address,
+                "contactNumber", user.contactNumber,
+                "type", user.type.toString()
+            )
+            .addOnSuccessListener { response.complete(true) }
+            .addOnFailureListener { response.complete(false) }
+        return response.await()
+    }
 }
