@@ -42,7 +42,7 @@ class UserController {
 
     suspend fun createUser(user: User) : Boolean {
         val response = CompletableDeferred<Boolean>(null)
-        firestore.collection("users").document(user.email).set(user.asMap())
+        firestore.collection("users").document(user.email).set(user)
             .addOnSuccessListener { response.complete(true) }
             .addOnFailureListener{ response.complete(false) }
         return response.await()
