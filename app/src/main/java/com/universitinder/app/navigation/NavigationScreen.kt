@@ -27,14 +27,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.universitinder.app.filters.FiltersScreen
 import com.universitinder.app.home.HomeScreen
+import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import com.universitinder.app.profile.ProfileScreen
+import com.universitinder.app.school.SchoolScreen
+import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationScreen
 
 @Composable
 fun NavigationScreen(navigationViewModel: NavigationViewModel) {
     val uiState by navigationViewModel.uiState.collectAsState()
     val navController = rememberNavController()
     var selectedIndex by remember { mutableIntStateOf(1) }
+    val currentUser = UserState.currentUser
 
     Scaffold (
         bottomBar = {
@@ -75,16 +79,16 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                                 selected = selectedIndex == 0,
                                 onClick = {
                                     selectedIndex = 0
-                                    navController.navigate("School")
+                                    navController.navigate("Institution")
                                 },
-                                icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "School")},
-                                label = { Text(text = "School") }
+                                icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "Institution")},
+                                label = { Text(text = "Institution") }
                             )
                             NavigationBarItem(
                                 selected = selectedIndex == 1,
                                 onClick = {
                                     selectedIndex = 1
-                                    navController.navigate("Home")
+                                    navController.navigate("School")
                                 },
                                 icon = { Icon(if (selectedIndex == 1) Icons.Filled.Home else Icons.Outlined.Home, "Home")},
                                 label = { Text(text = "Home") }
@@ -106,14 +110,17 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
         }
     ){ innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(
-                navController = navController,
-                startDestination = "Home"
-            ) {
-                composable("Filters") { FiltersScreen() }
-                composable("School") { FiltersScreen() }
-                composable("Home") { HomeScreen(homeViewModel = navigationViewModel.homeViewModel) }
-                composable("Profile") { ProfileScreen(profileViewModel = navigationViewModel.profileViewModel) }
+            if (currentUser != null) {
+                NavHost(
+                    navController = navController,
+                    startDestination = if (currentUser.type == UserType.INSTITUTION) "School" else "Home"
+                ) {
+                    composable("Filters") { FiltersScreen() }
+                    composable("Institution") { SchoolInformationNavigationScreen(viewModel = navigationViewModel.schoolInformationNavigationViewModel) }
+                    composable("School") { SchoolScreen(schoolViewModel = navigationViewModel.schoolViewModel) }
+                    composable("Home") { HomeScreen(homeViewModel = navigationViewModel.homeViewModel) }
+                    composable("Profile") { ProfileScreen(profileViewModel = navigationViewModel.profileViewModel) }
+                }
             }
         }
     }
