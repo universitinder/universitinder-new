@@ -10,12 +10,15 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.universitinder.app.accountSetup.AccountSetupActivity
+import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.login.LoginActivity
 import com.universitinder.app.models.UserState
 import com.universitinder.app.navigation.NavigationScreen
 import com.universitinder.app.navigation.NavigationViewModel
 import com.universitinder.app.profile.ProfileViewModel
+import com.universitinder.app.school.SchoolViewModel
+import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationViewModel
 import com.universitinder.app.ui.theme.UniversitinderTheme
 import com.universitinder.app.userDataStore
 import kotlinx.coroutines.launch
@@ -53,10 +56,18 @@ class HomeActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
+        val schoolController = SchoolController()
         val activityStarterHelper = ActivityStarterHelper(this)
         val homeViewModel = HomeViewModel()
+        val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper)
+        val schoolViewModel = SchoolViewModel(schoolController = schoolController)
         profileViewModel = ProfileViewModel(auth = auth, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
-        navigationViewModel = NavigationViewModel(homeViewModel = homeViewModel, profileViewModel = profileViewModel)
+        navigationViewModel = NavigationViewModel(
+            schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
+            schoolViewModel = schoolViewModel,
+            homeViewModel = homeViewModel,
+            profileViewModel = profileViewModel
+        )
 
         setContent {
             UniversitinderTheme {
