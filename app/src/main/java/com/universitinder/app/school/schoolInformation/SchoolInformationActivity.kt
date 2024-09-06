@@ -11,7 +11,10 @@ class SchoolInformationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val schoolController = SchoolController()
-        val schoolInformationViewModel = SchoolInformationViewModel(schoolController = schoolController)
+        val schoolInformationViewModel = SchoolInformationViewModel(
+            schoolController = schoolController,
+            popActivity = this::finish
+        )
 
         setContent {
             UniversitinderTheme {

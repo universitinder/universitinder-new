@@ -10,10 +10,7 @@ data class SchoolInformationUiState (
     val minimum: Int = 0,
     val maximum: Int = 0,
     val affordability: Int = 0,
-    val mission: String = "",
-    val vision: String = "",
-    val coreValues: String = "",
-    val degreesString: String = "",
+    val fetchingDataLoading: Boolean = false,
     val createSchoolLoading: Boolean = false,
     val resultMessage: ResultMessage = ResultMessage()
 )
