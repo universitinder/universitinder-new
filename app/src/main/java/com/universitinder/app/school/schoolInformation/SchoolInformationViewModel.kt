@@ -1,6 +1,5 @@
 package com.universitinder.app.school.schoolInformation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
@@ -98,12 +97,11 @@ class SchoolInformationViewModel(
                 val result = schoolController.updateSchool(UserState.currentUser?.email!!, school)
                 if (result) {
                     showMessage(ResultMessageType.SUCCESS, "Successfully set institution information")
-                    popActivity()
                 }
                 else showMessage(ResultMessageType.FAILED, "Setting institution information unsuccessful")
             }.await()
             withContext(Dispatchers.Main) {
-                _uiState.value = _uiState.value.copy(createSchoolLoading = true)
+                _uiState.value = _uiState.value.copy(createSchoolLoading = false)
             }
         }
     }
