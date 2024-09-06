@@ -6,6 +6,7 @@ import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.school.schoolCourses.SchoolCoursesActivity
 import com.universitinder.app.school.schoolImages.SchoolImagesActivity
 import com.universitinder.app.school.schoolInformation.SchoolInformationActivity
+import com.universitinder.app.school.schoolMissionVision.SchoolMissionVisionActivity
 
 class SchoolInformationNavigationViewModel(
     private val activityStarterHelper: ActivityStarterHelper
@@ -23,6 +24,11 @@ class SchoolInformationNavigationViewModel(
 
     fun startSchoolCoursesActivity() {
         val intent = Intent(activityStarterHelper.getContext(), SchoolCoursesActivity::class.java)
+        activityStarterHelper.startActivity(intent)
+    }
+
+    fun startSchoolMissionVisionActivity() {
+        val intent = Intent(activityStarterHelper.getContext(), SchoolMissionVisionActivity::class.java)
         activityStarterHelper.startActivity(intent)
     }
 }
