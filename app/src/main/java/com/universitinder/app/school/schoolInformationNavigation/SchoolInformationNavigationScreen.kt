@@ -53,6 +53,13 @@ fun SchoolInformationNavigationScreen(viewModel: SchoolInformationNavigationView
                     trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, "Arrow Right") }
                 )
             }
+            item {
+                ListItem(
+                    modifier = Modifier.clickable { viewModel.startFAQsActivity() },
+                    headlineContent = { Text(text = "Frequently Asked Questions") },
+                    trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, "Arrow Right") }
+                )
+            }
         }
     }
 }
