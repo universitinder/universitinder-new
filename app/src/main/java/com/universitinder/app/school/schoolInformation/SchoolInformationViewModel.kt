@@ -3,6 +3,7 @@ package com.universitinder.app.school.schoolInformation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
+import com.universitinder.app.models.MUNICIPALITIES_AND_CITIES
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.School
@@ -37,7 +38,11 @@ class SchoolInformationViewModel(
                     address = school.address,
                     minimum = school.minimum,
                     maximum = school.maximum,
-                    affordability = school.affordability
+                    affordability = school.affordability,
+                    province = school.province,
+                    municipalityOrCity = school.municipalityOrCity,
+                    barangay = school.barangay,
+                    street = school.street
                 )
                 withContext(Dispatchers.Main) {
                     _uiState.value = _uiState.value.copy(fetchingDataLoading = false)
@@ -50,14 +55,28 @@ class SchoolInformationViewModel(
     fun onEmailChange(newVal: String) { _uiState.value = _uiState.value.copy(email = newVal) }
     fun onContactNumberChange(newVal: String) { _uiState.value = _uiState.value.copy(contactNumber = newVal) }
     fun onAddressChange(newVal: String) { _uiState.value = _uiState.value.copy(address = newVal) }
+    fun onProvinceChange(newVal: String) {
+        _uiState.value = _uiState.value.copy(
+            province = newVal,
+            municipalitiesAndCities = MUNICIPALITIES_AND_CITIES[newVal]?.toList() ?: listOf()
+        )
+    }
+    fun onProvinceMenuToggle() { _uiState.value = _uiState.value.copy(provinceMenuExpand = !_uiState.value.provinceMenuExpand) }
+    fun onProvinceMenuExpand() { _uiState.value = _uiState.value.copy(provinceMenuExpand = true) }
+    fun onProvinceMenuDismiss() { _uiState.value = _uiState.value.copy(provinceMenuExpand = false) }
+    fun onMunicipalityOrCityChange(newVal: String) { _uiState.value = _uiState.value.copy(municipalityOrCity = newVal) }
+    fun onMunicipalityOrCityMenuExpand() { _uiState.value = _uiState.value.copy(municipalityOrCityMenuExpand = true) }
+    fun onMunicipalityOrCityMenuDismiss() { _uiState.value = _uiState.value.copy(municipalityOrCityMenuExpand = false) }
+    fun onBarangayChange(newVal: String) { _uiState.value = _uiState.value.copy(barangay = newVal) }
+    fun onStreetChange(newVal: String) { _uiState.value = _uiState.value.copy(street = newVal) }
     fun onMinimumChange(newVal: String) { _uiState.value = _uiState.value.copy(minimum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt()) }
     fun onMaximumChange(newVal: String) { _uiState.value = _uiState.value.copy(maximum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt()) }
     fun onAffordabilityChange(newVal: String) { _uiState.value = _uiState.value.copy(affordability = newVal.toInt()) }
 
     private fun fieldsNotFilled() : Boolean {
         return _uiState.value.name.isEmpty() || _uiState.value.name.isBlank() || _uiState.value.email.isEmpty() ||
-                _uiState.value.email.isBlank() || _uiState.value.contactNumber.isEmpty() || _uiState.value.contactNumber.isBlank() ||
-                _uiState.value.address.isEmpty() || _uiState.value.address.isBlank()
+                _uiState.value.email.isBlank() || _uiState.value.contactNumber.isEmpty() || _uiState.value.contactNumber.isBlank()
+//                _uiState.value.address.isEmpty() || _uiState.value.address.isBlank()
     }
 
     private fun validateFields() : Boolean {
@@ -93,6 +112,10 @@ class SchoolInformationViewModel(
                     minimum = _uiState.value.minimum,
                     maximum = _uiState.value.maximum,
                     affordability = _uiState.value.affordability,
+                    province = _uiState.value.province,
+                    municipalityOrCity = _uiState.value.municipalityOrCity,
+                    barangay = _uiState.value.barangay,
+                    street = _uiState.value.street
                 )
                 val result = schoolController.updateSchool(UserState.currentUser?.email!!, school)
                 if (result) {

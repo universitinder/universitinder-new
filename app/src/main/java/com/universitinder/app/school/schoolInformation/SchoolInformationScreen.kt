@@ -1,15 +1,22 @@
 package com.universitinder.app.school.schoolInformation
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +37,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.universitinder.app.components.PopUpDropDown
 import com.universitinder.app.models.ResultMessageType
+import com.universitinder.app.models.PROVINCES
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,17 +95,96 @@ fun SchoolInformationScreen(schoolInformationViewModel: SchoolInformationViewMod
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 10.dp),
-                        label = { Text(text = "Address") },
-                        value = uiState.address,
-                        onValueChange = schoolInformationViewModel::onAddressChange
+                        label = { Text(text = "Contact Number") },
+                        value = uiState.contactNumber,
+                        onValueChange = schoolInformationViewModel::onContactNumberChange
+                    )
+                    Text(text = "Address", style = MaterialTheme.typography.headlineMedium)
+                    Box(modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .fillMaxWidth()) {
+                        Column {
+                            Text(text = "Province")
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        width = 0.5.dp,
+                                        color = Color.Black,
+                                        shape = CircleShape.copy(
+                                            CornerSize(5.dp)
+                                        )
+                                    )
+                                    .clickable { schoolInformationViewModel.onProvinceMenuExpand() },
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
+                                    text = uiState.province
+                                )
+                                Icon(Icons.Filled.ArrowDropDown, contentDescription = "Dropdown Arrow")
+                            }
+                        }
+                    }
+                    PopUpDropDown(
+                        label = "Select Province",
+                        items = PROVINCES.toList(),
+                        show = uiState.provinceMenuExpand,
+                        onDismissRequest = schoolInformationViewModel::onProvinceMenuDismiss,
+                        onItemSelected = { schoolInformationViewModel.onProvinceChange(it) }
+                    )
+                    Box (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                    ) {
+                        Column {
+                            Text(text = "Municipality/City")
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        width = 0.5.dp,
+                                        color = Color.Black,
+                                        shape = CircleShape.copy(
+                                            CornerSize(5.dp)
+                                        )
+                                    )
+                                    .clickable { schoolInformationViewModel.onMunicipalityOrCityMenuExpand() },
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
+                                    text = uiState.municipalityOrCity
+                                )
+                                Icon(Icons.Filled.ArrowDropDown, contentDescription = "Dropdown Arrow")
+                            }
+                        }
+                    }
+                    PopUpDropDown(
+                        label = "Select Municipality/City",
+                        items = uiState.municipalitiesAndCities,
+                        show = uiState.municipalityOrCityMenuExpand,
+                        onDismissRequest = schoolInformationViewModel::onMunicipalityOrCityMenuDismiss,
+                        onItemSelected = { schoolInformationViewModel.onMunicipalityOrCityChange(it) }
                     )
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 10.dp),
-                        label = { Text(text = "Contact Number") },
-                        value = uiState.contactNumber,
-                        onValueChange = schoolInformationViewModel::onContactNumberChange
+                        label = { Text(text = "Barangay") },
+                        value = uiState.barangay,
+                        onValueChange = schoolInformationViewModel::onBarangayChange
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        label = { Text(text = "Street") },
+                        value = uiState.street,
+                        onValueChange = schoolInformationViewModel::onStreetChange
                     )
                     Text(
                         modifier = Modifier.padding(top = 20.dp),

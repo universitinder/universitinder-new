@@ -1,5 +1,6 @@
 package com.universitinder.app.controllers
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
@@ -16,7 +17,7 @@ class SchoolController {
         firestore.collection("users")
             .document(email)
             .collection("school")
-            .document(email)
+            .document("school")
             .get()
             .addOnSuccessListener {
                 if (it.exists()) school.complete(it.toObject<School>())
@@ -33,10 +34,13 @@ class SchoolController {
         firestore.collection("users")
             .document(email)
             .collection("school")
-            .document(email)
+            .document("school")
             .set(school)
             .addOnSuccessListener { response.complete(true) }
-            .addOnFailureListener { response.complete(false) }
+            .addOnFailureListener {
+                Log.w("SCHOOL CONTROLLER", it.message!!)
+                response.complete(false)
+            }
 
         return response.await()
     }
@@ -44,12 +48,12 @@ class SchoolController {
     suspend fun updateSchool(email: String, school: School) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document(email)
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
         if (schoolRef.get().await().exists()) {
             firestore.collection("users")
                 .document(email)
                 .collection("school")
-                .document(email)
+                .document("school")
                 .update(
                     "name", school.name,
                     "email", school.email,
@@ -58,12 +62,16 @@ class SchoolController {
                     "minimum", school.minimum,
                     "maximum", school.maximum,
                     "affordability", school.affordability,
-                    "courses", school.courses
+                    "province", school.province,
+                    "municipalityOrCity", school.municipalityOrCity,
+                    "barangay", school.barangay,
+                    "street", school.street
                 )
-                .addOnSuccessListener {
-                    response.complete(true)
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener {
+                    Log.w("SCHOOL CONTROLLER", it.message!!)
+                    response.complete(false)
                 }
-                .addOnFailureListener { response.complete(false) }
         } else {
             response.complete(createSchool(email = email, school = school))
         }
@@ -74,20 +82,18 @@ class SchoolController {
     suspend fun updateSchoolMissionVision(email: String, school: School) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document(email)
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
         if (schoolRef.get().await().exists()) {
             firestore.collection("users")
                 .document(email)
                 .collection("school")
-                .document(email)
+                .document("school")
                 .update(
                     "mission", school.mission,
                     "vision", school.vision,
                     "coreValues", school.coreValues
                 )
-                .addOnSuccessListener {
-                    response.complete(true)
-                }
+                .addOnSuccessListener { response.complete(true) }
                 .addOnFailureListener { response.complete(false) }
         } else {
             response.complete(createSchool(email = email, school = school))
