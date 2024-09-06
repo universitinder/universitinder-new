@@ -58,10 +58,32 @@ class SchoolController {
                     "minimum", school.minimum,
                     "maximum", school.maximum,
                     "affordability", school.affordability,
+                    "courses", school.courses
+                )
+                .addOnSuccessListener {
+                    response.complete(true)
+                }
+                .addOnFailureListener { response.complete(false) }
+        } else {
+            response.complete(createSchool(email = email, school = school))
+        }
+
+        return response.await()
+    }
+
+    suspend fun updateSchoolMissionVision(email: String, school: School) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document(email)
+        if (schoolRef.get().await().exists()) {
+            firestore.collection("users")
+                .document(email)
+                .collection("school")
+                .document(email)
+                .update(
                     "mission", school.mission,
                     "vision", school.vision,
-                    "coreValues", school.coreValues,
-                    "courses", school.courses
+                    "coreValues", school.coreValues
                 )
                 .addOnSuccessListener {
                     response.complete(true)
