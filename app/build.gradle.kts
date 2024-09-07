@@ -82,6 +82,9 @@ dependencies {
     // dependency for firebase firestore
     implementation("com.google.firebase:firebase-firestore")
 
+    // dependency for firebase storage
+    implementation("com.google.firebase:firebase-storage")
+
 //    implementation("androidx.datastore:datastore:1.1.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 //    implementation("com.google.protobuf:protobuf-javalite:3.14.0")
