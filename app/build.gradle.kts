@@ -87,4 +87,6 @@ dependencies {
 //    implementation("com.google.protobuf:protobuf-javalite:3.14.0")
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    implementation("io.coil-kt:coil-compose:2.2.2")
 }
