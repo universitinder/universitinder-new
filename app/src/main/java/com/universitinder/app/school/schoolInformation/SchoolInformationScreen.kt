@@ -99,7 +99,15 @@ fun SchoolInformationScreen(schoolInformationViewModel: SchoolInformationViewMod
                         value = uiState.contactNumber,
                         onValueChange = schoolInformationViewModel::onContactNumberChange
                     )
-                    Text(text = "Address", style = MaterialTheme.typography.headlineMedium)
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        label = { Text(text = "Link") },
+                        value = uiState.link,
+                        onValueChange = schoolInformationViewModel::onLinkChange
+                    )
+                    Text(modifier = Modifier.padding(top = 20.dp), text = "Address", style = MaterialTheme.typography.headlineMedium)
                     Box(modifier = Modifier
                         .padding(vertical = 10.dp)
                         .fillMaxWidth()) {

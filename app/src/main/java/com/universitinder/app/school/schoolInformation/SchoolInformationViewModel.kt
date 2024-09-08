@@ -31,19 +31,23 @@ class SchoolInformationViewModel(
                     _uiState.value = _uiState.value.copy(fetchingDataLoading = true)
                 }
                 val school = schoolController.getSchool(currentUser.email)
-                if (school != null) _uiState.value = _uiState.value.copy(
-                    name = school.name,
-                    email = school.email,
-                    contactNumber = school.contactNumber,
-                    address = school.address,
-                    minimum = school.minimum,
-                    maximum = school.maximum,
-                    affordability = school.affordability,
-                    province = school.province,
-                    municipalityOrCity = school.municipalityOrCity,
-                    barangay = school.barangay,
-                    street = school.street
-                )
+                if (school != null) {
+                    _uiState.value = _uiState.value.copy(
+                        name = school.name,
+                        email = school.email,
+                        contactNumber = school.contactNumber,
+                        address = school.address,
+                        link = school.link,
+                        minimum = school.minimum,
+                        maximum = school.maximum,
+                        affordability = school.affordability,
+                        province = school.province,
+                        municipalityOrCity = school.municipalityOrCity,
+                        barangay = school.barangay,
+                        street = school.street,
+                        municipalitiesAndCities = MUNICIPALITIES_AND_CITIES[school.province]?.toList() ?: listOf()
+                    )
+                }
                 withContext(Dispatchers.Main) {
                     _uiState.value = _uiState.value.copy(fetchingDataLoading = false)
                 }
@@ -54,7 +58,7 @@ class SchoolInformationViewModel(
     fun onNameChange(newVal: String) { _uiState.value = _uiState.value.copy(name = newVal) }
     fun onEmailChange(newVal: String) { _uiState.value = _uiState.value.copy(email = newVal) }
     fun onContactNumberChange(newVal: String) { _uiState.value = _uiState.value.copy(contactNumber = newVal) }
-    fun onAddressChange(newVal: String) { _uiState.value = _uiState.value.copy(address = newVal) }
+    fun onLinkChange(newVal: String) { _uiState.value = _uiState.value.copy(link = newVal) }
     fun onProvinceChange(newVal: String) {
         _uiState.value = _uiState.value.copy(
             province = newVal,
@@ -115,7 +119,8 @@ class SchoolInformationViewModel(
                     province = _uiState.value.province,
                     municipalityOrCity = _uiState.value.municipalityOrCity,
                     barangay = _uiState.value.barangay,
-                    street = _uiState.value.street
+                    street = _uiState.value.street,
+                    link = _uiState.value.link
                 )
                 val result = schoolController.updateSchool(UserState.currentUser?.email!!, school)
                 if (result) {

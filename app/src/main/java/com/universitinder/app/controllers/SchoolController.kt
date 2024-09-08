@@ -65,7 +65,8 @@ class SchoolController {
                     "province", school.province,
                     "municipalityOrCity", school.municipalityOrCity,
                     "barangay", school.barangay,
-                    "street", school.street
+                    "street", school.street,
+                    "link", school.link
                 )
                 .addOnSuccessListener { response.complete(true) }
                 .addOnFailureListener {

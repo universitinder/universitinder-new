@@ -6,6 +6,7 @@ data class SchoolInformationUiState (
     val name: String = "",
     val email: String = "",
     val contactNumber: String = "",
+    val link: String = "",
     val address: String = "",
     val province: String = "",
     val provinceMenuExpand: Boolean = false,

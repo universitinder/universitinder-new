@@ -5,6 +5,7 @@ class School (
     val email: String = "",
     val contactNumber: String = "",
     val address: String = "",
+    val link: String = "",
     val province: String = "",
     val municipalityOrCity: String = "",
     val barangay: String = "",
@@ -16,6 +17,8 @@ class School (
     val vision: String = "",
     val coreValues: String = "",
     val courses: String = "",
+    val rightSwipe: Int = 0,
+    val leftSwipe: Int = 0,
 ) {
     fun asMap() : Map<String, Any> {
         return hashMapOf(
