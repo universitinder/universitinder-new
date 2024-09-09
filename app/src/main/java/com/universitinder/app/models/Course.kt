@@ -7,8 +7,8 @@ enum class EducationLevel {
     DOCTORATE
 }
 
-class Degree (
-    val name : String,
-    val duration : Int,
-    val level : EducationLevel
+class Course (
+    val name : String = "",
+    val duration : Int = 0,
+    val level : EducationLevel = EducationLevel.BACHELORS
 )
