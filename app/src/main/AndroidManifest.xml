@@ -18,6 +18,18 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".filters.affordability.AffordabilityFilterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".filters.city.CityFilterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".filters.courses.CoursesFilterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".filters.province.ProvinceFilterActivity"
+            android:exported="false" />
+        <activity
             android:name=".school.schoolCourses.editCourse.EditCourseActivity"
             android:exported="false" />
         <activity

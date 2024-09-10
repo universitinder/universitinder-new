@@ -1,6 +1,7 @@
 package com.universitinder.app.navigation
 
 import androidx.lifecycle.ViewModel
+import com.universitinder.app.filters.FiltersViewModel
 import com.universitinder.app.home.HomeViewModel
 import com.universitinder.app.models.UserState
 import com.universitinder.app.profile.ProfileViewModel
@@ -14,7 +15,8 @@ class NavigationViewModel(
     val schoolInformationNavigationViewModel: SchoolInformationNavigationViewModel,
     val schoolViewModel: SchoolViewModel,
     val homeViewModel: HomeViewModel,
-    val profileViewModel: ProfileViewModel
+    val profileViewModel: ProfileViewModel,
+    val filtersViewModel: FiltersViewModel
 ): ViewModel() {
     private val _uiState = MutableStateFlow(NavigationUiState())
     val uiState : StateFlow<NavigationUiState> = _uiState.asStateFlow()

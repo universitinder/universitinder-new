@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.universitinder.app.accountSetup.AccountSetupActivity
 import com.universitinder.app.controllers.SchoolController
+import com.universitinder.app.filters.FiltersViewModel
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.login.LoginActivity
 import com.universitinder.app.models.UserState
@@ -61,12 +62,14 @@ class HomeActivity : AppCompatActivity() {
         val homeViewModel = HomeViewModel()
         val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper)
         val schoolViewModel = SchoolViewModel(schoolController = schoolController)
+        val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper)
         profileViewModel = ProfileViewModel(auth = auth, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
         navigationViewModel = NavigationViewModel(
             schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
             schoolViewModel = schoolViewModel,
             homeViewModel = homeViewModel,
-            profileViewModel = profileViewModel
+            profileViewModel = profileViewModel,
+            filtersViewModel = filtersViewModel
         )
 
         setContent {

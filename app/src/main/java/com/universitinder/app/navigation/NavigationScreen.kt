@@ -115,7 +115,7 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                     navController = navController,
                     startDestination = if (currentUser.type == UserType.INSTITUTION) "School" else "Home"
                 ) {
-                    composable("Filters") { FiltersScreen() }
+                    composable("Filters") { FiltersScreen(filtersViewModel = navigationViewModel.filtersViewModel) }
                     composable("Institution") { SchoolInformationNavigationScreen(viewModel = navigationViewModel.schoolInformationNavigationViewModel) }
                     composable("School") { SchoolScreen(schoolViewModel = navigationViewModel.schoolViewModel) }
                     composable("Home") { HomeScreen(homeViewModel = navigationViewModel.homeViewModel) }
