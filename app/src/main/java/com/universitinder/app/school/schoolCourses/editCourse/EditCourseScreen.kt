@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
@@ -28,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -42,7 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import com.universitinder.app.components.ConfirmDialog
 import com.universitinder.app.models.EducationLevel
 import com.universitinder.app.models.ResultMessageType
 
@@ -171,59 +168,17 @@ fun EditCourseScreen(editCourseViewModel: EditCourseViewModel) {
                 }
             }
 
-            if (uiState.showDeleteDialog) {
-                Dialog(onDismissRequest = editCourseViewModel::onDeleteDialogToggle) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Text(text = "Delete Confirmation", style = MaterialTheme.typography.titleLarge)
-                            Text(
-                                text = "Are you sure you want to delete course named ${uiState.name}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(vertical = 24.dp)
-                            )
-                            if (uiState.deleteResultMessage.show)
-                                Text(
-                                    modifier = Modifier.padding(top = 10.dp),
-                                    text = uiState.deleteResultMessage.message,
-                                    color = if (uiState.deleteResultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 12.sp
-                                )
-                            Row {
-                                TextButton(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.5f)
-                                        .padding(end = 5.dp),
-                                    onClick = editCourseViewModel::onDeleteDialogToggle
-                                ) {
-                                    Text(text = "Cancel")
-                                }
-                                Button(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 5.dp),
-                                    onClick = editCourseViewModel::deleteCourse
-                                ) {
-                                    if (uiState.deleteLoading) {
-                                        CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                                    } else {
-                                        Text(text = "Delete")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            ConfirmDialog(
+                title = "Delete Confirmation",
+                text = "Are you sure you want to delete course named ${uiState.name}",
+                show = uiState.showDeleteDialog,
+                onDismissRequest = editCourseViewModel::onDeleteDialogToggle,
+                resultMessage = uiState.deleteResultMessage,
+                onCancel = editCourseViewModel::onDeleteDialogToggle,
+                loading = uiState.deleteLoading,
+                actionText = "Delete",
+                onConfirm = editCourseViewModel::deleteCourse
+            )
         }
     }
 }
