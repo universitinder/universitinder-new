@@ -2,7 +2,9 @@ package com.universitinder.app.controllers
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObjects
 import com.universitinder.app.models.Course
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +13,23 @@ import kotlinx.coroutines.launch
 
 class CourseController {
     private val firestore = Firebase.firestore
+
+    suspend fun getAllUniqueCourses() : List<Course> {
+        val response = CompletableDeferred<List<Course>>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                firestore.collectionGroup("courses").get()
+                    .addOnSuccessListener {
+                        val courses = it.toObjects<Course>()
+                        response.complete(courses.distinctBy { course -> course.name })
+                    }
+                    .addOnFailureListener { response.complete(emptyList()) }
+            }
+        }
+
+        return response.await()
+    }
 
     suspend fun getCourse(email: String, documentID: String) : Course? {
         val response = CompletableDeferred<Course?>()
@@ -45,7 +64,8 @@ class CourseController {
     }
 
     suspend fun createCourse(email: String, course: Course) : Boolean {
-        val response = CompletableDeferred<Boolean>()
+        val firstResponse = CompletableDeferred<Boolean>()
+        val secondResponse = CompletableDeferred<Boolean>()
 
         coroutineScope {
             launch(Dispatchers.IO) {
@@ -53,12 +73,18 @@ class CourseController {
                 coursesRef
                     .document()
                     .set(course)
-                    .addOnSuccessListener { response.complete(true) }
-                    .addOnFailureListener { response.complete(false) }
+                    .addOnSuccessListener { firstResponse.complete(true) }
+                    .addOnFailureListener { firstResponse.complete(false) }
+            }
+            launch(Dispatchers.IO) {
+                firestore.collection("users").document(email).collection("school").document("school")
+                    .update("courses", FieldValue.arrayUnion(course.name))
+                    .addOnSuccessListener { secondResponse.complete(true) }
+                    .addOnSuccessListener { secondResponse.complete(false) }
             }
         }
 
-        return response.await()
+        return firstResponse.await() && secondResponse.await()
     }
 
     suspend fun updateCourse(email: String, documentID: String, course: Course) : Boolean {
