@@ -33,6 +33,9 @@ class ProvinceFilterViewModel(
                 val filter = filterController.getFilter(email = currentUser.email)
                 if (filter != null) {
                     _uiState.value = _uiState.value.copy(
+                        cities = filter.cities,
+                        affordability = filter.affordability,
+                        courses = filter.courses,
                         checkedProvinces = filter.provinces.split("___"),
                     )
                 }
@@ -53,9 +56,15 @@ class ProvinceFilterViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(loading = true)}
-                val result = filterController.updateFilter(email = currentUser.email, filter = Filter(
-                    provinces = _uiState.value.checkedProvinces.joinToString("___")
-                ))
+                val result = filterController.updateFilter(
+                    email = currentUser.email,
+                    filter = Filter(
+                        provinces = _uiState.value.checkedProvinces.joinToString("___"),
+                        cities = _uiState.value.cities,
+                        affordability = _uiState.value.affordability,
+                        courses = _uiState.value.courses
+                    )
+                )
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
