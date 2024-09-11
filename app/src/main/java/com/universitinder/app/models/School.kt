@@ -1,5 +1,7 @@
 package com.universitinder.app.models
 
+import android.net.Uri
+
 class School (
     val name: String = "",
     val email: String = "",
@@ -16,7 +18,7 @@ class School (
     val mission: String = "",
     val vision: String = "",
     val coreValues: String = "",
-    val courses: String = "",
+    val courses: List<String> = emptyList(),
     val rightSwipe: Int = 0,
     val leftSwipe: Int = 0,
 ) {
@@ -34,3 +36,8 @@ class School (
         )
     }
 }
+
+class SchoolPlusImages(
+    val school: School? = null,
+    val images: List<Uri> = emptyList()
+)
