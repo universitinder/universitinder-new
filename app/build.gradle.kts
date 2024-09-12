@@ -93,4 +93,8 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation("androidx.compose:compose-bom:2023.05.01")
+
+    implementation("com.google.accompanist:accompanist-pager:0.24.13-rc")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.24.13-rc")
+
 }
