@@ -75,7 +75,7 @@ class SchoolViewModel(
                     mission = _uiState.value.mission,
                     vision = _uiState.value.vision,
                     coreValues = _uiState.value.coreValues,
-                    courses = _uiState.value.degreesString
+                    courses = _uiState.value.degreesString.split("___")
                 )
                 val result = schoolController.createSchool(UserState.currentUser?.email!!, school)
                 if (result) showMessage(ResultMessageType.SUCCESS, "Successfully set institution information")
