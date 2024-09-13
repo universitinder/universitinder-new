@@ -3,8 +3,6 @@ package com.universitinder.app.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,7 +39,8 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                         SwipeableCard(
                             school = uiState.schools[uiState.currentIndex],
                             onSwipedLeft = homeViewModel::onSwipeLeft,
-                            onSwipedRight = homeViewModel::onSwipeRight
+                            onSwipedRight = homeViewModel::onSwipeRight,
+                            onMiddleClick = { homeViewModel.startSchoolProfileActivity(uiState.schools[uiState.currentIndex]) }
                         )
                     } else {
                         Text(text = "No More Institutions to show!", fontSize = 24.sp, fontWeight = FontWeight.Bold)

@@ -61,7 +61,11 @@ class HomeActivity : AppCompatActivity() {
         val schoolController = SchoolController()
         val filterController = FilterController()
         val activityStarterHelper = ActivityStarterHelper(this)
-        val homeViewModel = HomeViewModel(schoolController = schoolController, filterController = filterController)
+        val homeViewModel = HomeViewModel(
+            schoolController = schoolController,
+            filterController = filterController,
+            activityStarterHelper = activityStarterHelper
+        )
         val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper)
         val schoolViewModel = SchoolViewModel(schoolController = schoolController)
         val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper)

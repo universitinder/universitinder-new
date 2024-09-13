@@ -1,11 +1,15 @@
 package com.universitinder.app.home
 
 //import android.util.Log
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.FilterController
 import com.universitinder.app.controllers.SchoolController
+import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.models.SchoolPlusImages
 import com.universitinder.app.models.UserState
+import com.universitinder.app.school.profile.SchoolProfileActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +19,8 @@ import kotlinx.coroutines.withContext
 
 class HomeViewModel(
     private val schoolController: SchoolController,
-    private val filterController: FilterController
+    private val filterController: FilterController,
+    private val activityStarterHelper: ActivityStarterHelper
 ): ViewModel() {
     private val currentUser = UserState.currentUser
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -61,5 +66,11 @@ class HomeViewModel(
 
     fun onSwipeLeft() {
         _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
+    }
+
+    fun startSchoolProfileActivity(school: SchoolPlusImages) {
+        val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
+        intent.putExtra("school", school)
+        activityStarterHelper.startActivity(intent)
     }
 }
