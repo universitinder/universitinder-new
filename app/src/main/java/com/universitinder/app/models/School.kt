@@ -1,8 +1,11 @@
 package com.universitinder.app.models
 
 import android.net.Uri
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-class School (
+@Parcelize
+data class School (
     val name: String = "",
     val email: String = "",
     val contactNumber: String = "",
@@ -21,7 +24,7 @@ class School (
     val courses: List<String> = emptyList(),
     val rightSwipe: Int = 0,
     val leftSwipe: Int = 0,
-) {
+) : Parcelable {
     fun asMap() : Map<String, Any> {
         return hashMapOf(
             "name" to name,
@@ -37,7 +40,8 @@ class School (
     }
 }
 
-class SchoolPlusImages(
+@Parcelize
+data class SchoolPlusImages(
     val school: School? = null,
     val images: List<Uri> = emptyList()
-)
+) : Parcelable
