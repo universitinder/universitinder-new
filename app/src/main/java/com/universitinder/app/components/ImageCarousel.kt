@@ -3,8 +3,8 @@ package com.universitinder.app.components
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,15 +14,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -33,7 +32,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ImageCarousel(imageUris: List<Uri>) {
+fun ImageCarousel(imageUris: List<Uri>, onMiddleClick : () -> Unit) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -53,8 +52,16 @@ fun ImageCarousel(imageUris: List<Uri>) {
             Image(
                 painter = rememberImagePainter(data = imageUris[page]),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds
+                modifier = Modifier.fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            val screenWidth = this.size.width
+                            if (offset.x < screenWidth / 3 && pagerState.currentPage > 0) coroutineScope.launch { pagerState.animateScrollToPage(pagerState.currentPage-1) }
+                            else if (offset.x > (screenWidth / 2 + screenWidth / 3) && pagerState.currentPage < imageUris.size) coroutineScope.launch { pagerState.animateScrollToPage(pagerState.currentPage+1) }
+                            else if (offset.x > screenWidth / 3 && offset.x < (screenWidth / 2 + screenWidth / 3)) onMiddleClick()
+                        }
+                    },
+                contentScale = ContentScale.FillBounds,
             )
         }
 
@@ -70,10 +77,9 @@ fun ImageCarousel(imageUris: List<Uri>) {
                 Box(
                     modifier = Modifier
                         .padding(2.dp)
-                        .clip(if (pagerState.currentPage == iteration) RoundedCornerShape(12.dp) else CircleShape)
-                        .border(2.5.dp, color = Color.White)
-                        .background(color)
-                        .size(if (pagerState.currentPage == iteration) (28.dp) else 12.dp, 12.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (pagerState.currentPage == iteration) color else Color(10,10,10,50))
+                        .size(28.dp, 4.dp)
                         .clickable {
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(iteration)

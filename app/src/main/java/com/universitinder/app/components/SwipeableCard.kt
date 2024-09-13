@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Colors
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -45,7 +44,8 @@ import kotlin.math.abs
 fun SwipeableCard(
     school: SchoolPlusImages,
     onSwipedLeft: () -> Unit,
-    onSwipedRight: () -> Unit
+    onSwipedRight: () -> Unit,
+    onMiddleClick: () -> Unit,
 ) {
     val swipeOffsetX = remember { Animatable(0f) }
     val swipeThreshold = 300f
@@ -58,14 +58,12 @@ fun SwipeableCard(
                 detectDragGestures(
                     onDragEnd = {
                         if (abs(swipeOffsetX.value) > swipeThreshold) {
-                            // Swipe right
                             if (swipeOffsetX.value > 0) {
                                 onSwipedRight()
                             } else {
                                 onSwipedLeft()
                             }
                         } else {
-                            // Reset position if swipe is not far enough
                             coroutineScope.launch {
                                 swipeOffsetX.animateTo(
                                     0f,
@@ -82,15 +80,16 @@ fun SwipeableCard(
                     }
                 )
             }
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { onMiddleClick() }
+                )
+            }
             .offset { IntOffset(swipeOffsetX.value.toInt(), 0) }
             .background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.TopCenter
     ) {
-//        Box(
-//            modifier = Modifier.fillMaxSize(),
-//            contentAlignment = Alignment.TopCenter
-//        ) {
-        ImageCarousel(imageUris = school.images)
+        ImageCarousel(imageUris = school.images, onMiddleClick = onMiddleClick)
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
@@ -98,7 +97,7 @@ fun SwipeableCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(120.dp)
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
@@ -108,16 +107,26 @@ fun SwipeableCard(
                         )
                     )
             ) {
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = school.school?.name ?: "No Institution Name",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ){
+                    Text(
+                        text = school.school?.name ?: "No Institution Name",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "${school.school?.province}, ${school.school?.municipalityOrCity}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White
+                    )
+                }
             }
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
@@ -128,24 +137,41 @@ fun SwipeableCard(
                     ),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Box(
-                    modifier = Modifier.padding(24.dp).clip(CircleShape)
-                        .background(Color.White),
-                ) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Filled.Close, "Close")
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(Color.White),
+                    ) {
+                        Icon(
+                            Icons.Filled.Close,
+                            modifier = Modifier.padding(12.dp),
+                            contentDescription = "Close"
+                        )
                     }
+                    Text(modifier = Modifier.padding(top= 8.dp), text = "Swipe Left", fontSize = 12.sp, color = Color.White)
                 }
-                Box(
-                    modifier = Modifier.padding(24.dp).clip(CircleShape)
-                        .background(Color.White),
-                ) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Filled.Check, "Check")
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(Color.White),
+                    ) {
+                        Icon(
+                            Icons.Filled.Check,
+                            modifier = Modifier.padding(12.dp),
+                            contentDescription = "Close"
+                        )
                     }
+                    Text(modifier = Modifier.padding(top= 8.dp), text = "Swipe Right", fontSize = 12.sp, color = Color.White)
                 }
             }
         }
     }
-//    }
 }
