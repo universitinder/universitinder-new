@@ -24,24 +24,11 @@ data class School (
     val courses: List<String> = emptyList(),
     val rightSwipe: Int = 0,
     val leftSwipe: Int = 0,
-) : Parcelable {
-    fun asMap() : Map<String, Any> {
-        return hashMapOf(
-            "name" to name,
-            "address" to address,
-            "minimum" to minimum,
-            "maximum" to maximum,
-            "affordability" to affordability,
-            "mission" to mission,
-            "vision" to vision,
-            "coreValues" to coreValues,
-            "courses" to courses
-        )
-    }
-}
+) : Parcelable
 
 @Parcelize
 data class SchoolPlusImages(
+    val id: String = "",
     val school: School? = null,
     val images: List<Uri> = emptyList()
 ) : Parcelable
