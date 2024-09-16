@@ -18,6 +18,15 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".filters.FiltersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".faq.FAQActivity"
+            android:exported="false" />
+        <activity
+            android:name=".matched.MatchedActivity"
+            android:exported="false" />
+        <activity
             android:name=".school.profile.SchoolProfileActivity"
             android:exported="false" />
         <activity
