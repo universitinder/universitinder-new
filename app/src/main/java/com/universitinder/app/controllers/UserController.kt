@@ -1,7 +1,9 @@
 package com.universitinder.app.controllers
 
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserType
@@ -59,6 +61,30 @@ class UserController {
             )
             .addOnSuccessListener { response.complete(true) }
             .addOnFailureListener { response.complete(false) }
+        return response.await()
+    }
+
+    suspend fun addMatchedSchool(user: User, id: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
+        firestore.collection("users").document(user.email)
+            .set(mapOf("matched" to FieldValue.arrayUnion(schoolRef.path)), SetOptions.merge())
+            .addOnSuccessListener { response.complete(true) }
+            .addOnFailureListener { response.complete(false) }
+
+        return response.await()
+    }
+
+    suspend fun removeMatchedSchool(user: User, id: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
+        firestore.collection("users").document(user.email)
+            .update("matched", FieldValue.arrayRemove(schoolRef))
+            .addOnSuccessListener { response.complete(true) }
+            .addOnFailureListener { response.complete(false) }
+
         return response.await()
     }
 }

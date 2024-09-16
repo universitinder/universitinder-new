@@ -1,9 +1,9 @@
 package com.universitinder.app.controllers
 
-import android.net.Uri
 //import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.storage
@@ -46,16 +46,18 @@ class SchoolController {
                 async {
                     val filtered = filteredSchools.await()
                     val schoolPlusImages = filtered.map { document ->
-                        val uris = mutableListOf<Uri>()
                         val id = document.reference.parent.parent?.id
+//                        Log.w("SCHOOL CONTROLLER", id.toString())
                         val storageRef = storage.reference
-                        val listOfItems = storageRef.child("users/${id}").listAll().await()
-                        listOfItems.items.forEach {
-                            val downloadURL = it.downloadUrl.await()
-                            uris.plus(downloadURL)
-                        }
-
-                        SchoolPlusImages(school = document.toObject(School::class.java), images = uris)
+                        val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                        async {
+                            val uris = listOfItems.items.map {
+                                val downloadURL = it.downloadUrl.await()
+                                downloadURL
+                            }
+//                            Log.w("SCHOOL CONTROLLER", uris.toString())
+                            SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris)
+                        }.await()
                     }
 //                    Log.w("SCHOOL CONTROLLER", schoolPlusImages.toString())
                     schools.complete(schoolPlusImages)
@@ -85,6 +87,7 @@ class SchoolController {
 
     suspend fun createSchool(email: String, school: School) : Boolean {
         val response = CompletableDeferred<Boolean>()
+
 
         firestore.collection("users")
             .document(email)
@@ -153,6 +156,74 @@ class SchoolController {
                 .addOnFailureListener { response.complete(false) }
         } else {
             response.complete(createSchool(email = email, school = school))
+        }
+
+        return response.await()
+    }
+
+    suspend fun addSchoolSwipeRightCount(email: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            schoolRef.update(
+                "swipeRight", FieldValue.increment(1)
+            )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener { response.complete(false) }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun subtractSchoolSwipeRightCount(email: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            schoolRef.update(
+                "swipeRight", FieldValue.increment(-1)
+            )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener { response.complete(false) }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun addSchoolSwipeLeftCount(email: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            schoolRef.update(
+                "swipeLeft", FieldValue.increment(1)
+            )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener { response.complete(false) }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun subtractSchoolSwipeLeftCount(email: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            schoolRef.update(
+                "swipeLeft", FieldValue.increment(-1)
+            )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener { response.complete(false) }
+        } else {
+            response.complete(false)
         }
 
         return response.await()
