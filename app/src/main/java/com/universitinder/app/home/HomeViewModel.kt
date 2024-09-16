@@ -62,7 +62,7 @@ class HomeViewModel(
         activityStarterHelper.startActivity(intent)
         viewModelScope.launch(Dispatchers.IO) {
             schoolController.addSchoolSwipeRightCount(school.id)
-            if (currentUser != null) userController.addMatchedSchool(currentUser, school.id)
+            if (currentUser != null && school.school != null) userController.addMatchedSchool(currentUser, school.school.name)
         }
     }
 
