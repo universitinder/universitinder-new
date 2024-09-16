@@ -1,6 +1,8 @@
 package com.universitinder.app.controllers
 
+import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -8,6 +10,7 @@ import com.google.firebase.firestore.firestore
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserType
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.tasks.await
 
 class UserController {
     private val firestore : FirebaseFirestore = Firebase.firestore
@@ -64,26 +67,44 @@ class UserController {
         return response.await()
     }
 
-    suspend fun addMatchedSchool(user: User, id: String) : Boolean {
+    suspend fun addMatchedSchool(user: User, schoolName: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
+//        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
         firestore.collection("users").document(user.email)
-            .set(mapOf("matched" to FieldValue.arrayUnion(schoolRef.path)), SetOptions.merge())
+            .set(mapOf("matched" to FieldValue.arrayUnion(schoolName)), SetOptions.merge())
             .addOnSuccessListener { response.complete(true) }
             .addOnFailureListener { response.complete(false) }
 
         return response.await()
     }
 
-    suspend fun removeMatchedSchool(user: User, id: String) : Boolean {
+    suspend fun removeMatchedSchool(user: User, schoolName: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
+//        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
         firestore.collection("users").document(user.email)
-            .update("matched", FieldValue.arrayRemove(schoolRef))
+            .update("matched", FieldValue.arrayRemove(schoolName))
             .addOnSuccessListener { response.complete(true) }
             .addOnFailureListener { response.complete(false) }
+
+        return response.await()
+    }
+
+    suspend fun getMatchedSchools(user: User) : List<String> {
+        val response = CompletableDeferred<List<String>>()
+
+        val documentSnapshot = firestore.collection("users").document(user.email).get().await()
+        if (documentSnapshot.exists()) {
+            val matched = documentSnapshot.get("matched") as List<*>
+            response.complete(
+                matched.map {
+                    it.toString()
+                }
+            )
+        } else {
+            response.complete(emptyList())
+        }
 
         return response.await()
     }
