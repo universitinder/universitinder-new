@@ -12,9 +12,11 @@ import com.google.firebase.auth.auth
 import com.universitinder.app.accountSetup.AccountSetupActivity
 import com.universitinder.app.controllers.FilterController
 import com.universitinder.app.controllers.SchoolController
+import com.universitinder.app.controllers.UserController
 import com.universitinder.app.filters.FiltersViewModel
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.login.LoginActivity
+import com.universitinder.app.matches.MatchesViewModel
 import com.universitinder.app.models.UserState
 import com.universitinder.app.navigation.NavigationScreen
 import com.universitinder.app.navigation.NavigationViewModel
@@ -60,22 +62,26 @@ class HomeActivity : AppCompatActivity() {
 
         val schoolController = SchoolController()
         val filterController = FilterController()
+        val userController = UserController()
         val activityStarterHelper = ActivityStarterHelper(this)
         val homeViewModel = HomeViewModel(
             schoolController = schoolController,
             filterController = filterController,
-            activityStarterHelper = activityStarterHelper
+            activityStarterHelper = activityStarterHelper,
+            userController = userController
         )
         val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper)
         val schoolViewModel = SchoolViewModel(schoolController = schoolController)
         val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper)
+        val matchesViewModel = MatchesViewModel()
         profileViewModel = ProfileViewModel(auth = auth, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
         navigationViewModel = NavigationViewModel(
             schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
             schoolViewModel = schoolViewModel,
             homeViewModel = homeViewModel,
             profileViewModel = profileViewModel,
-            filtersViewModel = filtersViewModel
+            filtersViewModel = filtersViewModel,
+            matchesViewModel = matchesViewModel
         )
 
         setContent {

@@ -27,11 +27,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.universitinder.app.filters.FiltersScreen
 import com.universitinder.app.home.HomeScreen
+import com.universitinder.app.matches.MatchesScreen
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import com.universitinder.app.profile.ProfileScreen
 import com.universitinder.app.school.SchoolScreen
 import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationScreen
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Heart
 
 @Composable
 fun NavigationScreen(navigationViewModel: NavigationViewModel) {
@@ -50,16 +53,20 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                                 selected = selectedIndex == 0,
                                 onClick = {
                                     selectedIndex = 0
-                                    navController.navigate("Filters")
+                                    navController.navigate("Matches")
                                 },
-                                icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "Filters")},
-                                label = { Text(text = "Filters") }
+                                icon = { Icon(if (selectedIndex == 0) FeatherIcons.Heart else FeatherIcons.Heart, "Matches")},
+                                label = { Text(text = "Matches") }
                             )
                             NavigationBarItem(
                                 selected = selectedIndex == 1,
                                 onClick = {
-                                    selectedIndex = 1
-                                    navController.navigate("Home")
+                                    if (selectedIndex == 1) {
+                                        navigationViewModel.homeViewModel.refresh()
+                                    } else {
+                                        selectedIndex = 1
+                                        navController.navigate("Home")
+                                    }
                                 },
                                 icon = { Icon(if (selectedIndex == 1) Icons.Filled.Home else Icons.Outlined.Home, "Home")},
                                 label = { Text(text = "Home") }
@@ -115,6 +122,7 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                     navController = navController,
                     startDestination = if (currentUser.type == UserType.INSTITUTION) "School" else "Home"
                 ) {
+                    composable("Matches") { MatchesScreen(matchesViewModel = navigationViewModel.matchesViewModel) }
                     composable("Filters") { FiltersScreen(filtersViewModel = navigationViewModel.filtersViewModel) }
                     composable("Institution") { SchoolInformationNavigationScreen(viewModel = navigationViewModel.schoolInformationNavigationViewModel) }
                     composable("School") { SchoolScreen(schoolViewModel = navigationViewModel.schoolViewModel) }
