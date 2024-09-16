@@ -9,7 +9,8 @@ import com.universitinder.app.filters.province.ProvinceFilterActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
 
 class FiltersViewModel(
-    private val activityStarterHelper: ActivityStarterHelper
+    private val activityStarterHelper: ActivityStarterHelper,
+    val popActivity: () -> Unit,
 ): ViewModel() {
 
     fun startProvinceActivity() {

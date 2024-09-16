@@ -11,7 +11,7 @@ class FiltersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val activityStarterHelper = ActivityStarterHelper(this)
-        val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper)
+        val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper, popActivity = this::finish)
 
         setContent {
             UniversitinderTheme {
