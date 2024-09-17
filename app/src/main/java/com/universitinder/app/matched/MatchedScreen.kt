@@ -2,6 +2,7 @@ package com.universitinder.app.matched
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +30,10 @@ fun MatchedScreen(matchedViewModel: MatchedViewModel) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = matchedViewModel::startFAQActivity) {
+            FloatingActionButton(
+                onClick = matchedViewModel::startFAQActivity,
+                shape = CircleShape
+            ) {
                 Icon(FeatherIcons.MessageSquare, contentDescription = "Message")
             }
         }

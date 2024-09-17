@@ -1,6 +1,7 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -21,8 +22,45 @@ class SchoolController {
     private val firestore = Firebase.firestore
     private val storage = Firebase.storage
 
+    suspend fun getSchoolPlusImageByName(name: String) : SchoolPlusImages? {
+        val school = CompletableDeferred<SchoolPlusImages?>()
+        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                async {
+                    firestore.collectionGroup("school")
+                        .whereEqualTo("name", name)
+                        .limit(1)
+                        .get()
+                        .addOnSuccessListener { objects ->
+                            Log.w("SCHOOL CONTROLLER", objects.documents.toString())
+                            filteredSchools.complete(objects.documents)
+                        }
+                        .addOnFailureListener {
+                            filteredSchools.complete(emptyList())
+                            Log.w("SCHOOL CONTROLLER", it.localizedMessage!!)
+                        }
+                }.await()
+                async {
+                    val filtered = filteredSchools.await()
+                    val first = filtered.first()
+                    val id = first.reference.parent.parent?.id
+                    val storageRef = storage.reference
+                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                    val uris = listOfItems.items.map {
+                        val downloadURL = it.downloadUrl.await()
+                        downloadURL
+                    }
+                    school.complete(SchoolPlusImages(id = id!!, school = first.toObject(School::class.java), images = uris))
+                }.await()
+            }
+        }
+
+        return school.await()
+    }
+
     suspend fun getFilteredSchool(filter: Filter) : List<SchoolPlusImages> {
-//        Log.w("SCHOOL CONTROLLER", filter.toString())
         val schools = CompletableDeferred<List<SchoolPlusImages>>()
         val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
 
@@ -32,13 +70,11 @@ class SchoolController {
                     firestore.collectionGroup("school")
                         .get()
                         .addOnSuccessListener { objects ->
-//                            Log.w("SCHOOL CONTROLLER", objects.documents.toString())
                             val filtered = objects.documents.filter { document ->
                                 val school = document.toObject(School::class.java)
                                 filter.provinces.contains(school?.province!!) && filter.cities.contains(school.municipalityOrCity) &&
                                 filter.courses.split("___").intersect(school.courses.toSet()).isNotEmpty()
                             }
-//                            Log.w("SCHOOL CONTROLLER", filtered.toString())
                             filteredSchools.complete(filtered)
                         }
                         .addOnFailureListener { filteredSchools.complete(emptyList()) }
@@ -47,7 +83,6 @@ class SchoolController {
                     val filtered = filteredSchools.await()
                     val schoolPlusImages = filtered.map { document ->
                         val id = document.reference.parent.parent?.id
-//                        Log.w("SCHOOL CONTROLLER", id.toString())
                         val storageRef = storage.reference
                         val listOfItems = storageRef.child("users/${id}/school").listAll().await()
                         async {
@@ -55,11 +90,9 @@ class SchoolController {
                                 val downloadURL = it.downloadUrl.await()
                                 downloadURL
                             }
-//                            Log.w("SCHOOL CONTROLLER", uris.toString())
                             SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris)
                         }.await()
                     }
-//                    Log.w("SCHOOL CONTROLLER", schoolPlusImages.toString())
                     schools.complete(schoolPlusImages)
                 }.await()
             }
@@ -96,7 +129,6 @@ class SchoolController {
             .set(school)
             .addOnSuccessListener { response.complete(true) }
             .addOnFailureListener {
-//                Log.w("SCHOOL CONTROLLER", it.message!!)
                 response.complete(false)
             }
 
@@ -128,7 +160,6 @@ class SchoolController {
                 )
                 .addOnSuccessListener { response.complete(true) }
                 .addOnFailureListener {
-//                    Log.w("SCHOOL CONTROLLER", it.message!!)
                     response.complete(false)
                 }
         } else {

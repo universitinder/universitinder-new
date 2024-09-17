@@ -14,6 +14,7 @@ class MatchedViewModel(
 
     fun startFAQActivity() {
         val intent = Intent(activityStarterHelper.getContext(), FAQActivity::class.java)
+        intent.putExtra("schoolID", school.id)
         activityStarterHelper.startActivity(intent)
     }
 }

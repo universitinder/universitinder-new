@@ -1,5 +1,6 @@
 package com.universitinder.app.matches
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -39,6 +40,7 @@ fun MatchesScreen(matchesViewModel: MatchesViewModel) {
                 ){
                     itemsIndexed(uiState.matches) { index, school ->
                         ListItem(
+                            modifier = Modifier.clickable { matchesViewModel.startMatchedSchool(school) },
                             leadingContent = { Text(text = (index+1).toString()) },
                             headlineContent = { Text(text = school)}
                         )
