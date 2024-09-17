@@ -41,10 +41,16 @@ class MatchesViewModel(
 
     fun startMatchedSchool(school: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val schoolPlusImage = schoolController.getSchoolPlusImageByName(school) ?: return@launch
+            withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(matchClickLoading = true) }
+            val schoolPlusImage = schoolController.getSchoolPlusImageByName(school)
+            if (schoolPlusImage == null) {
+                withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(matchClickLoading = false) }
+                return@launch
+            }
             val intent = Intent(activityStarterHelper.getContext(), MatchedActivity::class.java)
             intent.putExtra("school", schoolPlusImage)
             activityStarterHelper.startActivity(intent)
+            withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(matchClickLoading = false) }
         }
     }
 }

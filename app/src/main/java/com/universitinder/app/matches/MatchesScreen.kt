@@ -35,15 +35,25 @@ fun MatchesScreen(matchesViewModel: MatchesViewModel) {
                 }
             }
             false -> {
-                LazyColumn(
-                    modifier = Modifier.padding(innerPadding)
-                ){
-                    itemsIndexed(uiState.matches) { index, school ->
-                        ListItem(
-                            modifier = Modifier.clickable { matchesViewModel.startMatchedSchool(school) },
-                            leadingContent = { Text(text = (index+1).toString()) },
-                            headlineContent = { Text(text = school)}
-                        )
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ){
+                        itemsIndexed(uiState.matches) { index, school ->
+                            ListItem(
+                                modifier = Modifier.clickable { matchesViewModel.startMatchedSchool(school) },
+                                leadingContent = { Text(text = (index+1).toString()) },
+                                headlineContent = { Text(text = school)},
+                            )
+                        }
+                    }
+                    if (uiState.matchClickLoading) {
+                        CircularProgressIndicator()
                     }
                 }
             }
