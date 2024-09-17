@@ -18,6 +18,12 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".forgotPassword.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".changePassword.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".filters.FiltersActivity"
             android:exported="false" />
         <activity

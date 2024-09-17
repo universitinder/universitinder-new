@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.universitinder.app.controllers.UserController
+import com.universitinder.app.forgotPassword.ForgotPasswordActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.home.HomeActivity
 import com.universitinder.app.models.ResultMessage
@@ -96,6 +97,7 @@ class LoginViewModel(
     }
 
     fun startForgotPasswordActivity() {
-        TODO("Create Start Forgot Password Activity")
+        val intent = Intent(activityStarterHelper.getContext(), ForgotPasswordActivity::class.java)
+        activityStarterHelper.startActivity(intent)
     }
 }
