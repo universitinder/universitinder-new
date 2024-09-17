@@ -1,7 +1,6 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
-import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -33,17 +32,15 @@ class SchoolController {
                         .whereEqualTo("name", name)
                         .limit(1)
                         .get()
-                        .addOnSuccessListener { objects ->
-                            Log.w("SCHOOL CONTROLLER", objects.documents.toString())
-                            filteredSchools.complete(objects.documents)
-                        }
-                        .addOnFailureListener {
-                            filteredSchools.complete(emptyList())
-                            Log.w("SCHOOL CONTROLLER", it.localizedMessage!!)
-                        }
+                        .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
+                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
                 }.await()
                 async {
                     val filtered = filteredSchools.await()
+                    if (filtered.isEmpty()) {
+                        school.complete(null)
+                        return@async
+                    }
                     val first = filtered.first()
                     val id = first.reference.parent.parent?.id
                     val storageRef = storage.reference
