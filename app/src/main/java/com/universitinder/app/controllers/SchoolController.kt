@@ -1,6 +1,7 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -74,6 +75,47 @@ class SchoolController {
                             }
                             filteredSchools.complete(filtered)
                         }
+                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
+                }.await()
+                async {
+                    val filtered = filteredSchools.await()
+                    val schoolPlusImages = filtered.map { document ->
+                        val id = document.reference.parent.parent?.id
+                        val storageRef = storage.reference
+                        val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                        async {
+                            val uris = listOfItems.items.map {
+                                val downloadURL = it.downloadUrl.await()
+                                downloadURL
+                            }
+                            SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris)
+                        }.await()
+                    }
+                    schools.complete(schoolPlusImages)
+                }.await()
+            }
+        }
+
+        return schools.await()
+    }
+
+    suspend fun getFilteredSchoolTwo(filter: Filter) : List<SchoolPlusImages> {
+        val schools = CompletableDeferred<List<SchoolPlusImages>>()
+        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
+        val provinces = filter.provinces.split("___").toList()
+        val cities = filter.cities.split("___").toList()
+        val courses = filter.courses.split("___").toList()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                async {
+                    firestore.collectionGroup("school")
+                        .whereIn("province", provinces)
+                        .whereIn("municipalityOrCity", cities)
+                        .whereArrayContainsAny("courses", courses)
+                        .whereEqualTo("affordability", filter.affordability)
+                        .get()
+                        .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
                         .addOnFailureListener { filteredSchools.complete(emptyList()) }
                 }.await()
                 async {

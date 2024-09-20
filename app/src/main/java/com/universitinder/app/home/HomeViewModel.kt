@@ -39,10 +39,8 @@ class HomeViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
                 val filter = filterController.getFilter(currentUser.email)
-//                Log.w("HOME VIEW MODEL", filter.toString())
                 if (filter != null) {
-                    val schools = schoolController.getFilteredSchool(filter)
-//                    Log.w("HOME VIEW MODEL", schools.toString())
+                    val schools = schoolController.getFilteredSchoolTwo(filter)
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
