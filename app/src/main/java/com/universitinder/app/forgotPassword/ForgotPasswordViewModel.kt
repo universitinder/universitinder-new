@@ -1,18 +1,21 @@
 package com.universitinder.app.forgotPassword
 
 import androidx.lifecycle.ViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import androidx.lifecycle.viewModelScope
+import com.universitinder.app.controllers.UserController
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ForgotPasswordViewModel(
+    private val userController: UserController,
     val popActivity: () -> Unit
 ) : ViewModel() {
-    private val auth = Firebase.auth
     private val _uiState = MutableStateFlow(ForgotPasswordUiState())
     val uiState : StateFlow<ForgotPasswordUiState> = _uiState.asStateFlow()
 
@@ -30,27 +33,30 @@ class ForgotPasswordViewModel(
             return
         }
 
-        _uiState.value = _uiState.value.copy(loading = true)
-        auth.sendPasswordResetEmail(_uiState.value.email)
-            .addOnSuccessListener {
-                _uiState.value = _uiState.value.copy(
-                    resultMessage = ResultMessage(
-                        message = "Password Reset Email Sent!",
-                        show = true,
-                        type = ResultMessageType.SUCCESS
-                    ),
-                    loading = false
-                )
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(loading = true) }
+            val result = userController.sendResetPasswordEmail(_uiState.value.email)
+            withContext(Dispatchers.Main) {
+                if (result) {
+                    _uiState.value = _uiState.value.copy(
+                        resultMessage = ResultMessage(
+                            message = "Password Reset Email Sent!",
+                            show = true,
+                            type = ResultMessageType.SUCCESS
+                        ),
+                        loading = false
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        resultMessage = ResultMessage(
+                            message = "Failed to send password reset email",
+                            show = true,
+                            type = ResultMessageType.FAILED
+                        ),
+                        loading = false
+                    )
+                }
             }
-            .addOnFailureListener {
-                _uiState.value = _uiState.value.copy(
-                    resultMessage = ResultMessage(
-                        message = "Failed to send password reset email",
-                        show = true,
-                        type = ResultMessageType.FAILED
-                    ),
-                    loading = false
-                )
-            }
+        }
     }
 }
