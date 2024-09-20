@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.universitinder.app.components.AffordabilityIndicator
 import com.universitinder.app.components.PopUpDropDown
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.PROVINCES
@@ -217,6 +218,11 @@ fun SchoolInformationScreen(schoolInformationViewModel: SchoolInformationViewMod
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = schoolInformationViewModel::onMaximumChange
                     )
+
+                    Column {
+                        Text(text = "Affordability")
+                        AffordabilityIndicator(affordability = uiState.affordability)
+                    }
                     if (uiState.resultMessage.show)
                         Text(text = uiState.resultMessage.message, color = if (uiState.resultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, fontSize = 12.sp)
                     Button(

@@ -65,7 +65,6 @@ class SchoolInformationViewModel(
             municipalitiesAndCities = MUNICIPALITIES_AND_CITIES[newVal]?.toList() ?: listOf()
         )
     }
-    fun onProvinceMenuToggle() { _uiState.value = _uiState.value.copy(provinceMenuExpand = !_uiState.value.provinceMenuExpand) }
     fun onProvinceMenuExpand() { _uiState.value = _uiState.value.copy(provinceMenuExpand = true) }
     fun onProvinceMenuDismiss() { _uiState.value = _uiState.value.copy(provinceMenuExpand = false) }
     fun onMunicipalityOrCityChange(newVal: String) { _uiState.value = _uiState.value.copy(municipalityOrCity = newVal) }
@@ -74,8 +73,17 @@ class SchoolInformationViewModel(
     fun onBarangayChange(newVal: String) { _uiState.value = _uiState.value.copy(barangay = newVal) }
     fun onStreetChange(newVal: String) { _uiState.value = _uiState.value.copy(street = newVal) }
     fun onMinimumChange(newVal: String) { _uiState.value = _uiState.value.copy(minimum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt()) }
-    fun onMaximumChange(newVal: String) { _uiState.value = _uiState.value.copy(maximum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt()) }
-    fun onAffordabilityChange(newVal: String) { _uiState.value = _uiState.value.copy(affordability = newVal.toInt()) }
+    fun onMaximumChange(newVal: String) {
+        _uiState.value = _uiState.value.copy(maximum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt())
+        determineAffordability(_uiState.value.maximum)
+    }
+    private fun onAffordabilityChange(newVal: Int) { _uiState.value = _uiState.value.copy(affordability = newVal) }
+
+    private fun determineAffordability(maxVal: Int) {
+        if (maxVal <= 10000) onAffordabilityChange(1)
+        else if (maxVal <= 50000) onAffordabilityChange(2)
+        else onAffordabilityChange(3)
+    }
 
     private fun fieldsNotFilled() : Boolean {
         return _uiState.value.name.isEmpty() || _uiState.value.name.isBlank() || _uiState.value.email.isEmpty() ||
