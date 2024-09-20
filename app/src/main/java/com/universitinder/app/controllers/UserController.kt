@@ -2,17 +2,22 @@ package com.universitinder.app.controllers
 
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
+import com.universitinder.app.models.ResultMessage
+import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.tasks.await
 
 class UserController {
+    private val auth : FirebaseAuth = Firebase.auth
     private val firestore : FirebaseFirestore = Firebase.firestore
 
     private fun userPropsExists(data: Map<String, Any>) : Boolean {
@@ -105,6 +110,40 @@ class UserController {
         } else {
             response.complete(emptyList())
         }
+
+        return response.await()
+    }
+
+    suspend fun sendResetPasswordEmail(email: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        auth.sendPasswordResetEmail(email)
+            .addOnSuccessListener { response.complete(true) }
+            .addOnFailureListener { response.complete(false) }
+
+        return response.await()
+    }
+
+    suspend fun changePassword(newPassword: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+        val currentUser = auth.currentUser
+        if (currentUser == null) response.complete(false)
+
+        currentUser!!.updatePassword(newPassword)
+            .addOnSuccessListener { response.complete(true) }
+            .addOnFailureListener { response.complete(false) }
+
+        return response.await()
+    }
+
+    suspend fun deleteUser() : Boolean {
+        val response = CompletableDeferred<Boolean>()
+        val currentUser = auth.currentUser
+        if (currentUser == null) response.complete(false)
+
+        currentUser!!.delete()
+            .addOnSuccessListener { response.complete(true) }
+            .addOnFailureListener { response.complete(false) }
 
         return response.await()
     }
