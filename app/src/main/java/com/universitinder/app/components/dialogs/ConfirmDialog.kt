@@ -1,4 +1,4 @@
-package com.universitinder.app.components
+package com.universitinder.app.components.dialogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

@@ -39,7 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.universitinder.app.components.ConfirmDialog
+import com.universitinder.app.components.dialogs.ConfirmDialog
 import com.universitinder.app.models.EducationLevel
 import com.universitinder.app.models.ResultMessageType
 
