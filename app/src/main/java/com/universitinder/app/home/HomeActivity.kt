@@ -74,7 +74,7 @@ class HomeActivity : AppCompatActivity() {
         val schoolViewModel = SchoolViewModel(schoolController = schoolController)
         val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper, popActivity = this::finish)
         val matchesViewModel = MatchesViewModel(userController = userController, schoolController = schoolController, activityStarterHelper = activityStarterHelper)
-        profileViewModel = ProfileViewModel(auth = auth, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
+        profileViewModel = ProfileViewModel(auth = auth, userController = userController, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
         navigationViewModel = NavigationViewModel(
             schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
             schoolViewModel = schoolViewModel,

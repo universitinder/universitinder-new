@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.universitinder.app.components.CircularAvatar
+import com.universitinder.app.components.dialogs.ConfirmDeleteAccountDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,7 +106,7 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                     }
                     TextButton(
                         modifier = Modifier.padding(),
-                        onClick = {  },
+                        onClick = profileViewModel::showDeleteDialog,
                         colors = ButtonDefaults.textButtonColors(
                             contentColor = Color.Red
                         )
@@ -121,5 +122,12 @@ fun ProfileScreen(profileViewModel: ProfileViewModel) {
                 Text(text = "Sign Out")
             }
         }
+
+        ConfirmDeleteAccountDialog(
+            show = uiState.showDeleteDialog,
+            onDismissRequest = profileViewModel::onDismissDeleteDialog,
+            deleteAccount = profileViewModel::deleteAccount,
+            loading = uiState.deleteDialogLoading
+        )
     }
 }

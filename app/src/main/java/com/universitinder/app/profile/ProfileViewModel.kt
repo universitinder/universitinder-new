@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.universitinder.app.MainActivity
 import com.universitinder.app.changePassword.ChangePasswordActivity
+import com.universitinder.app.controllers.UserController
 import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.login.LoginActivity
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
@@ -26,6 +28,7 @@ import kotlinx.coroutines.withContext
 
 class ProfileViewModel(
     private val auth: FirebaseAuth,
+    private val userController: UserController,
     private val activityStarterHelper: ActivityStarterHelper,
     private val clearUser: suspend () -> Unit
 ) : ViewModel() {
@@ -36,6 +39,9 @@ class ProfileViewModel(
         val currentUser = UserState.currentUser
         if (currentUser != null) { _uiState.value = _uiState.value.copy(user = currentUser) }
     }
+
+    fun onDismissDeleteDialog() { _uiState.value = _uiState.value.copy(showDeleteDialog = false) }
+    fun showDeleteDialog() { _uiState.value = _uiState.value.copy(showDeleteDialog = true) }
 
     suspend fun refreshUser(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -79,7 +85,14 @@ class ProfileViewModel(
         activityStarterHelper.startActivity(intent)
     }
 
-    fun deleteUser() {
-
+    fun deleteAccount() {
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteDialogLoading = true) }
+            userController.deleteUser()
+            auth.signOut()
+            val intent = Intent(activityStarterHelper.getContext(), LoginActivity::class.java)
+            activityStarterHelper.startActivity(intent)
+            withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteDialogLoading = false) }
+        }
     }
 }
