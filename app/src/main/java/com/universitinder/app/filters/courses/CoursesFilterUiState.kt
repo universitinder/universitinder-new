@@ -6,6 +6,8 @@ data class CoursesFilterUiState(
     val provinces: String = "",
     val cities: String = "",
     val affordability: Int = 0,
+    val minimum: Int = 0,
+    val maximum: Int = 0,
     val courses: List<String> = listOf(),
     val checkedCourses: List<String> = listOf(),
     val loading: Boolean = false,

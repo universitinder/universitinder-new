@@ -35,7 +35,9 @@ class CityFilterViewModel(
                         checkedCities = filter.cities.split("___"),
                         provinces = filter.provinces,
                         affordability = filter.affordability,
-                        courses = filter.courses
+                        minimum = filter.minimum,
+                        maximum = filter.maximum,
+                        courses = filter.courses,
                     )
                 }
             }
@@ -61,6 +63,8 @@ class CityFilterViewModel(
                         cities = _uiState.value.checkedCities.joinToString("___"),
                         provinces = _uiState.value.provinces,
                         affordability = _uiState.value.affordability,
+                        minimum = _uiState.value.minimum,
+                        maximum = _uiState.value.maximum,
                         courses = _uiState.value.courses
                     )
                 )

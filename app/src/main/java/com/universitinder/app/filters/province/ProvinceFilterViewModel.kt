@@ -35,6 +35,8 @@ class ProvinceFilterViewModel(
                     _uiState.value = _uiState.value.copy(
                         cities = filter.cities,
                         affordability = filter.affordability,
+                        minimum = filter.minimum,
+                        maximum = filter.maximum,
                         courses = filter.courses,
                         checkedProvinces = filter.provinces.split("___"),
                     )
@@ -62,6 +64,8 @@ class ProvinceFilterViewModel(
                         provinces = _uiState.value.checkedProvinces.joinToString("___"),
                         cities = _uiState.value.cities,
                         affordability = _uiState.value.affordability,
+                        minimum = _uiState.value.minimum,
+                        maximum = _uiState.value.maximum,
                         courses = _uiState.value.courses
                     )
                 )

@@ -12,6 +12,7 @@ import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.matched.MatchedActivity
 import com.universitinder.app.models.SchoolPlusImages
 import com.universitinder.app.models.UserState
+import com.universitinder.app.models.UserType
 import com.universitinder.app.school.profile.SchoolProfileActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,9 @@ class HomeViewModel(
     val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        refresh()
+        if (currentUser != null && currentUser.type == UserType.STUDENT) {
+            refresh()
+        }
     }
 
     fun refresh() {

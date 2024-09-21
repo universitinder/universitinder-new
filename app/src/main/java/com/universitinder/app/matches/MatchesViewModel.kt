@@ -8,6 +8,7 @@ import com.universitinder.app.controllers.UserController
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.matched.MatchedActivity
 import com.universitinder.app.models.UserState
+import com.universitinder.app.models.UserType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,9 @@ class MatchesViewModel(
     val uiState : StateFlow<MatchesUiState> = _uiState.asStateFlow()
 
     init {
-        refresh()
+        if (currentUser != null && currentUser.type == UserType.STUDENT) {
+            refresh()
+        }
     }
 
     fun refresh() {

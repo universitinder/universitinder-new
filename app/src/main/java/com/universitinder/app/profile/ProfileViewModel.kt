@@ -40,7 +40,7 @@ class ProfileViewModel(
         if (currentUser != null) { _uiState.value = _uiState.value.copy(user = currentUser) }
     }
 
-    fun onDismissDeleteDialog() { _uiState.value = _uiState.value.copy(showDeleteDialog = false) }
+    fun onDismissDeleteDialog() { _uiState.value = _uiState.value.copy(showDeleteDialog = false, deleteDialogLoading = false) }
     fun showDeleteDialog() { _uiState.value = _uiState.value.copy(showDeleteDialog = true) }
 
     suspend fun refreshUser(context: Context) {

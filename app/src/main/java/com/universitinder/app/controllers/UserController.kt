@@ -1,16 +1,14 @@
 package com.universitinder.app.controllers
 
-import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
-import com.universitinder.app.models.ResultMessage
-import com.universitinder.app.models.ResultMessageType
+import com.universitinder.app.models.Filter
+import com.universitinder.app.models.School
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserType
 import kotlinx.coroutines.CompletableDeferred
@@ -53,9 +51,27 @@ class UserController {
     suspend fun createUser(user: User) : Boolean {
         val response = CompletableDeferred<Boolean>(null)
         firestore.collection("users").document(user.email).set(user)
-            .addOnSuccessListener { response.complete(true) }
+            .addOnSuccessListener {
+                createSchoolDocument(user.email)
+                createFiltersDocument(user.email)
+                response.complete(true)
+            }
             .addOnFailureListener{ response.complete(false) }
         return response.await()
+    }
+
+    private fun createFiltersDocument(email: String) {
+        firestore.collection("users").document(email).collection("filters").document("filters")
+            .set(Filter())
+            .addOnSuccessListener {  }
+            .addOnFailureListener {  }
+    }
+
+    private fun createSchoolDocument(email: String) {
+        firestore.collection("users").document(email).collection("school").document("school")
+            .set(School())
+            .addOnSuccessListener {  }
+            .addOnFailureListener {  }
     }
 
     suspend fun updateUser(user: User) : Boolean {
@@ -136,7 +152,7 @@ class UserController {
         return response.await()
     }
 
-    suspend fun deleteUser() : Boolean {
+    suspend fun deleteUser(): Boolean {
         val response = CompletableDeferred<Boolean>()
         val responseTwo = CompletableDeferred<Boolean>()
         val currentUser = auth.currentUser
@@ -153,8 +169,6 @@ class UserController {
                 responseTwo.complete(false)
             }
 
-        val result = response.await() && responseTwo.await()
-        if (!result) return deleteUser()
-        return true
+        return response.await() && responseTwo.await()
     }
 }

@@ -54,6 +54,7 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                                 onClick = {
                                     selectedIndex = 0
                                     navController.navigate("Matches")
+                                    navigationViewModel.matchesViewModel.refresh()
                                 },
                                 icon = { Icon(if (selectedIndex == 0) FeatherIcons.Heart else FeatherIcons.Heart, "Matches")},
                                 label = { Text(text = "Matches") }

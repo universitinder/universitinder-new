@@ -12,17 +12,8 @@ class User (
     val type: UserType,
     val address: String,
     val contactNumber: String,
-) {
-    fun asMap() : Map<String, Any> {
-        return hashMapOf(
-            "email" to email,
-            "name" to name,
-            "type" to type.toString(),
-            "address" to address,
-            "contactNumber" to contactNumber
-        )
-    }
-}
+    val matched: List<String> = emptyList(),
+)
 
 
 object UserState {

@@ -209,13 +209,13 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                 }
                             }
                             3 -> {
-                                item { SchoolBasicInfo(label = "Mission", value = uiState.schoolPlusImages?.school!!.mission) }
+                                item(span = { GridItemSpan(3) }){ SchoolBasicInfo(label = "Mission", value = uiState.schoolPlusImages?.school!!.mission) }
                             }
                             4 -> {
-                                item { SchoolBasicInfo(label = "Vision", value = uiState.schoolPlusImages?.school!!.vision) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Vision", value = uiState.schoolPlusImages?.school!!.vision) }
                             }
                             5 -> {
-                                item { SchoolBasicInfo(label = "Core Values", value = uiState.schoolPlusImages?.school!!.coreValues) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Core Values", value = uiState.schoolPlusImages?.school!!.coreValues) }
                             }
                         }
                     }

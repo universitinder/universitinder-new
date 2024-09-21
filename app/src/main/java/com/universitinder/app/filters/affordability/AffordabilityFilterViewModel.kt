@@ -32,6 +32,8 @@ class AffordabilityFilterViewModel(
                         cities = filter.cities,
                         provinces = filter.provinces,
                         affordability = filter.affordability,
+                        minimum = filter.minimum,
+                        maximum = filter.maximum,
                         courses = filter.courses
                     )
                 }
