@@ -22,8 +22,8 @@ data class School (
     val vision: String = "",
     val coreValues: String = "",
     val courses: List<String> = emptyList(),
-    val rightSwipe: Int = 0,
-    val leftSwipe: Int = 0,
+    val swipeRight: Int = 0,
+    val swipeLeft: Int = 0,
 ) : Parcelable
 
 @Parcelize
