@@ -96,6 +96,7 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                                 onClick = {
                                     selectedIndex = 1
                                     navController.navigate("School")
+                                    navigationViewModel.schoolViewModel.refresh()
                                 },
                                 icon = { Icon(if (selectedIndex == 1) Icons.Filled.Home else Icons.Outlined.Home, "Home")},
                                 label = { Text(text = "Home") }
