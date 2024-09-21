@@ -138,13 +138,23 @@ class UserController {
 
     suspend fun deleteUser() : Boolean {
         val response = CompletableDeferred<Boolean>()
+        val responseTwo = CompletableDeferred<Boolean>()
         val currentUser = auth.currentUser
         if (currentUser == null) response.complete(false)
 
-        currentUser!!.delete()
+        firestore.collection("users").document(currentUser?.email!!).delete()
             .addOnSuccessListener { response.complete(true) }
-            .addOnFailureListener { response.complete(false) }
+            .addOnFailureListener {
+                response.complete(false)
+            }
+        currentUser.delete()
+            .addOnSuccessListener { responseTwo.complete(true) }
+            .addOnFailureListener {
+                responseTwo.complete(false)
+            }
 
-        return response.await()
+        val result = response.await() && responseTwo.await()
+        if (!result) return deleteUser()
+        return true
     }
 }
