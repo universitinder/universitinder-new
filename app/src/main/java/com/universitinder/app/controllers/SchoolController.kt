@@ -1,7 +1,6 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
-import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -21,6 +20,38 @@ import kotlinx.coroutines.tasks.await
 class SchoolController {
     private val firestore = Firebase.firestore
     private val storage = Firebase.storage
+
+    suspend fun getSchoolPlusImageByEmail(email: String) : SchoolPlusImages? {
+        val school = CompletableDeferred<SchoolPlusImages?>()
+        val filteredSchools = CompletableDeferred<DocumentSnapshot?>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                async {
+                    firestore.collection("users").document(email).collection("school").document("school")
+                        .get()
+                        .addOnSuccessListener { objects -> filteredSchools.complete(objects) }
+                        .addOnFailureListener { filteredSchools.complete(null) }
+                }.await()
+                async {
+                    val filtered = filteredSchools.await()
+                    if (filtered == null) {
+                        school.complete(null)
+                        return@async
+                    }
+                    val storageRef = storage.reference
+                    val listOfItems = storageRef.child("users/${email}/school").listAll().await()
+                    val uris = listOfItems.items.map {
+                        val downloadURL = it.downloadUrl.await()
+                        downloadURL
+                    }
+                    school.complete(SchoolPlusImages(id = email, school = filtered.toObject(School::class.java), images = uris))
+                }.await()
+            }
+        }
+
+        return school.await()
+    }
 
     suspend fun getSchoolPlusImageByName(name: String) : SchoolPlusImages? {
         val school = CompletableDeferred<SchoolPlusImages?>()
