@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universitinder.app.components.AffordabilityIndicator
 import com.universitinder.app.components.PopUpDropDown
+import com.universitinder.app.components.PrivatePublicSelector
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.PROVINCES
 
@@ -84,6 +85,7 @@ fun SchoolInformationScreen(schoolInformationViewModel: SchoolInformationViewMod
                         value = uiState.name,
                         onValueChange = schoolInformationViewModel::onNameChange
                     )
+                    PrivatePublicSelector(isPrivate = uiState.isPrivate, toggle = schoolInformationViewModel::privateToggle)
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()

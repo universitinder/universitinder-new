@@ -36,7 +36,6 @@ class SchoolInformationViewModel(
                         name = school.name,
                         email = school.email,
                         contactNumber = school.contactNumber,
-                        address = school.address,
                         link = school.link,
                         minimum = school.minimum,
                         maximum = school.maximum,
@@ -45,6 +44,7 @@ class SchoolInformationViewModel(
                         municipalityOrCity = school.municipalityOrCity,
                         barangay = school.barangay,
                         street = school.street,
+                        isPrivate = school.isPrivate,
                         municipalitiesAndCities = MUNICIPALITIES_AND_CITIES[school.province]?.toList() ?: listOf()
                     )
                 }
@@ -67,6 +67,7 @@ class SchoolInformationViewModel(
     }
     fun onProvinceMenuExpand() { _uiState.value = _uiState.value.copy(provinceMenuExpand = true) }
     fun onProvinceMenuDismiss() { _uiState.value = _uiState.value.copy(provinceMenuExpand = false) }
+    fun privateToggle() { _uiState.value = _uiState.value.copy(isPrivate = !_uiState.value.isPrivate) }
     fun onMunicipalityOrCityChange(newVal: String) { _uiState.value = _uiState.value.copy(municipalityOrCity = newVal) }
     fun onMunicipalityOrCityMenuExpand() { _uiState.value = _uiState.value.copy(municipalityOrCityMenuExpand = true) }
     fun onMunicipalityOrCityMenuDismiss() { _uiState.value = _uiState.value.copy(municipalityOrCityMenuExpand = false) }
@@ -88,7 +89,6 @@ class SchoolInformationViewModel(
     private fun fieldsNotFilled() : Boolean {
         return _uiState.value.name.isEmpty() || _uiState.value.name.isBlank() || _uiState.value.email.isEmpty() ||
                 _uiState.value.email.isBlank() || _uiState.value.contactNumber.isEmpty() || _uiState.value.contactNumber.isBlank()
-//                _uiState.value.address.isEmpty() || _uiState.value.address.isBlank()
     }
 
     private fun validateFields() : Boolean {
@@ -120,7 +120,7 @@ class SchoolInformationViewModel(
                     name = _uiState.value.name,
                     email = _uiState.value.email,
                     contactNumber = _uiState.value.contactNumber,
-                    address = _uiState.value.address,
+                    isPrivate = _uiState.value.isPrivate,
                     minimum = _uiState.value.minimum,
                     maximum = _uiState.value.maximum,
                     affordability = _uiState.value.affordability,
