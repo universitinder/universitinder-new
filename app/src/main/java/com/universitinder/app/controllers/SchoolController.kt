@@ -188,7 +188,7 @@ class SchoolController {
         return school.await()
     }
 
-    suspend fun createSchool(email: String, school: School) : Boolean {
+    private suspend fun createSchool(email: String, school: School) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
 
@@ -218,7 +218,7 @@ class SchoolController {
                     "name", school.name,
                     "email", school.email,
                     "contactNumber", school.contactNumber,
-                    "address", school.address,
+                    "isPrivate", school.isPrivate,
                     "minimum", school.minimum,
                     "maximum", school.maximum,
                     "affordability", school.affordability,
