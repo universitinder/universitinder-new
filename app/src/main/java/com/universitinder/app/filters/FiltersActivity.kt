@@ -3,19 +3,26 @@ package com.universitinder.app.filters
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.controllers.CourseController
+import com.universitinder.app.controllers.FilterController
 import com.universitinder.app.ui.theme.UniversitinderTheme
 
 class FiltersActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val activityStarterHelper = ActivityStarterHelper(this)
-        val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper, popActivity = this::finish)
+        val filterController = FilterController()
+        val courseController = CourseController()
+        val filtersViewModel = FiltersViewModel(
+            filterController = filterController,
+            courseController = courseController,
+            popActivity = this::finish
+        )
 
         setContent {
             UniversitinderTheme {
-                FiltersScreen(filtersViewModel = filtersViewModel)
+//                FiltersScreen(filtersViewModel = filtersViewModel)
+                FiltersScreenTwo(filtersViewModel = filtersViewModel)
             }
         }
     }

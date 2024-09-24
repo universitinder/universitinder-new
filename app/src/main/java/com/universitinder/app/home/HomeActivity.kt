@@ -10,6 +10,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.universitinder.app.accountSetup.AccountSetupActivity
+import com.universitinder.app.controllers.CourseController
 import com.universitinder.app.controllers.FilterController
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
@@ -62,6 +63,7 @@ class HomeActivity : AppCompatActivity() {
 
         val schoolController = SchoolController()
         val filterController = FilterController()
+        val courseController = CourseController()
         val userController = UserController()
         val activityStarterHelper = ActivityStarterHelper(this)
         val homeViewModel = HomeViewModel(
@@ -72,7 +74,7 @@ class HomeActivity : AppCompatActivity() {
         )
         val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper)
         val schoolViewModel = SchoolViewModel(schoolController = schoolController)
-        val filtersViewModel = FiltersViewModel(activityStarterHelper = activityStarterHelper, popActivity = this::finish)
+        val filtersViewModel = FiltersViewModel(filterController = filterController, courseController = courseController, popActivity = this::finish)
         val matchesViewModel = MatchesViewModel(userController = userController, schoolController = schoolController, activityStarterHelper = activityStarterHelper)
         profileViewModel = ProfileViewModel(auth = auth, userController = userController, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
         navigationViewModel = NavigationViewModel(

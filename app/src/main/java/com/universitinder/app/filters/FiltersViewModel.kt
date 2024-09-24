@@ -1,35 +1,151 @@
 package com.universitinder.app.filters
 
-import android.content.Intent
 import androidx.lifecycle.ViewModel
-import com.universitinder.app.filters.affordability.AffordabilityFilterActivity
-import com.universitinder.app.filters.city.CityFilterActivity
-import com.universitinder.app.filters.courses.CoursesFilterActivity
-import com.universitinder.app.filters.province.ProvinceFilterActivity
-import com.universitinder.app.helpers.ActivityStarterHelper
+import androidx.lifecycle.viewModelScope
+import com.universitinder.app.controllers.CourseController
+import com.universitinder.app.controllers.FilterController
+import com.universitinder.app.models.Filter
+import com.universitinder.app.models.MUNICIPALITIES_AND_CITIES
+import com.universitinder.app.models.PROVINCES
+import com.universitinder.app.models.ResultMessage
+import com.universitinder.app.models.ResultMessageType
+import com.universitinder.app.models.UserState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FiltersViewModel(
-    private val activityStarterHelper: ActivityStarterHelper,
+    private val courseController: CourseController,
+    private val filterController: FilterController,
     val popActivity: () -> Unit,
 ): ViewModel() {
+    private val currentUser = UserState.currentUser
+    private val _uiState = MutableStateFlow(FiltersUiState())
+    val uiState: StateFlow<FiltersUiState> = _uiState.asStateFlow()
 
-    fun startProvinceActivity() {
-        val intent = Intent(activityStarterHelper.getContext(), ProvinceFilterActivity::class.java)
-        activityStarterHelper.startActivity(intent)
+    init {
+        if (currentUser != null) {
+            _uiState.value = _uiState.value.copy(
+                provinces = PROVINCES.toList(),
+                loading = true
+            )
+            viewModelScope.launch(Dispatchers.IO) {
+                val courses = courseController.getAllUniqueCourses()
+                val filter = filterController.getFilter(email = currentUser.email)
+                if (filter != null) {
+                    _uiState.value = _uiState.value.copy(
+                        cities = MUNICIPALITIES_AND_CITIES["Pampanga"]?.toList()!!,
+                        checkedCities = filter.cities.split("___"),
+                        affordability = filter.affordability,
+                        minimum = filter.minimum,
+                        maximum = filter.maximum,
+                        courses = courses.map { course -> course.name },
+                        checkedCourses = filter.courses.split("___"),
+                        checkedProvinces = filter.provinces.split("___"),
+                        checkedPrivatePublic = filter.privatePublic.split("___")
+                    )
+                }
+            }
+            _uiState.value = _uiState.value.copy(loading = false)
+        }
     }
 
-    fun startCityActivity() {
-        val intent = Intent(activityStarterHelper.getContext(), CityFilterActivity::class.java)
-        activityStarterHelper.startActivity(intent)
+    fun onMinimumChange(newVal: String) {
+        _uiState.value =
+            _uiState.value.copy(minimum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt())
     }
 
-    fun startAffordabilityActivity() {
-        val intent = Intent(activityStarterHelper.getContext(), AffordabilityFilterActivity::class.java)
-        activityStarterHelper.startActivity(intent)
+    fun onMaximumChange(newVal: String) {
+        _uiState.value =
+            _uiState.value.copy(maximum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt())
+        determineAffordability(_uiState.value.maximum)
     }
 
-    fun startCoursesActivity() {
-        val intent = Intent(activityStarterHelper.getContext(), CoursesFilterActivity::class.java)
-        activityStarterHelper.startActivity(intent)
+    private fun onAffordabilityChange(newVal: Int) {
+        _uiState.value = _uiState.value.copy(affordability = newVal)
+    }
+
+    private fun determineAffordability(maxVal: Int) {
+        if (maxVal <= 10000) onAffordabilityChange(1)
+        else if (maxVal <= 50000) onAffordabilityChange(2)
+        else onAffordabilityChange(3)
+    }
+
+    fun onCityCheckChange(newVal: String) {
+        _uiState.value = _uiState.value.copy(
+            checkedCities = if (_uiState.value.checkedCities.contains(newVal))
+                _uiState.value.checkedCities.filter { it != newVal }
+            else _uiState.value.checkedCities.plus(newVal)
+        )
+    }
+
+    fun onCoursesCheckChange(newVal: String) {
+        _uiState.value = _uiState.value.copy(
+            checkedCourses = if (_uiState.value.checkedCourses.contains(newVal))
+                _uiState.value.checkedCourses.filter { it != newVal }
+            else _uiState.value.checkedCourses.plus(newVal)
+        )
+    }
+
+    fun onProvinceCheckChange(newVal: String) {
+        _uiState.value = _uiState.value.copy(
+            checkedProvinces = if (_uiState.value.checkedProvinces.contains(newVal))
+                _uiState.value.checkedProvinces.filter { it != newVal }
+            else _uiState.value.checkedProvinces.plus(newVal)
+        )
+    }
+
+    fun onPrivatePublicCheckChange(newVal: String) {
+        _uiState.value = _uiState.value.copy(
+            checkedPrivatePublic = if (_uiState.value.checkedPrivatePublic.contains(newVal))
+                _uiState.value.checkedPrivatePublic.filter { it != newVal }
+            else _uiState.value.checkedPrivatePublic.plus(newVal)
+        )
+    }
+
+    fun save() {
+        if (currentUser != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(saveLoading = true) }
+                val result = filterController.updateFilter(
+                    email = currentUser.email,
+                    filter = Filter(
+                        provinces = _uiState.value.checkedProvinces.joinToString("___"),
+                        cities = _uiState.value.checkedCities.joinToString("___"),
+                        affordability = _uiState.value.affordability,
+                        minimum = _uiState.value.minimum,
+                        maximum = _uiState.value.maximum,
+                        courses = _uiState.value.checkedCourses.joinToString("___"),
+                        privatePublic = _uiState.value.checkedPrivatePublic.joinToString("___")
+                    )
+                )
+                if (result) {
+                    withContext(Dispatchers.Main) {
+                        _uiState.value = _uiState.value.copy(
+                            saveLoading = false,
+                            resultMessage = ResultMessage(
+                                show = true,
+                                type = ResultMessageType.SUCCESS,
+                                message = "Successfully saved filters"
+                            )
+                        )
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _uiState.value = _uiState.value.copy(
+                            saveLoading = false,
+                            resultMessage = ResultMessage(
+                                show = true,
+                                type = ResultMessageType.FAILED,
+                                message = "Saving filters unsuccessful"
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 }

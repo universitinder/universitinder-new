@@ -1,6 +1,5 @@
 package com.universitinder.app.filters
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -36,28 +35,28 @@ fun FiltersScreen(filtersViewModel: FiltersViewModel) {
         ){
             item {
                 ListItem(
-                    modifier = Modifier.clickable { filtersViewModel.startProvinceActivity() },
+//                    modifier = Modifier.clickable { filtersViewModel.startProvinceActivity() },
                     headlineContent = { Text(text = "Province") },
                     trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "Go Right") }
                 )
             }
             item { 
                 ListItem(
-                    modifier = Modifier.clickable { filtersViewModel.startCityActivity() },
+//                    modifier = Modifier.clickable { filtersViewModel.startCityActivity() },
                     headlineContent = { Text(text = "City/Municipality") },
                     trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "Go Right") }
                 )
             }
             item {
                 ListItem(
-                    modifier = Modifier.clickable { filtersViewModel.startAffordabilityActivity() },
+//                    modifier = Modifier.clickable { filtersViewModel.startAffordabilityActivity() },
                     headlineContent = { Text(text = "Affordability") },
                     trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "Go Right") }
                 )
             }
             item {
                 ListItem(
-                    modifier = Modifier.clickable { filtersViewModel.startCoursesActivity() },
+//                    modifier = Modifier.clickable { filtersViewModel.startCoursesActivity() },
                     headlineContent = { Text(text = "Courses") },
                     trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "Go Right") }
                 )
