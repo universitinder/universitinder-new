@@ -106,6 +106,14 @@ class FiltersViewModel(
         )
     }
 
+    fun onDurationCheckChange(newVal: String) {
+        _uiState.value = _uiState.value.copy(
+            checkedDurations = if (_uiState.value.checkedDurations.contains(newVal))
+                _uiState.value.checkedDurations.filter { it != newVal }
+            else _uiState.value.checkedDurations.plus(newVal)
+        )
+    }
+
     fun save() {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -119,7 +127,8 @@ class FiltersViewModel(
                         minimum = _uiState.value.minimum,
                         maximum = _uiState.value.maximum,
                         courses = _uiState.value.checkedCourses.joinToString("___"),
-                        privatePublic = _uiState.value.checkedPrivatePublic.joinToString("___")
+                        privatePublic = _uiState.value.checkedPrivatePublic.joinToString("___"),
+                        courseDuration = _uiState.value.checkedDurations.joinToString("___")
                     )
                 )
                 if (result) {

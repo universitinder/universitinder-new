@@ -33,8 +33,10 @@ import com.google.accompanist.pager.rememberPagerState
 import com.universitinder.app.filters.affordability.AffordabilityFilterScreen
 import com.universitinder.app.filters.city.CityFilterScreen
 import com.universitinder.app.filters.courses.CoursesFilterScreen
+import com.universitinder.app.filters.duration.DurationFilterScreen
 import com.universitinder.app.filters.privatePublic.PrivatePublicFilterScreen
 import com.universitinder.app.filters.province.ProvinceFilterScreen
+import com.universitinder.app.models.COURSE_DURATION
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
@@ -95,6 +97,12 @@ fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
                                 containerColor = if(selectedTab == 4) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
                             )
                         ) { Text(text = "Courses")}
+                        TextButton(
+                            onClick = { selectedTab = 5 },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = if(selectedTab == 5) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                            )
+                        ) { Text(text = "Course Duration")}
                     }
                 }
             }
@@ -117,7 +125,7 @@ fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
         HorizontalPager(
             modifier = Modifier.padding(innerPadding),
             state = pagerState,
-            count = 5
+            count = 6
         ) {
             when (selectedTab) {
                 0 -> {
@@ -155,6 +163,13 @@ fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
                         courses = uiState.courses,
                         checkedCourses = uiState.checkedCourses,
                         onCourseCheckChange = filtersViewModel::onCoursesCheckChange
+                    )
+                }
+                5 -> {
+                    DurationFilterScreen(
+                        durations = COURSE_DURATION,
+                        checkedDurations = uiState.checkedDurations,
+                        onCheckChange = filtersViewModel::onDurationCheckChange
                     )
                 }
             }
