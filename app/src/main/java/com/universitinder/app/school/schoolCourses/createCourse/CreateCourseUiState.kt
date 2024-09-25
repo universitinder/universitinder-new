@@ -7,6 +7,7 @@ data class CreateCourseUiState (
     val createLoading: Boolean = false,
     val name: String = "",
     val duration: String = "",
+    val durationMenuExpanded: Boolean = false,
     val level: EducationLevel = EducationLevel.BACHELORS,
     val levelMenuExpanded: Boolean = false,
     val resultMessage: ResultMessage = ResultMessage()

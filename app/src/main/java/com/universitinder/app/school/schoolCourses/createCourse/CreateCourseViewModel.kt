@@ -3,6 +3,7 @@ package com.universitinder.app.school.schoolCourses.createCourse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.CourseController
+import com.universitinder.app.models.COURSE_DURATION_MAP
 import com.universitinder.app.models.Course
 import com.universitinder.app.models.EducationLevel
 import com.universitinder.app.models.ResultMessage
@@ -25,7 +26,8 @@ class CreateCourseViewModel(
 
     fun onNameChange(newVal: String) { _uiState.value = _uiState.value.copy(name = newVal) }
     fun onDurationChange(newVal: String) { _uiState.value = _uiState.value.copy(duration = newVal) }
-    fun onLevelChange(newVal: String) { _uiState.value = _uiState.value.copy(level = EducationLevel.valueOf(newVal), levelMenuExpanded = false) }
+    fun onDurationMenuToggle() { _uiState.value = _uiState.value.copy(durationMenuExpanded = !_uiState.value.durationMenuExpanded) }
+    fun onLevelChange(newVal: String) { _uiState.value = _uiState.value.copy(level = EducationLevel.valueOf(newVal)) }
     fun onLevelMenuToggle() { _uiState.value = _uiState.value.copy(levelMenuExpanded = !_uiState.value.levelMenuExpanded) }
 
     fun fieldsNotFilled() : Boolean {
@@ -48,7 +50,14 @@ class CreateCourseViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(createLoading = true) }
-                val result = courseController.createCourse(email = currentUser.email, course = Course(name = _uiState.value.name, duration = _uiState.value.duration.toInt(), level = _uiState.value.level))
+                val result = courseController.createCourse(
+                    email = currentUser.email,
+                    course = Course(
+                        name = _uiState.value.name,
+                        duration = COURSE_DURATION_MAP[_uiState.value.duration] ?: 0,
+                        level = _uiState.value.level
+                    )
+                )
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

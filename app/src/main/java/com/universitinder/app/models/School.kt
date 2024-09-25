@@ -32,3 +32,17 @@ data class SchoolPlusImages(
     val school: School? = null,
     val images: List<Uri> = emptyList()
 ) : Parcelable
+
+val COURSE_DURATION = listOf(
+    "2 YEARS",
+    "3 YEARS",
+    "4 YEARS",
+    "5 YEARS",
+)
+
+val COURSE_DURATION_MAP = hashMapOf(
+    "2 YEARS" to 2,
+    "3 YEARS" to 3,
+    "4 YEARS" to 4,
+    "5 YEARS" to 5
+)

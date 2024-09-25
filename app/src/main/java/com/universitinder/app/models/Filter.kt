@@ -7,5 +7,6 @@ data class Filter(
     val maximum: Int = 0,
     val affordability: Int = 0,
     val courses: String = "",
-    val privatePublic: String = ""
+    val privatePublic: String = "",
+    val courseDuration: String = ""
 )

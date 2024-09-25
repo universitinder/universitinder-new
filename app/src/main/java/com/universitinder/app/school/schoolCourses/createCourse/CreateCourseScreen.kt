@@ -11,14 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,10 +30,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.universitinder.app.components.PopUpDropDown
+import com.universitinder.app.models.COURSE_DURATION
 import com.universitinder.app.models.EducationLevel
 import com.universitinder.app.models.ResultMessageType
 
@@ -73,14 +71,39 @@ fun CreateCourseScreen(createCourseViewModel: CreateCourseViewModel) {
                 )
             }
             item {
-                OutlinedTextField(
-                    label = { Text(text = "Duration in Years") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp),
-                    value = uiState.duration,
-                    onValueChange = createCourseViewModel::onDurationChange,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                Box(modifier = Modifier
+                    .padding(vertical = 10.dp)
+                    .fillMaxWidth()) {
+                    Column {
+                        Text(text = "Duration in Years")
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(
+                                    width = 0.5.dp,
+                                    color = Color.Black,
+                                    shape = CircleShape.copy(
+                                        CornerSize(5.dp)
+                                    )
+                                )
+                                .clickable { createCourseViewModel.onDurationMenuToggle() },
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(vertical = 16.dp, horizontal = 18.dp),
+                                text = uiState.duration
+                            )
+                            Icon(Icons.Filled.ArrowDropDown, contentDescription = "Dropdown Arrow")
+                        }
+                    }
+                }
+                PopUpDropDown(
+                    label = "Duration in Years",
+                    items = COURSE_DURATION.toList(),
+                    show = uiState.durationMenuExpanded,
+                    onDismissRequest = createCourseViewModel::onDurationMenuToggle,
+                    onItemSelected = { createCourseViewModel.onDurationChange(it) }
                 )
             }
             item {
@@ -112,12 +135,14 @@ fun CreateCourseScreen(createCourseViewModel: CreateCourseViewModel) {
                             Icon(Icons.Filled.ArrowDropDown, contentDescription = "Dropdown Arrow")
                         }
                     }
-                    DropdownMenu(expanded = uiState.levelMenuExpanded, onDismissRequest = createCourseViewModel::onLevelMenuToggle) {
-                        EducationLevel.entries.forEach {
-                            DropdownMenuItem(text = { Text(text = it.toString()) }, onClick = { createCourseViewModel.onLevelChange(it.toString()) })
-                        }
-                    }
                 }
+                PopUpDropDown(
+                    label = "Level of Education",
+                    items = EducationLevel.entries.map { it.toString() },
+                    show = uiState.levelMenuExpanded,
+                    onDismissRequest = createCourseViewModel::onLevelMenuToggle,
+                    onItemSelected = { createCourseViewModel.onLevelChange(it) }
+                )
             }
             item {
                 if (uiState.resultMessage.show)
