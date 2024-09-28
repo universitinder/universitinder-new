@@ -7,7 +7,9 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.storage
+import com.universitinder.app.helpers.DistanceCalculator
 import com.universitinder.app.models.Filter
+import com.universitinder.app.models.LocationPoint
 import com.universitinder.app.models.School
 import com.universitinder.app.models.SchoolPlusImages
 import kotlinx.coroutines.CompletableDeferred
@@ -130,12 +132,15 @@ class SchoolController {
         return schools.await()
     }
 
-    suspend fun getFilteredSchoolTwo(filter: Filter) : List<SchoolPlusImages> {
-        val schools = CompletableDeferred<List<SchoolPlusImages>>()
+    suspend fun getFilteredSchoolTwo(filter: Filter, userPoint: LocationPoint) : List<SchoolPlusImages> {
+        val sortedSchools = CompletableDeferred<List<SchoolPlusImages>>()
+        val schools = CompletableDeferred<List<Pair<SchoolPlusImages, Double>>>()
         val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
         val provinces = filter.provinces.split("___").toList()
         val cities = filter.cities.split("___").toList()
         val courses = filter.courses.split("___").toList()
+        val privatePublic = filter.privatePublic.split("___").toList()
+        val durations = filter.courseDuration.split("___").toList()
 
         coroutineScope {
             launch(Dispatchers.IO) {
@@ -143,7 +148,9 @@ class SchoolController {
                     firestore.collectionGroup("school")
                         .whereIn("province", provinces)
                         .whereIn("municipalityOrCity", cities)
+                        .whereIn("isPrivate", privatePublic)
                         .whereArrayContainsAny("courses", courses)
+                        .whereArrayContainsAny("durations", durations)
                         .whereEqualTo("affordability", filter.affordability)
                         .get()
                         .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
@@ -160,15 +167,23 @@ class SchoolController {
                                 val downloadURL = it.downloadUrl.await()
                                 downloadURL
                             }
-                            SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris)
+                            val schoolObject = document.toObject(School::class.java)
+                            val schoolPoint = schoolObject?.coordinates!!
+                            val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(userPoint = userPoint, schoolPoint = schoolPoint)
+
+                            Pair(SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris), distance)
                         }.await()
                     }
                     schools.complete(schoolPlusImages)
                 }.await()
+                async {
+                    val awaitedSchools= schools.await()
+                    sortedSchools.complete(awaitedSchools.sortedBy { it.second }.map { it.first })
+                }.await()
             }
         }
 
-        return schools.await()
+        return sortedSchools.await()
     }
 
     suspend fun getSchool(email: String) : School? {
