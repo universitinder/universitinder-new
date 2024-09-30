@@ -1,15 +1,27 @@
 package com.universitinder.app.home
 
 //import android.util.Log
+import android.app.Application
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Looper
+import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.universitinder.app.controllers.FilterController
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
 import com.universitinder.app.filters.FiltersActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
-import com.universitinder.app.matched.MatchedActivity
+//import com.universitinder.app.matched.MatchedActivity
+import com.universitinder.app.models.LocationPoint
 import com.universitinder.app.models.SchoolPlusImages
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
@@ -22,6 +34,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class HomeViewModel(
+    private val application: Application,
     private val schoolController: SchoolController,
     private val userController: UserController,
     private val filterController: FilterController,
@@ -29,9 +42,55 @@ class HomeViewModel(
 ): ViewModel() {
     private val currentUser = UserState.currentUser
     private val _uiState = MutableStateFlow(HomeUiState())
+    private val _locationState = MutableStateFlow<Location?>(null)
+    val locationState : StateFlow<Location?> = _locationState.asStateFlow()
     val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    private val fusedLocationClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(application)
+
+    private val locationRequest: LocationRequest = LocationRequest.create().apply {
+        interval = 10000  // Update every 10 seconds
+        fastestInterval = 5000  // Fastest update every 5 seconds
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            for (location in locationResult.locations) {
+                viewModelScope.launch {
+                    _locationState.emit(location)
+                    getCurrentLocation()
+                    refresh()
+                    stopLocationUpdates()
+                }
+            }
+        }
+    }
+
+    fun startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                application,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                application,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+        }
+    }
+
+    fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
     init {
+        getCurrentLocation()
         if (currentUser != null && currentUser.type == UserType.STUDENT) {
             refresh()
         }
@@ -43,7 +102,10 @@ class HomeViewModel(
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
                 val filter = filterController.getFilter(currentUser.email)
                 if (filter != null) {
-                    val schools = schoolController.getFilteredSchoolTwo(filter)
+                    if (locationState.value == null) return@launch
+                    Log.w("HOME VIEW MODEL", locationState.value.toString())
+                    Log.w("HOME VIEW MODEL", "GET FILTERED SCHOOLS...")
+                    val schools = schoolController.getFilteredSchoolTwo(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
@@ -58,9 +120,9 @@ class HomeViewModel(
 
     fun onSwipeRight(school: SchoolPlusImages) {
         _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
-        val intent = Intent(activityStarterHelper.getContext(), MatchedActivity::class.java)
-        intent.putExtra("school", school)
-        activityStarterHelper.startActivity(intent)
+//        val intent = Intent(activityStarterHelper.getContext(), MatchedActivity::class.java)
+//        intent.putExtra("school", school)
+//        activityStarterHelper.startActivity(intent)
         viewModelScope.launch(Dispatchers.IO) {
             schoolController.addSchoolSwipeRightCount(school.id)
             if (currentUser != null && school.school != null) userController.addMatchedSchool(currentUser, school.school.name)
@@ -83,5 +145,20 @@ class HomeViewModel(
     fun startFilterActivity() {
         val intent = Intent(activityStarterHelper.getContext(), FiltersActivity::class.java)
         activityStarterHelper.startActivity(intent)
+    }
+
+    private fun getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                application,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                application,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                viewModelScope.launch { _locationState.emit(location) }
+            }
+        }
     }
 }

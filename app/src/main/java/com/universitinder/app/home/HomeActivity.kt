@@ -1,9 +1,13 @@
 package com.universitinder.app.home
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.Firebase
@@ -32,6 +36,40 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var profileViewModel : ProfileViewModel
     private lateinit var navigationViewModel : NavigationViewModel
+
+    val LOCATION_PERMISSION_REQUEST_CODE = 1000
+
+    fun requestLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            getCurrentLocation()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation()
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun getCurrentLocation() {
+
+    }
 
     override fun onRestart() {
         super.onRestart()
@@ -67,6 +105,7 @@ class HomeActivity : AppCompatActivity() {
         val userController = UserController()
         val activityStarterHelper = ActivityStarterHelper(this)
         val homeViewModel = HomeViewModel(
+            application = application,
             schoolController = schoolController,
             filterController = filterController,
             activityStarterHelper = activityStarterHelper,

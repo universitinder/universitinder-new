@@ -1,6 +1,7 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -148,13 +149,18 @@ class SchoolController {
                     firestore.collectionGroup("school")
                         .whereIn("province", provinces)
                         .whereIn("municipalityOrCity", cities)
-                        .whereIn("isPrivate", privatePublic)
+//                        .whereIn("isPrivate", privatePublic)
                         .whereArrayContainsAny("courses", courses)
-                        .whereArrayContainsAny("durations", durations)
                         .whereEqualTo("affordability", filter.affordability)
                         .get()
-                        .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
-                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
+                        .addOnSuccessListener { objects ->
+                            Log.w("SCHOOL CONTROLLER", objects.toString())
+                            filteredSchools.complete(objects.documents)
+                        }
+                        .addOnFailureListener {
+                            Log.w("SCHOOL CONTROLLER", it.localizedMessage!!)
+                            filteredSchools.complete(emptyList())
+                        }
                 }.await()
                 async {
                     val filtered = filteredSchools.await()

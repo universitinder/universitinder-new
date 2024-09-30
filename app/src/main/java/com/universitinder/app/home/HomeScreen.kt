@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,60 +24,86 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.universitinder.app.components.SwipeableCard
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Filter
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel) {
     val uiState by homeViewModel.uiState.collectAsState()
+    val fineLocationPermissionState = rememberPermissionState(
+        android.Manifest.permission.ACCESS_FINE_LOCATION,
+        onPermissionResult = {
+            if (it) homeViewModel.refresh()
+        }
+    )
 
     Scaffold(
         topBar = {  },
     ){ innerPadding ->
-        when (uiState.fetchingLoading) {
-            true -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+        when (fineLocationPermissionState.status) {
+            PermissionStatus.Granted -> {
+                LaunchedEffect(Unit) {
+                    homeViewModel.startLocationUpdates()
                 }
-            }
-            false -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    if (uiState.currentIndex < uiState.schools.size) {
-                        SwipeableCard(
-                            school = uiState.schools[uiState.currentIndex],
-                            onSwipedLeft = { homeViewModel.onSwipeLeft(uiState.schools[uiState.currentIndex].id) },
-                            onSwipedRight = { homeViewModel.onSwipeRight(school = uiState.schools[uiState.currentIndex]) },
-                            onMiddleClick = { homeViewModel.startSchoolProfileActivity(uiState.schools[uiState.currentIndex]) }
-                        )
-                    } else {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ){
-                            Text(text = "No More Institutions to show!", fontSize = 16.sp, textAlign = TextAlign.Center)
-                            FilledTonalButton(modifier = Modifier.padding(top = 12.dp), onClick = homeViewModel::refresh) {
-                                Text(text = "Refresh")
+                when (uiState.fetchingLoading) {
+                    true -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    false -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            if (uiState.currentIndex < uiState.schools.size) {
+                                SwipeableCard(
+                                    school = uiState.schools[uiState.currentIndex],
+                                    onSwipedLeft = { homeViewModel.onSwipeLeft(uiState.schools[uiState.currentIndex].id) },
+                                    onSwipedRight = { homeViewModel.onSwipeRight(school = uiState.schools[uiState.currentIndex]) },
+                                    onMiddleClick = { homeViewModel.startSchoolProfileActivity(uiState.schools[uiState.currentIndex]) }
+                                )
+                            } else {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ){
+                                    Text(text = "No More Institutions to show!", fontSize = 16.sp, textAlign = TextAlign.Center)
+                                    FilledTonalButton(modifier = Modifier.padding(top = 12.dp), onClick = homeViewModel::refresh) {
+                                        Text(text = "Refresh")
+                                    }
+                                }
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp, end = 10.dp),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Column(
+                                    modifier = Modifier.clickable { homeViewModel.startFilterActivity() },
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
+                                    Icon(FeatherIcons.Filter, contentDescription = "Filter", tint = Color.White)
+                                    Text(text = "Filters", fontSize = 12.sp, color = Color.White)
+                                }
                             }
                         }
                     }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp, end = 10.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Column(
-                            modifier = Modifier.clickable { homeViewModel.startFilterActivity() },
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Icon(FeatherIcons.Filter, contentDescription = "Filter", tint = Color.White)
-                            Text(text = "Filters", fontSize = 12.sp, color = Color.White)
-                        }
+                }
+            }
+            else -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Button(onClick = { fineLocationPermissionState.launchPermissionRequest() }) {
+                        Text(text = "Request Location Permission")
                     }
                 }
             }
