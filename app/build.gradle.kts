@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.cronet.embedded)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -99,4 +100,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager-indicators:0.24.13-rc")
 
     implementation("br.com.devsrsouza.compose.icons:feather:1.1.1")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.31.0-alpha")
 }
