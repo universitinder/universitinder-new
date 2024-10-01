@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.models.MUNICIPALITIES_AND_CITIES
+import com.universitinder.app.models.PrivatePublic
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.School
@@ -67,7 +68,7 @@ class SchoolInformationViewModel(
     }
     fun onProvinceMenuExpand() { _uiState.value = _uiState.value.copy(provinceMenuExpand = true) }
     fun onProvinceMenuDismiss() { _uiState.value = _uiState.value.copy(provinceMenuExpand = false) }
-    fun privateToggle() { _uiState.value = _uiState.value.copy(isPrivate = !_uiState.value.isPrivate) }
+    fun privateToggle() { _uiState.value = _uiState.value.copy(isPrivate = if (_uiState.value.isPrivate == PrivatePublic.PUBLIC.toString()) PrivatePublic.PRIVATE.toString() else PrivatePublic.PUBLIC.toString()) }
     fun onMunicipalityOrCityChange(newVal: String) { _uiState.value = _uiState.value.copy(municipalityOrCity = newVal) }
     fun onMunicipalityOrCityMenuExpand() { _uiState.value = _uiState.value.copy(municipalityOrCityMenuExpand = true) }
     fun onMunicipalityOrCityMenuDismiss() { _uiState.value = _uiState.value.copy(municipalityOrCityMenuExpand = false) }

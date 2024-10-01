@@ -9,6 +9,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.storage
 import com.universitinder.app.helpers.DistanceCalculator
+import com.universitinder.app.models.CourseDurations
 import com.universitinder.app.models.Filter
 import com.universitinder.app.models.LocationPoint
 import com.universitinder.app.models.School
@@ -344,6 +345,125 @@ class SchoolController {
             )
                 .addOnSuccessListener { response.complete(true) }
                 .addOnFailureListener { response.complete(false) }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun getSchoolDurations(email: String) : CourseDurations? {
+        val response = CompletableDeferred<CourseDurations?>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        schoolRef.get()
+            .addOnSuccessListener {
+                val schoolObject = it.toObject(School::class.java)
+                if (schoolObject == null) {
+                    response.complete(null)
+                    return@addOnSuccessListener
+                }
+                response.complete(
+                    CourseDurations(
+                        has2YearCourse = schoolObject.has2YearCourse,
+                        has3YearCourse = schoolObject.has3YearCourse,
+                        has4YearCourse = schoolObject.has4YearCourse,
+                        has5YearCourse = schoolObject.has5YearCourse
+                    )
+                )
+            }
+            .addOnFailureListener {
+                response.complete(null)
+            }
+
+        return response.await()
+    }
+
+    suspend fun updateSchool2YearCourse(email: String, newVal: Boolean) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            firestore.collection("users")
+                .document(email)
+                .collection("school")
+                .document("school")
+                .update(
+                    "has2YearCourse", newVal
+                )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener {
+                    response.complete(false)
+                }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun updateSchool3YearCourse(email: String, newVal: Boolean) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            firestore.collection("users")
+                .document(email)
+                .collection("school")
+                .document("school")
+                .update(
+                    "has3YearCourse", newVal
+                )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener {
+                    response.complete(false)
+                }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun updateSchool4YearCourse(email: String, newVal: Boolean) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            firestore.collection("users")
+                .document(email)
+                .collection("school")
+                .document("school")
+                .update(
+                    "has4YearCourse", newVal
+                )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener {
+                    response.complete(false)
+                }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun updateSchool5YearCourse(email: String, newVal: Boolean) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        if (schoolRef.get().await().exists()) {
+            firestore.collection("users")
+                .document(email)
+                .collection("school")
+                .document("school")
+                .update(
+                    "has5YearCourse", newVal
+                )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener {
+                    response.complete(false)
+                }
         } else {
             response.complete(false)
         }

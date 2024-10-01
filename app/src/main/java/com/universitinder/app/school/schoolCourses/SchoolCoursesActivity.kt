@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.universitinder.app.controllers.CourseController
+import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.ui.theme.UniversitinderTheme
 
@@ -19,8 +20,14 @@ class SchoolCoursesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val courseController = CourseController()
+        val schoolController = SchoolController()
         val activityStarterHelper = ActivityStarterHelper(this)
-        schoolCoursesViewModel = SchoolCoursesViewModel(courseController = courseController, activityStarterHelper = activityStarterHelper, popActivity = this::finish)
+        schoolCoursesViewModel = SchoolCoursesViewModel(
+            courseController = courseController,
+            schoolController = schoolController,
+            activityStarterHelper = activityStarterHelper,
+            popActivity = this::finish
+        )
 
         setContent {
             UniversitinderTheme {

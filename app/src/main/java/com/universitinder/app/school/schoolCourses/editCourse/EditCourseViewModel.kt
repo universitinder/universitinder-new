@@ -3,7 +3,7 @@ package com.universitinder.app.school.schoolCourses.editCourse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.CourseController
-import com.universitinder.app.models.COURSE_DURATION_MAP
+import com.universitinder.app.models.COURSE_DURATION_STRING_TO_INT_MAP
 import com.universitinder.app.models.Course
 import com.universitinder.app.models.EducationLevel
 import com.universitinder.app.models.ResultMessage
@@ -69,7 +69,7 @@ class EditCourseViewModel(
                     email = currentUser.email,
                     course = Course(
                         name = _uiState.value.name,
-                        duration = COURSE_DURATION_MAP[_uiState.value.duration] ?: 0,
+                        duration = COURSE_DURATION_STRING_TO_INT_MAP[_uiState.value.duration] ?: 0,
                         level = _uiState.value.level
                     )
                 )
