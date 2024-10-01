@@ -4,6 +4,11 @@ import android.net.Uri
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+enum class PrivatePublic {
+    PRIVATE,
+    PUBLIC
+}
+
 @Parcelize
 data class School (
     val name: String = "",
@@ -14,7 +19,11 @@ data class School (
     val municipalityOrCity: String = "",
     val barangay: String = "",
     val street: String = "",
-    val isPrivate: Boolean = false,
+    val isPrivate: String = PrivatePublic.PUBLIC.toString(),
+    val has2YearCourse: Boolean = false,
+    val has3YearCourse: Boolean = false,
+    val has4YearCourse: Boolean = false,
+    val has5YearCourse: Boolean = false,
     val minimum: Int = 0,
     val maximum: Int = 0,
     val affordability: Int = 0,
@@ -35,6 +44,13 @@ data class SchoolPlusImages(
     val images: List<Uri> = emptyList()
 ) : Parcelable
 
+data class CourseDurations(
+    val has2YearCourse: Boolean,
+    val has3YearCourse: Boolean,
+    val has4YearCourse: Boolean,
+    val has5YearCourse: Boolean,
+)
+
 val COURSE_DURATION = listOf(
     "2 YEARS",
     "3 YEARS",
@@ -42,9 +58,16 @@ val COURSE_DURATION = listOf(
     "5 YEARS",
 )
 
-val COURSE_DURATION_MAP = hashMapOf(
+val COURSE_DURATION_STRING_TO_INT_MAP = hashMapOf(
     "2 YEARS" to 2,
     "3 YEARS" to 3,
     "4 YEARS" to 4,
     "5 YEARS" to 5
+)
+
+val COURSE_DURATION_INT_TO_STRING_MAP = hashMapOf(
+    2 to "2 YEARS",
+    3 to "3 YEARS",
+    4 to "4 YEARS",
+    5 to "5 YEARS"
 )
