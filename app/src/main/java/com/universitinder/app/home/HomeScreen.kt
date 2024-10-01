@@ -101,7 +101,12 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                 }
             }
             else -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Locaiton Permission Required to access universities")
                     Button(onClick = { fineLocationPermissionState.launchPermissionRequest() }) {
                         Text(text = "Request Location Permission")
                     }
