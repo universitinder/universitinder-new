@@ -93,46 +93,46 @@ class SchoolController {
         return school.await()
     }
 
-    suspend fun getFilteredSchool(filter: Filter) : List<SchoolPlusImages> {
-        val schools = CompletableDeferred<List<SchoolPlusImages>>()
-        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
-
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                async {
-                    firestore.collectionGroup("school")
-                        .get()
-                        .addOnSuccessListener { objects ->
-                            val filtered = objects.documents.filter { document ->
-                                val school = document.toObject(School::class.java)
-                                filter.provinces.contains(school?.province!!) && filter.cities.contains(school.municipalityOrCity) &&
-                                filter.courses.split("___").intersect(school.courses.toSet()).isNotEmpty()
-                            }
-                            filteredSchools.complete(filtered)
-                        }
-                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
-                }.await()
-                async {
-                    val filtered = filteredSchools.await()
-                    val schoolPlusImages = filtered.map { document ->
-                        val id = document.reference.parent.parent?.id
-                        val storageRef = storage.reference
-                        val listOfItems = storageRef.child("users/${id}/school").listAll().await()
-                        async {
-                            val uris = listOfItems.items.map {
-                                val downloadURL = it.downloadUrl.await()
-                                downloadURL
-                            }
-                            SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris)
-                        }.await()
-                    }
-                    schools.complete(schoolPlusImages)
-                }.await()
-            }
-        }
-
-        return schools.await()
-    }
+//    suspend fun getFilteredSchool(filter: Filter) : List<SchoolPlusImages> {
+//        val schools = CompletableDeferred<List<SchoolPlusImages>>()
+//        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
+//
+//        coroutineScope {
+//            launch(Dispatchers.IO) {
+//                async {
+//                    firestore.collectionGroup("school")
+//                        .get()
+//                        .addOnSuccessListener { objects ->
+//                            val filtered = objects.documents.filter { document ->
+//                                val school = document.toObject(School::class.java)
+//                                filter.provinces.contains(school?.province!!) && filter.cities.contains(school.municipalityOrCity) &&
+//                                filter.courses.split("___").intersect(school.courses.toSet()).isNotEmpty()
+//                            }
+//                            filteredSchools.complete(filtered)
+//                        }
+//                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
+//                }.await()
+//                async {
+//                    val filtered = filteredSchools.await()
+//                    val schoolPlusImages = filtered.map { document ->
+//                        val id = document.reference.parent.parent?.id
+//                        val storageRef = storage.reference
+//                        val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+//                        async {
+//                            val uris = listOfItems.items.map {
+//                                val downloadURL = it.downloadUrl.await()
+//                                downloadURL
+//                            }
+//                            SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris)
+//                        }.await()
+//                    }
+//                    schools.complete(schoolPlusImages)
+//                }.await()
+//            }
+//        }
+//
+//        return schools.await()
+//    }
 
     private fun createQueryOne(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, isPrivate: Boolean) : Query {
         return firestore.collectionGroup("school")
@@ -339,22 +339,22 @@ class SchoolController {
         return response.await()
     }
 
-    suspend fun subtractSchoolSwipeRightCount(email: String) : Boolean {
-        val response = CompletableDeferred<Boolean>()
-
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
-        if (schoolRef.get().await().exists()) {
-            schoolRef.update(
-                "swipeRight", FieldValue.increment(-1)
-            )
-                .addOnSuccessListener { response.complete(true) }
-                .addOnFailureListener { response.complete(false) }
-        } else {
-            response.complete(false)
-        }
-
-        return response.await()
-    }
+//    suspend fun subtractSchoolSwipeRightCount(email: String) : Boolean {
+//        val response = CompletableDeferred<Boolean>()
+//
+//        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+//        if (schoolRef.get().await().exists()) {
+//            schoolRef.update(
+//                "swipeRight", FieldValue.increment(-1)
+//            )
+//                .addOnSuccessListener { response.complete(true) }
+//                .addOnFailureListener { response.complete(false) }
+//        } else {
+//            response.complete(false)
+//        }
+//
+//        return response.await()
+//    }
 
     suspend fun addSchoolSwipeLeftCount(email: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
@@ -373,22 +373,22 @@ class SchoolController {
         return response.await()
     }
 
-    suspend fun subtractSchoolSwipeLeftCount(email: String) : Boolean {
-        val response = CompletableDeferred<Boolean>()
-
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
-        if (schoolRef.get().await().exists()) {
-            schoolRef.update(
-                "swipeLeft", FieldValue.increment(-1)
-            )
-                .addOnSuccessListener { response.complete(true) }
-                .addOnFailureListener { response.complete(false) }
-        } else {
-            response.complete(false)
-        }
-
-        return response.await()
-    }
+//    suspend fun subtractSchoolSwipeLeftCount(email: String) : Boolean {
+//        val response = CompletableDeferred<Boolean>()
+//
+//        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+//        if (schoolRef.get().await().exists()) {
+//            schoolRef.update(
+//                "swipeLeft", FieldValue.increment(-1)
+//            )
+//                .addOnSuccessListener { response.complete(true) }
+//                .addOnFailureListener { response.complete(false) }
+//        } else {
+//            response.complete(false)
+//        }
+//
+//        return response.await()
+//    }
 
     suspend fun getSchoolDurations(email: String) : CourseDurations? {
         val response = CompletableDeferred<CourseDurations?>()
