@@ -13,7 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PrivatePublicSelector(isPrivate: String, toggle: () -> Unit) {
+fun PrivatePublicSelector(
+    isPrivate: Boolean,
+    isPublic: Boolean,
+    toggle: () -> Unit
+) {
     Column(
         modifier = Modifier.padding(vertical = 10.dp)
     ) {
@@ -27,7 +31,7 @@ fun PrivatePublicSelector(isPrivate: String, toggle: () -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Text(text = isPrivate)
+                Text(text = if (isPrivate && !isPublic) "PRIVATE" else "PUBLIC")
             }
         }
     }

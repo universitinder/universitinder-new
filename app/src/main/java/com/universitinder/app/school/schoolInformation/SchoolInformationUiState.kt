@@ -1,6 +1,6 @@
 package com.universitinder.app.school.schoolInformation
 
-import com.universitinder.app.models.PrivatePublic
+//import com.universitinder.app.models.PrivatePublic
 import com.universitinder.app.models.ResultMessage
 
 data class SchoolInformationUiState (
@@ -15,7 +15,8 @@ data class SchoolInformationUiState (
     val municipalityOrCityMenuExpand: Boolean = false,
     val barangay: String = "",
     val street: String = "",
-    val isPrivate: String = PrivatePublic.PUBLIC.toString(),
+    val isPrivate: Boolean = false,
+    val isPublic : Boolean = false,
     val minimum: Int = 0,
     val maximum: Int = 0,
     val affordability: Int = 0,

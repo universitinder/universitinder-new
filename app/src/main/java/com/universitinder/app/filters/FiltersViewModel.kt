@@ -45,7 +45,7 @@ class FiltersViewModel(
                         courses = courses.map { course -> course.name },
                         checkedCourses = filter.courses.split("___"),
                         checkedProvinces = filter.provinces.split("___"),
-                        checkedPrivatePublic = filter.privatePublic.split("___")
+//                        checkedPrivatePublic = filter.privatePublic.split("___")
                     )
                 }
             }
@@ -127,7 +127,7 @@ class FiltersViewModel(
                         minimum = _uiState.value.minimum,
                         maximum = _uiState.value.maximum,
                         courses = _uiState.value.checkedCourses.joinToString("___"),
-                        privatePublic = _uiState.value.checkedPrivatePublic.joinToString("___"),
+//                        privatePublic = _uiState.value.checkedPrivatePublic.joinToString("___"),
                         courseDuration = _uiState.value.checkedDurations.joinToString("___")
                     )
                 )

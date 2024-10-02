@@ -141,8 +141,6 @@ class SchoolController {
         val provinces = filter.provinces.split("___").toList()
         val cities = filter.cities.split("___").toList()
         val courses = filter.courses.split("___").toList()
-        val privatePublic = filter.privatePublic.split("___").toList()
-        val durations = filter.courseDuration.split("___").toList()
 
         coroutineScope {
             launch(Dispatchers.IO) {
@@ -150,9 +148,14 @@ class SchoolController {
                     firestore.collectionGroup("school")
                         .whereIn("province", provinces)
                         .whereIn("municipalityOrCity", cities)
-//                        .whereIn("isPrivate", privatePublic)
                         .whereArrayContainsAny("courses", courses)
                         .whereEqualTo("affordability", filter.affordability)
+                        .whereEqualTo("isPrivate", filter.isPrivate)
+                        .whereEqualTo("isPublic", filter.isPrivate)
+                        .whereEqualTo("has2YearCourse", filter.has2YearCourse)
+                        .whereEqualTo("has3YearCourse", filter.has3YearCourse)
+                        .whereEqualTo("has4YearCourse", filter.has4YearCourse)
+                        .whereEqualTo("has5YearCourse", filter.has5YearCourse)
                         .get()
                         .addOnSuccessListener { objects ->
                             Log.w("SCHOOL CONTROLLER", objects.toString())
@@ -241,6 +244,7 @@ class SchoolController {
                     "email", school.email,
                     "contactNumber", school.contactNumber,
                     "isPrivate", school.isPrivate,
+                    "isPublic", school.isPublic,
                     "minimum", school.minimum,
                     "maximum", school.maximum,
                     "affordability", school.affordability,

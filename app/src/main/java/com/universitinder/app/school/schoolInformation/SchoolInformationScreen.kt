@@ -85,7 +85,7 @@ fun SchoolInformationScreen(schoolInformationViewModel: SchoolInformationViewMod
                         value = uiState.name,
                         onValueChange = schoolInformationViewModel::onNameChange
                     )
-                    PrivatePublicSelector(isPrivate = uiState.isPrivate, toggle = schoolInformationViewModel::privateToggle)
+                    PrivatePublicSelector(isPrivate = uiState.isPrivate, isPublic = uiState.isPublic, toggle = schoolInformationViewModel::privateToggle)
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
