@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -24,6 +25,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -43,13 +46,25 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                 .padding(20.dp),
             verticalArrangement = Arrangement.SpaceAround,
         ){
-            Text(text = "Universitinder")
+            Column {
+                Text(
+                    text = "Universitinder",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "Please fill in the form to register account",
+                    fontSize = 18.sp,
+                )
+            }
             Column {
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email Icon") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     label = { Text(text = "Email") },
                     value = uiState.email,
                     onValueChange = registrationViewModel::onEmailChange
@@ -60,6 +75,8 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                         .padding(vertical = 8.dp),
                     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password Icon") },
                     label = { Text(text = "Password") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     visualTransformation = if (!uiState.showPassword) PasswordVisualTransformation() else VisualTransformation.None,
                     value = uiState.password,
                     onValueChange = registrationViewModel::onPasswordChange
@@ -70,6 +87,8 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                         .padding(vertical = 8.dp),
                     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password Icon") },
                     label = { Text(text = "Confirm Password") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     visualTransformation = if (!uiState.showPassword) PasswordVisualTransformation() else VisualTransformation.None,
                     value = uiState.confirmPassword,
                     onValueChange = registrationViewModel::onConfirmPasswordChange
@@ -108,7 +127,8 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                 Text(text = "Already have an account?")
                 Text(
                     modifier = Modifier.clickable { registrationViewModel.startLoginActivity() },
-                    text = "Login Here"
+                    text = "Login Here",
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }

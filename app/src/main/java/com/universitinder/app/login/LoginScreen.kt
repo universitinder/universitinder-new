@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -24,6 +25,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -43,14 +46,26 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceAround
         ){
-            Text(text = "Universitinder")
+            Column {
+                Text(
+                    text = "Universitinder",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "Please login to continue",
+                    fontSize = 18.sp,
+                )
+            }
             Column {
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     value = uiState.email,
+                    singleLine = true,
                     onValueChange = loginViewModel::onEmailChange,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     label = { Text(text = "Email") },
                     leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email Icon") },
                 )
@@ -60,6 +75,8 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                         .padding(vertical = 8.dp),
                     value = uiState.password,
                     onValueChange = loginViewModel::onPasswordChange,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     visualTransformation = if (!uiState.showPassword) PasswordVisualTransformation() else VisualTransformation.None,
                     label = { Text(text = "Password") },
                     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password Icon") },
@@ -79,7 +96,8 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                     Text(
                         modifier = Modifier.clickable { loginViewModel.startForgotPasswordActivity() },
                         text = "Forgot Password",
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 if (uiState.resultMessage.show)
@@ -103,7 +121,8 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                 Text(text = "Don't have an account?")
                 Text(
                     modifier = Modifier.clickable { loginViewModel.startRegistrationActivity() },
-                    text = "Register Here"
+                    text = "Register Here",
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
