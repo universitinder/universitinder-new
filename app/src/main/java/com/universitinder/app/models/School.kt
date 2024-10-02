@@ -4,10 +4,10 @@ import android.net.Uri
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-enum class PrivatePublic {
-    PRIVATE,
-    PUBLIC
-}
+//enum class PrivatePublic {
+//    PRIVATE,
+//    PUBLIC
+//}
 
 @Parcelize
 data class School (
@@ -19,7 +19,8 @@ data class School (
     val municipalityOrCity: String = "",
     val barangay: String = "",
     val street: String = "",
-    val isPrivate: String = PrivatePublic.PUBLIC.toString(),
+    val isPrivate: Boolean = false,
+    val isPublic: Boolean = false,
     val has2YearCourse: Boolean = false,
     val has3YearCourse: Boolean = false,
     val has4YearCourse: Boolean = false,

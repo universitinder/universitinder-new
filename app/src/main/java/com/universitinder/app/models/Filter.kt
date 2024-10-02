@@ -7,6 +7,11 @@ data class Filter(
     val maximum: Int = 0,
     val affordability: Int = 0,
     val courses: String = "",
-    val privatePublic: String = "",
+    val isPrivate: Boolean = false,
+    val isPublic: Boolean = false,
+    val has2YearCourse: Boolean = false,
+    val has3YearCourse: Boolean = false,
+    val has4YearCourse: Boolean = false,
+    val has5YearCourse: Boolean = false,
     val courseDuration: String = ""
 )
