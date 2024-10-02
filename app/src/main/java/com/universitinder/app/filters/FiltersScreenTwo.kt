@@ -115,7 +115,7 @@ fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
                     .padding(8.dp)
             ) {
                 if (uiState.saveLoading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = Color.White)
                 } else {
                     Text(text = "Save")
                 }
