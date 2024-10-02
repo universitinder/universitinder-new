@@ -43,7 +43,7 @@ class HomeViewModel(
     private val currentUser = UserState.currentUser
     private val _uiState = MutableStateFlow(HomeUiState())
     private val _locationState = MutableStateFlow<Location?>(null)
-    val locationState : StateFlow<Location?> = _locationState.asStateFlow()
+    private val locationState : StateFlow<Location?> = _locationState.asStateFlow()
     val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private val fusedLocationClient: FusedLocationProviderClient =

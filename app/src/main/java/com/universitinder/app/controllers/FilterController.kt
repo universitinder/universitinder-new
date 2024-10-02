@@ -8,6 +8,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class FilterController {
     private val firestore = Firebase.firestore
@@ -37,6 +38,52 @@ class FilterController {
                     .addOnSuccessListener { response.complete(true) }
                     .addOnFailureListener { response.complete(false) }
             }
+        }
+
+        return response.await()
+    }
+
+    suspend fun updateFilterPrivate(email: String, isPrivate: Boolean) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("filters").document("filters")
+        if (schoolRef.get().await().exists()) {
+            firestore.collection("users")
+                .document(email)
+                .collection("filters")
+                .document("filters")
+                .update(
+                    "isPrivate", isPrivate
+                )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener {
+                    response.complete(false)
+                }
+        } else {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
+    suspend fun updateFilterPublic(email: String, isPublic: Boolean) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        val schoolRef = firestore.collection("users").document(email).collection("filters").document("filters")
+        if (schoolRef.get().await().exists()) {
+            firestore.collection("users")
+                .document(email)
+                .collection("filters")
+                .document("filters")
+                .update(
+                    "isPublic", isPublic
+                )
+                .addOnSuccessListener { response.complete(true) }
+                .addOnFailureListener {
+                    response.complete(false)
+                }
+        } else {
+            response.complete(false)
         }
 
         return response.await()

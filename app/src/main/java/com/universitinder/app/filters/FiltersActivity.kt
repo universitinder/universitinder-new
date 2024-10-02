@@ -21,7 +21,6 @@ class FiltersActivity : AppCompatActivity() {
 
         setContent {
             UniversitinderTheme {
-//                FiltersScreen(filtersViewModel = filtersViewModel)
                 FiltersScreenTwo(filtersViewModel = filtersViewModel)
             }
         }
