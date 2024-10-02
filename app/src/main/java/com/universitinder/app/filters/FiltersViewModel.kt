@@ -45,7 +45,8 @@ class FiltersViewModel(
                         courses = courses.map { course -> course.name },
                         checkedCourses = filter.courses.split("___"),
                         checkedProvinces = filter.provinces.split("___"),
-                        checkedPrivatePublic = listOf(if (filter.private) "PRIVATE" else "", if (filter.public) "PUBLIC" else "")
+                        checkedPrivatePublic = listOf(if (filter.private) "PRIVATE" else "", if (filter.public) "PUBLIC" else ""),
+                        checkedDurations = listOf(if (filter.has2YearCourse) "2 YEARS" else "", if (filter.has3YearCourse) "3 YEARS" else "", if (filter.has4YearCourse) "4 YEARS" else "", if (filter.has5YearCourse) "5 YEARS" else "")
                     )
                 }
             }
@@ -129,6 +130,10 @@ class FiltersViewModel(
                         courses = _uiState.value.checkedCourses.joinToString("___"),
                         public = _uiState.value.checkedPrivatePublic.contains("PUBLIC"),
                         private = _uiState.value.checkedPrivatePublic.contains("PRIVATE"),
+                        has2YearCourse = _uiState.value.checkedDurations.contains("2 YEARS"),
+                        has3YearCourse = _uiState.value.checkedDurations.contains("3 YEARS"),
+                        has4YearCourse = _uiState.value.checkedDurations.contains("4 YEARS"),
+                        has5YearCourse = _uiState.value.checkedDurations.contains("5 YEARS"),
                         courseDuration = _uiState.value.checkedDurations.joinToString("___")
                     )
                 )
