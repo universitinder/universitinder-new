@@ -230,6 +230,50 @@ class SchoolController {
         return sortedSchools.await()
     }
 
+    suspend fun getTopSchools(userPoint: LocationPoint) : List<SchoolPlusImages> {
+        val sortedSchools = CompletableDeferred<List<SchoolPlusImages>>()
+        val schools = CompletableDeferred<List<Pair<SchoolPlusImages, Double>>>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val combinedSchools = firestore.collectionGroup("school")
+                    .orderBy("swipeRight", Query.Direction.DESCENDING).get().await()
+                val schoolPlusImages = combinedSchools.map { document ->
+                    val id = document.reference.parent.parent?.id
+                    val storageRef = storage.reference
+                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                    async {
+                        val uris = listOfItems.items.map {
+                            val downloadURL = it.downloadUrl.await()
+                            downloadURL
+                        }
+                        val schoolObject = document.toObject(School::class.java)
+                        val schoolPoint = schoolObject.coordinates
+                        val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(
+                            userPoint = userPoint,
+                            schoolPoint = schoolPoint
+                        )
+
+                        Pair(
+                            SchoolPlusImages(
+                                id = id!!,
+                                school = document.toObject(School::class.java),
+                                images = uris
+                            ), distance
+                        )
+                    }.await()
+                }
+                schools.complete(schoolPlusImages)
+            }
+            launch {
+                val awaitedSchools = schools.await()
+                sortedSchools.complete(awaitedSchools.sortedBy { it.second }.map { it.first })
+            }
+        }
+
+        return sortedSchools.await()
+    }
+
     suspend fun getSchool(email: String) : School? {
         val school = CompletableDeferred<School?>()
 
