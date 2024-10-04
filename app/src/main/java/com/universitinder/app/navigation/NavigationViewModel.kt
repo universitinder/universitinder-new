@@ -7,6 +7,7 @@ import com.universitinder.app.matches.MatchesViewModel
 import com.universitinder.app.models.UserState
 import com.universitinder.app.profile.ProfileViewModel
 import com.universitinder.app.school.SchoolViewModel
+import com.universitinder.app.school.list.SchoolListViewModel
 import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,8 @@ class NavigationViewModel(
     val homeViewModel: HomeViewModel,
     val profileViewModel: ProfileViewModel,
     val filtersViewModel: FiltersViewModel,
-    val matchesViewModel: MatchesViewModel
+    val matchesViewModel: MatchesViewModel,
+    val schoolListViewModel: SchoolListViewModel
 ): ViewModel() {
     private val _uiState = MutableStateFlow(NavigationUiState())
     val uiState : StateFlow<NavigationUiState> = _uiState.asStateFlow()

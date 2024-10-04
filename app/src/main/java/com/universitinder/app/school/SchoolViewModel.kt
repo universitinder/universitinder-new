@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolViewModel(
-    private val schoolController: SchoolController
+    private val schoolController: SchoolController,
+    val popActivity: () -> Unit,
 ): ViewModel(){
     private val currentUser = UserState.currentUser
     private val _uiState = MutableStateFlow(SchoolUiState())

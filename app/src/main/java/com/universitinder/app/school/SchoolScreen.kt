@@ -18,9 +18,13 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,7 +54,12 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Institution") },
+                title = { Text(text = "School Profile") },
+                navigationIcon = {
+                    IconButton(onClick = { schoolViewModel.popActivity() }) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Go Back")
+                    }
+                }
             )
         },
     ) { innerPadding ->

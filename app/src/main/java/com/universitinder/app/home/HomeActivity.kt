@@ -23,6 +23,7 @@ import com.universitinder.app.navigation.NavigationScreen
 import com.universitinder.app.navigation.NavigationViewModel
 import com.universitinder.app.profile.ProfileViewModel
 import com.universitinder.app.school.SchoolViewModel
+import com.universitinder.app.school.list.SchoolListViewModel
 import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationViewModel
 import com.universitinder.app.ui.theme.UniversitinderTheme
 import com.universitinder.app.userDataStore
@@ -75,9 +76,10 @@ class HomeActivity : AppCompatActivity() {
             userController = userController
         )
         val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper)
-        val schoolViewModel = SchoolViewModel(schoolController = schoolController)
+        val schoolViewModel = SchoolViewModel(schoolController = schoolController, popActivity = this::finish)
         val filtersViewModel = FiltersViewModel(filterController = filterController, courseController = courseController, popActivity = this::finish)
         val matchesViewModel = MatchesViewModel(userController = userController, schoolController = schoolController, activityStarterHelper = activityStarterHelper)
+        val schoolListViewModel = SchoolListViewModel(schoolController = schoolController, activityStarterHelper = activityStarterHelper)
         profileViewModel = ProfileViewModel(auth = auth, userController = userController, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
         navigationViewModel = NavigationViewModel(
             schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
@@ -85,7 +87,8 @@ class HomeActivity : AppCompatActivity() {
             homeViewModel = homeViewModel,
             profileViewModel = profileViewModel,
             filtersViewModel = filtersViewModel,
-            matchesViewModel = matchesViewModel
+            matchesViewModel = matchesViewModel,
+            schoolListViewModel = schoolListViewModel
         )
 
         setContent {

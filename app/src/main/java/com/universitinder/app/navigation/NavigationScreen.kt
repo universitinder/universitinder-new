@@ -32,6 +32,7 @@ import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import com.universitinder.app.profile.ProfileScreen
 import com.universitinder.app.school.SchoolScreen
+import com.universitinder.app.school.list.SchoolListScreen
 import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationScreen
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Heart
@@ -83,21 +84,22 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
                             )
                         }
                         UserType.INSTITUTION -> {
-                            NavigationBarItem(
-                                selected = selectedIndex == 0,
-                                onClick = {
-                                    selectedIndex = 0
-                                    navController.navigate("Institution")
-                                },
-                                icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "Institution")},
-                                label = { Text(text = "Institution") }
-                            )
+//                            NavigationBarItem(
+//                                selected = selectedIndex == 0,
+//                                onClick = {
+//                                    selectedIndex = 0
+//                                    navController.navigate("Institution")
+//                                },
+//                                icon = { Icon(if (selectedIndex == 0) Icons.Filled.List else Icons.Outlined.List, "Institution")},
+//                                label = { Text(text = "Institution") }
+//                            )
                             NavigationBarItem(
                                 selected = selectedIndex == 1,
                                 onClick = {
                                     selectedIndex = 1
-                                    navController.navigate("School")
-                                    navigationViewModel.schoolViewModel.refresh()
+                                    navController.navigate("Schools")
+//                                    navigationViewModel.schoolViewModel.refresh()
+                                    navigationViewModel.schoolListViewModel.refresh()
                                 },
                                 icon = { Icon(if (selectedIndex == 1) Icons.Filled.Home else Icons.Outlined.Home, "Home")},
                                 label = { Text(text = "Home") }
@@ -122,12 +124,13 @@ fun NavigationScreen(navigationViewModel: NavigationViewModel) {
             if (currentUser != null) {
                 NavHost(
                     navController = navController,
-                    startDestination = if (currentUser.type == UserType.INSTITUTION) "School" else "Home"
+                    startDestination = if (currentUser.type == UserType.INSTITUTION) "Schools" else "Home"
                 ) {
                     composable("Matches") { MatchesScreen(matchesViewModel = navigationViewModel.matchesViewModel) }
-                    composable("Filters") { FiltersScreen(filtersViewModel = navigationViewModel.filtersViewModel) }
-                    composable("Institution") { SchoolInformationNavigationScreen(viewModel = navigationViewModel.schoolInformationNavigationViewModel) }
-                    composable("School") { SchoolScreen(schoolViewModel = navigationViewModel.schoolViewModel) }
+//                    composable("Filters") { FiltersScreen(filtersViewModel = navigationViewModel.filtersViewModel) }
+//                    composable("Institution") { SchoolInformationNavigationScreen(viewModel = navigationViewModel.schoolInformationNavigationViewModel) }
+//                    composable("School") { SchoolScreen(schoolViewModel = navigationViewModel.schoolViewModel) }
+                    composable("Schools") { SchoolListScreen(schoolListViewModel = navigationViewModel.schoolListViewModel) }
                     composable("Home") { HomeScreen(homeViewModel = navigationViewModel.homeViewModel) }
                     composable("Profile") { ProfileScreen(profileViewModel = navigationViewModel.profileViewModel) }
                 }
