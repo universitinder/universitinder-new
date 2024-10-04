@@ -1,11 +1,14 @@
 package com.universitinder.app.school
 
+import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
+import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
+import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolViewModel(
+    private val documentId: String,
     private val schoolController: SchoolController,
+    private val activityStarterHelper: ActivityStarterHelper,
     val popActivity: () -> Unit,
 ): ViewModel(){
     private val currentUser = UserState.currentUser
@@ -53,4 +58,10 @@ class SchoolViewModel(
     }
 
     fun onTabChange(newVal: Int) { _uiState.value = _uiState.value.copy(activeTab = newVal) }
+
+    fun startInformationNavigation() {
+        val intent = Intent(activityStarterHelper.getContext(), SchoolInformationNavigationActivity::class.java)
+        intent.putExtra("DOCUMENT_ID", documentId)
+        activityStarterHelper.startActivity(intent)
+    }
 }

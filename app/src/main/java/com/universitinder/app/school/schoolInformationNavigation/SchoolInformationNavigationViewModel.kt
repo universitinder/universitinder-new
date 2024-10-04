@@ -10,7 +10,8 @@ import com.universitinder.app.school.schoolInformation.SchoolInformationActivity
 import com.universitinder.app.school.schoolMissionVision.SchoolMissionVisionActivity
 
 class SchoolInformationNavigationViewModel(
-    private val activityStarterHelper: ActivityStarterHelper
+    private val activityStarterHelper: ActivityStarterHelper,
+    val popActivity: () -> Unit
 ): ViewModel() {
 
     fun startSchoolInformationActivity() {
