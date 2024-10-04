@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
-import android.util.Log
+//import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +20,7 @@ import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
 import com.universitinder.app.filters.FiltersActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.models.Filter
 //import com.universitinder.app.matched.MatchedActivity
 import com.universitinder.app.models.LocationPoint
 import com.universitinder.app.models.SchoolPlusImages
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("DEPRECATION")
 class HomeViewModel(
     private val application: Application,
     private val schoolController: SchoolController,
@@ -96,21 +98,35 @@ class HomeViewModel(
         }
     }
 
+    private fun isFilterClear(filter: Filter) : Boolean {
+        return filter.affordability == 0 && !filter.has5YearCourse && !filter.has3YearCourse && !filter.has4YearCourse && !filter.has2YearCourse &&
+        !filter.public  && !filter.private && (filter.provinces.isEmpty() || filter.provinces.isBlank()) && (filter.cities.isEmpty() || filter.cities.isBlank()) &&
+                (filter.courses.isBlank() || filter.courses.isEmpty()) && (filter.courseDuration.isEmpty() || filter.courses.isBlank())
+    }
+
     fun refresh() {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
                 val filter = filterController.getFilter(currentUser.email)
-                if (filter != null) {
+                if (filter != null && !isFilterClear(filter)) {
                     if (locationState.value == null) return@launch
-                    Log.w("HOME VIEW MODEL", locationState.value.toString())
-                    Log.w("HOME VIEW MODEL", "GET FILTERED SCHOOLS...")
                     val schools = schoolController.getFilteredSchoolTwo(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
                             fetchingLoading = false,
                             schools = schools.shuffled()
+                        )
+                    }
+                } else {
+                    if (locationState.value == null) return@launch
+                    val schools = schoolController.getTopSchools(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    withContext(Dispatchers.Main) {
+                        _uiState.value = _uiState.value.copy(
+                            currentIndex = 0,
+                            fetchingLoading = false,
+                            schools = schools
                         )
                     }
                 }
