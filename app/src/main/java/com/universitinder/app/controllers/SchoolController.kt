@@ -25,6 +25,22 @@ class SchoolController {
     private val firestore = Firebase.firestore
     private val storage = Firebase.storage
 
+    suspend fun getSchoolList() : List<DocumentSnapshot> {
+        val schools = CompletableDeferred<List<DocumentSnapshot>>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                firestore.collectionGroup("school").get()
+                    .addOnSuccessListener {
+                        schools.complete(it.documents)
+                    }
+                    .addOnFailureListener { schools.complete(emptyList()) }
+            }
+        }
+
+        return schools.await()
+    }
+
     suspend fun getSchoolPlusImageByEmail(email: String) : SchoolPlusImages? {
         val school = CompletableDeferred<SchoolPlusImages?>()
         val filteredSchools = CompletableDeferred<DocumentSnapshot?>()
