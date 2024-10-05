@@ -1,8 +1,10 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -66,6 +68,43 @@ class SchoolController {
                         downloadURL
                     }
                     school.complete(SchoolPlusImages(id = email, school = filtered.toObject(School::class.java), images = uris))
+                }.await()
+            }
+        }
+
+        return school.await()
+    }
+
+    suspend fun getSchoolPlusImageByDocumentId(documentId: String) : SchoolPlusImages? {
+        val school = CompletableDeferred<SchoolPlusImages?>()
+        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
+        Log.w("SCHOOL CONTROLLER", documentId)
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                async {
+                    firestore.collectionGroup("school")
+                        .whereEqualTo(FieldPath.documentId(), documentId)
+                        .limit(1)
+                        .get()
+                        .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
+                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
+                }.await()
+                async {
+                    val filtered = filteredSchools.await()
+                    if (filtered.isEmpty()) {
+                        school.complete(null)
+                        return@async
+                    }
+                    val first = filtered.first()
+                    val id = first.reference.parent.parent?.id
+                    val storageRef = storage.reference
+                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                    val uris = listOfItems.items.map {
+                        val downloadURL = it.downloadUrl.await()
+                        downloadURL
+                    }
+                    school.complete(SchoolPlusImages(id = id!!, school = first.toObject(School::class.java), images = uris))
                 }.await()
             }
         }

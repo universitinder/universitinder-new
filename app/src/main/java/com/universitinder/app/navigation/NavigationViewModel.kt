@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class NavigationViewModel(
-    val schoolInformationNavigationViewModel: SchoolInformationNavigationViewModel,
-    val schoolViewModel: SchoolViewModel,
+//    val schoolInformationNavigationViewModel: SchoolInformationNavigationViewModel,
+//    val schoolViewModel: SchoolViewModel,
     val homeViewModel: HomeViewModel,
     val profileViewModel: ProfileViewModel,
-    val filtersViewModel: FiltersViewModel,
+//    val filtersViewModel: FiltersViewModel,
     val matchesViewModel: MatchesViewModel,
     val schoolListViewModel: SchoolListViewModel
 ): ViewModel() {

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.models.School
 import com.universitinder.app.school.SchoolActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,9 +38,13 @@ class SchoolListViewModel(
         }
     }
 
-    fun startSchoolActivity(documentID: String) {
+    fun startRegisterSchool() {
+//        val intent = Intent(activityStarterHelper.getContext(), )
+    }
+
+    fun startSchoolActivity(school: School) {
         val intent = Intent(activityStarterHelper.getContext(), SchoolActivity::class.java)
-        intent.putExtra("DOCUMENT_ID", documentID)
+        intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }
 }

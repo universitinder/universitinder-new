@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationActivity
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolViewModel(
-    private val documentId: String,
+    private val school: School,
     private val schoolController: SchoolController,
     private val activityStarterHelper: ActivityStarterHelper,
     val popActivity: () -> Unit,
@@ -36,7 +37,7 @@ class SchoolViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
-                val schoolPlusImages = schoolController.getSchoolPlusImageByEmail(currentUser.email)
+                val schoolPlusImages = schoolController.getSchoolPlusImageByName(school.name)
                 if (schoolPlusImages == null) {
                     withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = false) }
                     return@launch
@@ -61,7 +62,7 @@ class SchoolViewModel(
 
     fun startInformationNavigation() {
         val intent = Intent(activityStarterHelper.getContext(), SchoolInformationNavigationActivity::class.java)
-        intent.putExtra("DOCUMENT_ID", documentId)
+        intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }
 }

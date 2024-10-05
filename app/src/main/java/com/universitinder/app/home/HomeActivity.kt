@@ -22,9 +22,9 @@ import com.universitinder.app.models.UserState
 import com.universitinder.app.navigation.NavigationScreen
 import com.universitinder.app.navigation.NavigationViewModel
 import com.universitinder.app.profile.ProfileViewModel
-import com.universitinder.app.school.SchoolViewModel
+//import com.universitinder.app.school.SchoolViewModel
 import com.universitinder.app.school.list.SchoolListViewModel
-import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationViewModel
+//import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationViewModel
 import com.universitinder.app.ui.theme.UniversitinderTheme
 import com.universitinder.app.userDataStore
 import kotlinx.coroutines.launch
@@ -75,18 +75,18 @@ class HomeActivity : AppCompatActivity() {
             activityStarterHelper = activityStarterHelper,
             userController = userController
         )
-        val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper, popActivity = this::finish)
-        val schoolViewModel = SchoolViewModel(documentId = "", schoolController = schoolController, activityStarterHelper = activityStarterHelper, popActivity = this::finish)
+//        val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper, popActivity = this::finish)
+//        val schoolViewModel = SchoolViewModel(documentId = "", schoolController = schoolController, activityStarterHelper = activityStarterHelper, popActivity = this::finish)
         val filtersViewModel = FiltersViewModel(filterController = filterController, courseController = courseController, popActivity = this::finish)
         val matchesViewModel = MatchesViewModel(userController = userController, schoolController = schoolController, activityStarterHelper = activityStarterHelper)
         val schoolListViewModel = SchoolListViewModel(schoolController = schoolController, activityStarterHelper = activityStarterHelper)
         profileViewModel = ProfileViewModel(auth = auth, userController = userController, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
         navigationViewModel = NavigationViewModel(
-            schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
-            schoolViewModel = schoolViewModel,
+//            schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
+//            schoolViewModel = schoolViewModel,
             homeViewModel = homeViewModel,
             profileViewModel = profileViewModel,
-            filtersViewModel = filtersViewModel,
+//            filtersViewModel = filtersViewModel,
             matchesViewModel = matchesViewModel,
             schoolListViewModel = schoolListViewModel
         )
