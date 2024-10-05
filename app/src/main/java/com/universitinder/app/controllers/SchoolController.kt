@@ -346,6 +346,27 @@ class SchoolController {
         return school.await()
     }
 
+    suspend fun getSchoolByName(name: String) : School? {
+        val school = CompletableDeferred<School?>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                firestore.collectionGroup("school")
+                    .whereEqualTo("name", name)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { objects ->
+                        if (objects.isEmpty) school.complete(null)
+                        val schoolObject = objects.first().toObject(School::class.java)
+                        school.complete(schoolObject)
+                    }
+                    .addOnFailureListener { school.complete(null) }
+            }
+        }
+
+        return school.await()
+    }
+
     private suspend fun createSchool(email: String, school: School) : Boolean {
         val response = CompletableDeferred<Boolean>()
 

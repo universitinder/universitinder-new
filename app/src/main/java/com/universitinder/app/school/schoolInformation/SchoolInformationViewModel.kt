@@ -17,20 +17,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolInformationViewModel(
+    private val school: School,
     private val schoolController: SchoolController,
     val popActivity: () -> Unit,
 ): ViewModel(){
+    val currentUser = UserState.currentUser
     private val _uiState = MutableStateFlow(SchoolInformationUiState())
     val uiState : StateFlow<SchoolInformationUiState> = _uiState.asStateFlow()
 
     init {
-        val currentUser = UserState.currentUser
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
                     _uiState.value = _uiState.value.copy(fetchingDataLoading = true)
                 }
-                val school = schoolController.getSchool(currentUser.email)
+                val school = schoolController.getSchoolByName(name = school.name)
                 if (school != null) {
                     _uiState.value = _uiState.value.copy(
                         name = school.name,

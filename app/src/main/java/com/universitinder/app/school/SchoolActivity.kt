@@ -10,6 +10,7 @@ import com.universitinder.app.models.School
 import com.universitinder.app.ui.theme.UniversitinderTheme
 
 class SchoolActivity : AppCompatActivity() {
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
