@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.universitinder.app.controllers.FaqController
 import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import com.universitinder.app.school.schoolFAQs.createFAQ.CreateFAQActivity
 import com.universitinder.app.school.schoolFAQs.editFAQ.EditFAQActivity
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolFAQsViewModel(
+    private val school: School,
     private val faqController: FaqController,
     private val activityStarterHelper: ActivityStarterHelper,
     val popActivity: () -> Unit
@@ -33,7 +35,7 @@ class SchoolFAQsViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
-                val faqs = faqController.getFAQs(currentUser.email)
+                val faqs = faqController.getFAQs(school.email)
                 onFaqsChange(faqs)
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = false) }
             }
@@ -44,12 +46,14 @@ class SchoolFAQsViewModel(
 
     fun startAddFaqActivity() {
         val intent = Intent(activityStarterHelper.getContext(), CreateFAQActivity::class.java)
+        intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }
 
     fun startEditFaqActivity(documentID: String) {
         val intent = Intent(activityStarterHelper.getContext(), EditFAQActivity::class.java)
         intent.putExtra("documentID", documentID)
+        intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }
 }

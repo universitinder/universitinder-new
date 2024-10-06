@@ -6,6 +6,7 @@ import com.universitinder.app.controllers.FaqController
 import com.universitinder.app.models.FAQ
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
+import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CreateFAQViewModel(
+    private val school: School,
     private val faqController: FaqController,
     val popActivity: () -> Unit,
 ) : ViewModel() {
@@ -43,7 +45,7 @@ class CreateFAQViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(createLoading = true) }
-                val result = faqController.createFAQ(email = currentUser.email, faq = FAQ(question = _uiState.value.question, answer = _uiState.value.answer))
+                val result = faqController.createFAQ(email = school.email, faq = FAQ(question = _uiState.value.question, answer = _uiState.value.answer))
                 withContext(Dispatchers.Main) {
                     if (result) {
                         _uiState.value = _uiState.value.copy(

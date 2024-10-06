@@ -8,6 +8,7 @@ import com.universitinder.app.models.Course
 import com.universitinder.app.models.EducationLevel
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
+import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class EditCourseViewModel(
+    private val school : School,
     private val documentID: String,
     private val courseController: CourseController,
     val popActivity: () -> Unit
@@ -28,7 +30,7 @@ class EditCourseViewModel(
     init {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
-                val course = courseController.getCourse(email = currentUser.email, documentID = documentID)
+                val course = courseController.getCourse(email = school.email, documentID = documentID)
                 if (course != null) {
                     onNameChange(course.name)
                     onDurationChange(course.duration.toString())
@@ -66,7 +68,7 @@ class EditCourseViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(updateLoading = true) }
                 val result = courseController.createCourse(
-                    email = currentUser.email,
+                    email = school.email,
                     course = Course(
                         name = _uiState.value.name,
                         duration = COURSE_DURATION_STRING_TO_INT_MAP[_uiState.value.duration] ?: 0,
@@ -105,7 +107,7 @@ class EditCourseViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = true) }
-                val result = courseController.deleteCourse(email = currentUser.email, documentID = documentID)
+                val result = courseController.deleteCourse(email = school.email, documentID = documentID)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

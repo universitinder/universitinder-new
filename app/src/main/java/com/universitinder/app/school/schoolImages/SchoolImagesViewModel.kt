@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.ImageController
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
+import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolImagesViewModel(
+    private val school: School,
     private val imageController: ImageController,
     val popActivity: () -> Unit,
 ): ViewModel() {
@@ -30,7 +32,7 @@ class SchoolImagesViewModel(
             withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
             val currentUser = UserState.currentUser
             if (currentUser != null) {
-                val imagesMap = imageController.getImages(currentUser.email)
+                val imagesMap = imageController.getImages(school.email)
                 onLogoPicked(imagesMap.logo)
                 onImagesPicked(imagesMap.images)
             }
@@ -45,7 +47,7 @@ class SchoolImagesViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(logoLoading = true) }
-                val result = imageController.uploadLogo(context = context, email = currentUser.email, uri = _uiState.value.logo!!)
+                val result = imageController.uploadLogo(context = context, email = school.email, uri = _uiState.value.logo!!)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
@@ -80,7 +82,7 @@ class SchoolImagesViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(imagesLoading = true) }
-                val result = imageController.uploadImages(context = context, email = currentUser.email, uris = _uiState.value.images)
+                val result = imageController.uploadImages(context = context, email = school.email, uris = _uiState.value.images)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

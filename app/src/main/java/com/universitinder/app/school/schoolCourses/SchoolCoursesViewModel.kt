@@ -10,6 +10,7 @@ import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.COURSE_DURATION_INT_TO_STRING_MAP
 import com.universitinder.app.models.CourseDurations
+import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import com.universitinder.app.school.schoolCourses.createCourse.CreateCourseActivity
 import com.universitinder.app.school.schoolCourses.editCourse.EditCourseActivity
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolCoursesViewModel(
+    private val school: School,
     private val courseController: CourseController,
     private val schoolController: SchoolController,
     private val activityStarterHelper: ActivityStarterHelper,
@@ -40,8 +42,8 @@ class SchoolCoursesViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
-                val courses = courseController.getCourses(email = currentUser.email)
-                val durations = schoolController.getSchoolDurations(email = currentUser.email)
+                val courses = courseController.getCourses(email = school.email)
+                val durations = schoolController.getSchoolDurations(email = school.email)
                 val courseDurationMapList = createCourseDurationMapList(durations)
                 withContext(Dispatchers.Main) {
                     _uiState.value = _uiState.value.copy(
@@ -61,16 +63,16 @@ class SchoolCoursesViewModel(
                     viewModelScope.launch(Dispatchers.IO) {
                         if (currentUser != null) {
                             if (title == "2 YEARS") {
-                                schoolController.updateSchool2YearCourse(currentUser.email, !it.clicked)
+                                schoolController.updateSchool2YearCourse(school.email, !it.clicked)
                             }
                             if (title == "3 YEARS") {
-                                schoolController.updateSchool3YearCourse(currentUser.email, !it.clicked)
+                                schoolController.updateSchool3YearCourse(school.email, !it.clicked)
                             }
                             if (title == "4 YEARS") {
-                                schoolController.updateSchool4YearCourse(currentUser.email, !it.clicked)
+                                schoolController.updateSchool4YearCourse(school.email, !it.clicked)
                             }
                             if (title == "5 YEARS") {
-                                schoolController.updateSchool5YearCourse(currentUser.email, !it.clicked)
+                                schoolController.updateSchool5YearCourse(school.email, !it.clicked)
                             }
                         }
                     }
@@ -99,12 +101,14 @@ class SchoolCoursesViewModel(
 
     fun startCreateCourseActivity() {
         val intent = Intent(activityStarterHelper.getContext(), CreateCourseActivity::class.java)
+        intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }
 
     fun startEditCourseActivity(documentID: String) {
         val intent = Intent(activityStarterHelper.getContext(), EditCourseActivity::class.java)
         intent.putExtra("documentID", documentID)
+        intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }
 }

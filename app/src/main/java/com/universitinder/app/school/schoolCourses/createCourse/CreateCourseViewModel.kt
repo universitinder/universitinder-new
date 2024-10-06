@@ -8,6 +8,7 @@ import com.universitinder.app.models.Course
 import com.universitinder.app.models.EducationLevel
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
+import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CreateCourseViewModel(
+    private val school: School,
     private val courseController: CourseController,
     val popActivity: () -> Unit,
 ): ViewModel() {
@@ -51,7 +53,7 @@ class CreateCourseViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(createLoading = true) }
                 val result = courseController.createCourse(
-                    email = currentUser.email,
+                    email = school.email,
                     course = Course(
                         name = _uiState.value.name,
                         duration = COURSE_DURATION_STRING_TO_INT_MAP[_uiState.value.duration] ?: 0,

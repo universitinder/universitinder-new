@@ -31,7 +31,7 @@ class SchoolFAQsActivity : AppCompatActivity() {
 
         val faqController = FaqController()
         val activityStarterHelper = ActivityStarterHelper(this)
-        schoolFAQsViewModel = SchoolFAQsViewModel(faqController = faqController, activityStarterHelper = activityStarterHelper, popActivity = this::finish)
+        schoolFAQsViewModel = SchoolFAQsViewModel(school = school!!, faqController = faqController, activityStarterHelper = activityStarterHelper, popActivity = this::finish)
 
         setContent {
             UniversitinderTheme {

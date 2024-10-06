@@ -34,6 +34,7 @@ class SchoolCoursesActivity : AppCompatActivity() {
         val schoolController = SchoolController()
         val activityStarterHelper = ActivityStarterHelper(this)
         schoolCoursesViewModel = SchoolCoursesViewModel(
+            school = school!!,
             courseController = courseController,
             schoolController = schoolController,
             activityStarterHelper = activityStarterHelper,

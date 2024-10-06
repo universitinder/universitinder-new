@@ -22,7 +22,7 @@ class SchoolImagesActivity : AppCompatActivity() {
         if (school == null) finish()
 
         val imageController = ImageController()
-        val schoolImagesViewModel = SchoolImagesViewModel(imageController = imageController, popActivity = this::finish)
+        val schoolImagesViewModel = SchoolImagesViewModel(school = school!!, imageController = imageController, popActivity = this::finish)
 
         setContent {
             UniversitinderTheme {
