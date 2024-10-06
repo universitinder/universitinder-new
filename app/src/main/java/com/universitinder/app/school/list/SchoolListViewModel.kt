@@ -7,6 +7,7 @@ import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
 import com.universitinder.app.school.SchoolActivity
+import com.universitinder.app.school.create.CreateSchoolActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +40,8 @@ class SchoolListViewModel(
     }
 
     fun startRegisterSchool() {
-//        val intent = Intent(activityStarterHelper.getContext(), )
+        val intent = Intent(activityStarterHelper.getContext(), CreateSchoolActivity::class.java)
+        activityStarterHelper.startActivity(intent)
     }
 
     fun startSchoolActivity(school: School) {

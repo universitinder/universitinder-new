@@ -20,6 +20,9 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".school.create.CreateSchoolActivity"
+            android:exported="false" />
+        <activity
             android:name=".school.schoolInformationNavigation.SchoolInformationNavigationActivity"
             android:exported="false" />
         <activity
