@@ -43,6 +43,13 @@ fun SchoolInformationNavigationScreen(viewModel: SchoolInformationNavigationView
             }
             item {
                 ListItem(
+                    modifier = Modifier.clickable { viewModel.startSchoolLocationActivity() },
+                    headlineContent = { Text(text = "Location") },
+                    trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, "Arrow Right") }
+                )
+            }
+            item {
+                ListItem(
                     modifier = Modifier.clickable { viewModel.startSchoolMissionVisionActivity() },
                     headlineContent = { Text(text = "Mission/Vision/Core Values") },
                     trailingContent = { Icon(Icons.Filled.KeyboardArrowRight, "Arrow Right") }
