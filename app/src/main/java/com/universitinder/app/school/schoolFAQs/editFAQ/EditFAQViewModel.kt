@@ -8,7 +8,6 @@ import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
-import com.universitinder.app.school.schoolFAQs.createFAQ.CreateFAQUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,6 +43,7 @@ class EditFAQViewModel(
 
     fun onQuestionChange(newVal: String) { _uiState.value = _uiState.value.copy(question = newVal) }
     fun onAnswerChange(newVal: String) { _uiState.value = _uiState.value.copy(answer = newVal) }
+    fun onDeleteDialogToggle() { _uiState.value = _uiState.value.copy(showDeleteDialog = !_uiState.value.showDeleteDialog) }
 
     private fun fieldsNotFilled(): Boolean {
         return _uiState.value.answer.isEmpty() || _uiState.value.answer.isBlank() || _uiState.value.question.isEmpty() || _uiState.value.question.isBlank()
@@ -88,6 +88,38 @@ class EditFAQViewModel(
                                 show = true,
                                 message = "Updating question information unsuccessful"
                             )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteFAQ() {
+        if (currentUser != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = true) }
+                val result = faqController.deleteFAQ(email = school.email, documentID = documentID)
+                if (result) {
+                    withContext(Dispatchers.Main) {
+                        _uiState.value = _uiState.value.copy(
+                            deleteResultMessage = ResultMessage(
+                                show = true,
+                                type = ResultMessageType.SUCCESS,
+                                message = "Successfully deleted course"
+                            ),
+                            deleteLoading = false
+                        )
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _uiState.value = _uiState.value.copy(
+                            deleteResultMessage = ResultMessage(
+                                show = true,
+                                type = ResultMessageType.FAILED,
+                                message = "Course deletion unsuccessful"
+                            ),
+                            deleteLoading = false
                         )
                     }
                 }

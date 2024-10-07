@@ -74,6 +74,26 @@ class FaqController {
         return response.await()
     }
 
+    suspend fun deleteFAQ(email: String, documentID: String) : Boolean  {
+        val response = CompletableDeferred<Boolean>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val faqRef = firestore.collection("schools").document(email).collection("FAQs")
+                faqRef.document(documentID)
+                    .delete()
+                    .addOnSuccessListener {
+                        response.complete(true)
+                    }
+                    .addOnFailureListener {
+                        response.complete(false)
+                    }
+            }
+        }
+
+        return response.await()
+    }
+
 //    suspend fun createFAQs(email: String, faqs: List<FAQ>) : Boolean {
 //        val response = CompletableDeferred<Boolean>(null)
 //

@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.universitinder.app.components.dialogs.ConfirmDialog
 import com.universitinder.app.models.ResultMessageType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +44,7 @@ fun EditFAQScreen(editFAQViewModel: EditFAQViewModel) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Go Back")
                 }},
                 actions = {
-                    IconButton(onClick = {}, colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Red)) {
+                    IconButton(onClick = editFAQViewModel::onDeleteDialogToggle, colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Red)) {
                         Icon(Icons.Filled.Delete, contentDescription = "Delete")
                     }
                 }
@@ -103,6 +104,17 @@ fun EditFAQScreen(editFAQViewModel: EditFAQViewModel) {
                         }
                     }
                 }
+                ConfirmDialog(
+                    title = "Delete Confirmation",
+                    text = "Are you sure you want to delete this FAQ?",
+                    show = uiState.showDeleteDialog,
+                    onDismissRequest = editFAQViewModel::onDeleteDialogToggle,
+                    resultMessage = uiState.deleteResultMessage,
+                    onCancel = editFAQViewModel::onDeleteDialogToggle,
+                    loading = uiState.deleteLoading,
+                    actionText = "Delete",
+                    onConfirm = editFAQViewModel::deleteFAQ
+                )
             }
         }
     }
