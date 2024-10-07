@@ -14,17 +14,17 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -56,13 +56,8 @@ fun EditCourseScreen(editCourseViewModel: EditCourseViewModel) {
                 },
                 title = { Text(text = "Edit Course") },
                 actions = {
-                    TextButton(
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        ),
-                        onClick = editCourseViewModel::onDeleteDialogToggle
-                    ) {
-                        Text(text = "Delete")
+                    IconButton(onClick = editCourseViewModel::onDeleteDialogToggle, colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Red)) {
+                        Icon(Icons.Filled.Delete, contentDescription = "Delete")
                     }
                 }
             )
