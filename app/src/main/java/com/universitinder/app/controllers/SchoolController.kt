@@ -611,4 +611,19 @@ class SchoolController {
         return response.await() && responseTwo.await()
     }
 
+    suspend fun updateSchoolLocation(email: String, locationPoint: LocationPoint) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+
+        coroutineScope {
+            launch(Dispatchers.IO)  {
+                firestore.collection("schools").document(email)
+                    .update("coordinates", locationPoint)
+                    .addOnSuccessListener { response.complete(true) }
+                    .addOnFailureListener { response.complete(false) }
+            }
+        }
+
+        return response.await()
+    }
+
 }
