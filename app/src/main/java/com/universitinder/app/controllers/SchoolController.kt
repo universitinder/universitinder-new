@@ -4,9 +4,11 @@ package com.universitinder.app.controllers
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.storage
 import com.universitinder.app.helpers.DistanceCalculator
 import com.universitinder.app.models.CourseDurations
@@ -228,7 +230,7 @@ class SchoolController {
                         val schoolPoint = schoolObject?.coordinates!!
                         val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(userPoint = userPoint, schoolPoint = schoolPoint)
 
-                        Pair(SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris), distance)
+                        Pair(SchoolPlusImages(id = id, school = document.toObject(School::class.java), images = uris), distance)
                     }.await()
                 }
                 schools.complete(schoolPlusImages)
@@ -268,7 +270,7 @@ class SchoolController {
 
                         Pair(
                             SchoolPlusImages(
-                                id = id!!,
+                                id = id,
                                 school = document.toObject(School::class.java),
                                 images = uris
                             ), distance
@@ -569,4 +571,44 @@ class SchoolController {
 
         return response.await()
     }
+
+    suspend fun deleteSchool(email: String) : Boolean {
+        val response = CompletableDeferred<Boolean>()
+        val responseTwo = CompletableDeferred<Boolean>()
+
+        coroutineScope {
+            launch(Dispatchers.IO){
+                try {
+                    firestore.collection("schools").document(email).collection("courses").get().await()
+                        .documents.forEach {
+                            firestore.collection("schools").document(email).collection("courses").document(it.id).delete().await()
+                        }
+                    firestore.collection("schools").document(email).collection("FAQs").get().await()
+                        .documents.forEach {
+                            firestore.collection("schools").document(email).collection("FAQs").document(it.id).delete().await()
+                        }
+                    firestore.collection("schools").document(email).delete().await()
+                    response.complete(true)
+                } catch (exception: FirebaseFirestoreException) {
+                    response.complete(false)
+                }
+            }
+            launch(Dispatchers.IO){
+                try {
+                    val storageRef = storage.reference
+                    val listOfItems = storageRef.child("schools/${email}").listAll().await()
+                    listOfItems.items.forEach {
+                        storageRef.child(it.path).delete().await()
+                    }
+                    storageRef.child("schools/$email").delete().await()
+                    responseTwo.complete(true)
+                } catch (exception: StorageException) {
+                    responseTwo.complete(false)
+                }
+            }
+        }
+
+        return response.await() && responseTwo.await()
+    }
+
 }

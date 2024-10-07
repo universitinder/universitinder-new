@@ -20,12 +20,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,6 +48,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.universitinder.app.components.AffordabilityIndicator
 import com.universitinder.app.components.SchoolBasicInfo
 import com.universitinder.app.components.SchoolPhotos
+import com.universitinder.app.components.dialogs.ConfirmDeleteSchoolDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +67,9 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                 actions = {
                     IconButton(onClick = schoolViewModel::startInformationNavigation) {
                         Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                    }
+                    IconButton(onClick = schoolViewModel::toggleDeleteDialog, colors = IconButtonDefaults.iconButtonColors(contentColor = Color.Red)) {
+                        Icon(Icons.Filled.Delete, contentDescription = "Delete")
                     }
                 }
             )
@@ -234,6 +240,12 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                             }
                         }
                     }
+                    ConfirmDeleteSchoolDialog(
+                        show = uiState.showDeleteDialog,
+                        onDismissRequest = schoolViewModel::toggleDeleteDialog,
+                        deleteSchool = schoolViewModel::deleteSchool,
+                        loading = uiState.deleteLoading
+                    )
                 }
             }
         }

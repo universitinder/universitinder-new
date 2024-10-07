@@ -33,6 +33,8 @@ class SchoolViewModel(
         }
     }
 
+    fun toggleDeleteDialog() { _uiState.value = _uiState.value.copy(showDeleteDialog = !_uiState.value.showDeleteDialog) }
+
     fun refresh() {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -55,6 +57,15 @@ class SchoolViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun deleteSchool() {
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = true) }
+            schoolController.deleteSchool(school.email)
+            withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = false, showDeleteDialog = false) }
+            popActivity()
         }
     }
 

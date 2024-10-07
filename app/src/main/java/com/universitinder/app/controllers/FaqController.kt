@@ -6,7 +6,6 @@ import com.google.firebase.firestore.firestore
 import com.universitinder.app.models.FAQ
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -18,7 +17,7 @@ class FaqController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val faqRef = firestore.collection("users").document(email).collection("school").document("school").collection("FAQs").document(documentID)
+                val faqRef = firestore.collection("schools").document(email).collection("FAQs").document(documentID)
                 faqRef.get()
                     .addOnSuccessListener { response.complete(it.toObject(FAQ::class.java)) }
                     .addOnFailureListener { response.complete(null) }
@@ -33,7 +32,7 @@ class FaqController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val faqsRef = firestore.collection("users").document(email).collection("school").document("school").collection("FAQs")
+                val faqsRef = firestore.collection("schools").document(email).collection("FAQs")
                 faqsRef.get()
                     .addOnSuccessListener { response.complete(it.documents) }
                     .addOnFailureListener { response.complete(listOf()) }
@@ -48,7 +47,7 @@ class FaqController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val faqsRef = firestore.collection("users").document(email).collection("school").document("school").collection("FAQs")
+                val faqsRef = firestore.collection("schools").document(email).collection("FAQs")
                 faqsRef.document()
                     .set(faq)
                     .addOnSuccessListener { response.complete(true) }
@@ -64,7 +63,7 @@ class FaqController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val faqsRef = firestore.collection("users").document(email).collection("school").document("school").collection("FAQs")
+                val faqsRef = firestore.collection("schools").document(email).collection("FAQs")
                 faqsRef.document(documentID)
                     .update("question", faq.question, "answer", faq.answer)
                     .addOnSuccessListener { response.complete(true) }
@@ -75,29 +74,29 @@ class FaqController {
         return response.await()
     }
 
-    suspend fun createFAQs(email: String, faqs: List<FAQ>) : Boolean {
-        val response = CompletableDeferred<Boolean>(null)
-
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                val faqsRef = firestore.collection("users").document(email).collection("school").document("school").collection("FAQs")
-                val batch = firestore.batch()
-
-                async {
-                    faqs.forEachIndexed { index, faq ->
-                        val faqDocumentRef = faqsRef.document(index.toString())
-                        batch.set(faqDocumentRef, faq)
-                    }
-                }.await()
-
-                async {
-                    batch.commit()
-                        .addOnSuccessListener { response.complete(true) }
-                        .addOnFailureListener { response.complete(false) }
-                }.await()
-            }
-        }
-
-        return response.await()
-    }
+//    suspend fun createFAQs(email: String, faqs: List<FAQ>) : Boolean {
+//        val response = CompletableDeferred<Boolean>(null)
+//
+//        coroutineScope {
+//            launch(Dispatchers.IO) {
+//                val faqsRef = firestore.collection("users").document(email).collection("school").document("school").collection("FAQs")
+//                val batch = firestore.batch()
+//
+//                async {
+//                    faqs.forEachIndexed { index, faq ->
+//                        val faqDocumentRef = faqsRef.document(index.toString())
+//                        batch.set(faqDocumentRef, faq)
+//                    }
+//                }.await()
+//
+//                async {
+//                    batch.commit()
+//                        .addOnSuccessListener { response.complete(true) }
+//                        .addOnFailureListener { response.complete(false) }
+//                }.await()
+//            }
+//        }
+//
+//        return response.await()
+//    }
 }

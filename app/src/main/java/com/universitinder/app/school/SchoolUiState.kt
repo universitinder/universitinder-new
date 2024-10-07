@@ -7,5 +7,7 @@ data class SchoolUiState (
     val fetchingLoading : Boolean = false,
     val schoolPlusImages: SchoolPlusImages? = null,
     val logo : Uri? = null,
-    val activeTab: Int = 0
+    val activeTab: Int = 0,
+    val showDeleteDialog: Boolean = false,
+    val deleteLoading: Boolean = false,
 )

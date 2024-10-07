@@ -36,7 +36,7 @@ class CourseController {
 
         coroutineScope {
             launch (Dispatchers.IO) {
-                val coursesRef = firestore.collection("users").document(email).collection("school").document("school").collection("courses")
+                val coursesRef = firestore.collection("schools").document(email).collection("courses")
                 coursesRef
                     .document(documentID)
                     .get()
@@ -53,7 +53,7 @@ class CourseController {
 
         coroutineScope {
             launch (Dispatchers.IO) {
-                val coursesRef = firestore.collection("users").document(email).collection("school").document("school").collection("courses")
+                val coursesRef = firestore.collection("schools").document(email).collection("courses")
                 coursesRef.get()
                     .addOnSuccessListener { response.complete(it.documents) }
                     .addOnFailureListener { response.complete(listOf()) }
@@ -69,7 +69,7 @@ class CourseController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val coursesRef = firestore.collection("users").document(email).collection("school").document("school").collection("courses")
+                val coursesRef = firestore.collection("schools").document(email).collection("courses")
                 coursesRef
                     .document()
                     .set(course)
@@ -77,7 +77,7 @@ class CourseController {
                     .addOnFailureListener { firstResponse.complete(false) }
             }
             launch(Dispatchers.IO) {
-                firestore.collection("users").document(email).collection("school").document("school")
+                firestore.collection("schools").document(email)
                     .update("courses", FieldValue.arrayUnion(course.name))
                     .addOnSuccessListener { secondResponse.complete(true) }
                     .addOnSuccessListener { secondResponse.complete(false) }
@@ -92,7 +92,7 @@ class CourseController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val coursesRef = firestore.collection("users").document(email).collection("school").document("school").collection("courses")
+                val coursesRef = firestore.collection("schools").document(email).collection("courses")
                 coursesRef
                     .document(documentID)
                     .update(
@@ -113,7 +113,7 @@ class CourseController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val coursesRef = firestore.collection("users").document(email).collection("school").document("school").collection("courses")
+                val coursesRef = firestore.collection("schools").document(email).collection("courses")
                 coursesRef
                     .document(documentID)
                     .delete()
