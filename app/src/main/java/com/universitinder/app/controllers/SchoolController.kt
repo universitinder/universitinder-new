@@ -1,10 +1,8 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
-import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -32,7 +30,7 @@ class SchoolController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                firestore.collectionGroup("school").get()
+                firestore.collection("schools").get()
                     .addOnSuccessListener {
                         schools.complete(it.documents)
                     }
@@ -43,74 +41,74 @@ class SchoolController {
         return schools.await()
     }
 
-    suspend fun getSchoolPlusImageByEmail(email: String) : SchoolPlusImages? {
-        val school = CompletableDeferred<SchoolPlusImages?>()
-        val filteredSchools = CompletableDeferred<DocumentSnapshot?>()
+//    suspend fun getSchoolPlusImageByEmail(email: String) : SchoolPlusImages? {
+//        val school = CompletableDeferred<SchoolPlusImages?>()
+//        val filteredSchools = CompletableDeferred<DocumentSnapshot?>()
+//
+//        coroutineScope {
+//            launch(Dispatchers.IO) {
+//                async {
+//                    firestore.collection("users").document(email).collection("school").document("school")
+//                        .get()
+//                        .addOnSuccessListener { objects -> filteredSchools.complete(objects) }
+//                        .addOnFailureListener { filteredSchools.complete(null) }
+//                }.await()
+//                async {
+//                    val filtered = filteredSchools.await()
+//                    if (filtered == null) {
+//                        school.complete(null)
+//                        return@async
+//                    }
+//                    val storageRef = storage.reference
+//                    val listOfItems = storageRef.child("users/${email}/school").listAll().await()
+//                    val uris = listOfItems.items.map {
+//                        val downloadURL = it.downloadUrl.await()
+//                        downloadURL
+//                    }
+//                    school.complete(SchoolPlusImages(id = email, school = filtered.toObject(School::class.java), images = uris))
+//                }.await()
+//            }
+//        }
+//
+//        return school.await()
+//    }
 
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                async {
-                    firestore.collection("users").document(email).collection("school").document("school")
-                        .get()
-                        .addOnSuccessListener { objects -> filteredSchools.complete(objects) }
-                        .addOnFailureListener { filteredSchools.complete(null) }
-                }.await()
-                async {
-                    val filtered = filteredSchools.await()
-                    if (filtered == null) {
-                        school.complete(null)
-                        return@async
-                    }
-                    val storageRef = storage.reference
-                    val listOfItems = storageRef.child("users/${email}/school").listAll().await()
-                    val uris = listOfItems.items.map {
-                        val downloadURL = it.downloadUrl.await()
-                        downloadURL
-                    }
-                    school.complete(SchoolPlusImages(id = email, school = filtered.toObject(School::class.java), images = uris))
-                }.await()
-            }
-        }
-
-        return school.await()
-    }
-
-    suspend fun getSchoolPlusImageByDocumentId(documentId: String) : SchoolPlusImages? {
-        val school = CompletableDeferred<SchoolPlusImages?>()
-        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
-        Log.w("SCHOOL CONTROLLER", documentId)
-
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                async {
-                    firestore.collectionGroup("school")
-                        .whereEqualTo(FieldPath.documentId(), documentId)
-                        .limit(1)
-                        .get()
-                        .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
-                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
-                }.await()
-                async {
-                    val filtered = filteredSchools.await()
-                    if (filtered.isEmpty()) {
-                        school.complete(null)
-                        return@async
-                    }
-                    val first = filtered.first()
-                    val id = first.reference.parent.parent?.id
-                    val storageRef = storage.reference
-                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
-                    val uris = listOfItems.items.map {
-                        val downloadURL = it.downloadUrl.await()
-                        downloadURL
-                    }
-                    school.complete(SchoolPlusImages(id = id!!, school = first.toObject(School::class.java), images = uris))
-                }.await()
-            }
-        }
-
-        return school.await()
-    }
+//    suspend fun getSchoolPlusImageByDocumentId(documentId: String) : SchoolPlusImages? {
+//        val school = CompletableDeferred<SchoolPlusImages?>()
+//        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
+//        Log.w("SCHOOL CONTROLLER", documentId)
+//
+//        coroutineScope {
+//            launch(Dispatchers.IO) {
+//                async {
+//                    firestore.collection("schools")
+//                        .whereEqualTo(FieldPath.documentId(), documentId)
+//                        .limit(1)
+//                        .get()
+//                        .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
+//                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
+//                }.await()
+//                async {
+//                    val filtered = filteredSchools.await()
+//                    if (filtered.isEmpty()) {
+//                        school.complete(null)
+//                        return@async
+//                    }
+//                    val first = filtered.first()
+//                    val id = first.reference.parent.parent?.id
+//                    val storageRef = storage.reference
+//                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+//                    val uris = listOfItems.items.map {
+//                        val downloadURL = it.downloadUrl.await()
+//                        downloadURL
+//                    }
+//                    school.complete(SchoolPlusImages(id = id!!, school = first.toObject(School::class.java), images = uris))
+//                }.await()
+//            }
+//        }
+//
+//        return school.await()
+//    }
 
     suspend fun getSchoolPlusImageByName(name: String) : SchoolPlusImages? {
         val school = CompletableDeferred<SchoolPlusImages?>()
@@ -119,7 +117,7 @@ class SchoolController {
         coroutineScope {
             launch(Dispatchers.IO) {
                 async {
-                    firestore.collectionGroup("school")
+                    firestore.collection("schools")
                         .whereEqualTo("name", name)
                         .limit(1)
                         .get()
@@ -133,14 +131,14 @@ class SchoolController {
                         return@async
                     }
                     val first = filtered.first()
-                    val id = first.reference.parent.parent?.id
+                    val id = first.reference.id
                     val storageRef = storage.reference
-                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                    val listOfItems = storageRef.child("schools/${id}").listAll().await()
                     val uris = listOfItems.items.map {
                         val downloadURL = it.downloadUrl.await()
                         downloadURL
                     }
-                    school.complete(SchoolPlusImages(id = id!!, school = first.toObject(School::class.java), images = uris))
+                    school.complete(SchoolPlusImages(id = id, school = first.toObject(School::class.java), images = uris))
                 }.await()
             }
         }
@@ -148,49 +146,8 @@ class SchoolController {
         return school.await()
     }
 
-//    suspend fun getFilteredSchool(filter: Filter) : List<SchoolPlusImages> {
-//        val schools = CompletableDeferred<List<SchoolPlusImages>>()
-//        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
-//
-//        coroutineScope {
-//            launch(Dispatchers.IO) {
-//                async {
-//                    firestore.collectionGroup("school")
-//                        .get()
-//                        .addOnSuccessListener { objects ->
-//                            val filtered = objects.documents.filter { document ->
-//                                val school = document.toObject(School::class.java)
-//                                filter.provinces.contains(school?.province!!) && filter.cities.contains(school.municipalityOrCity) &&
-//                                filter.courses.split("___").intersect(school.courses.toSet()).isNotEmpty()
-//                            }
-//                            filteredSchools.complete(filtered)
-//                        }
-//                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
-//                }.await()
-//                async {
-//                    val filtered = filteredSchools.await()
-//                    val schoolPlusImages = filtered.map { document ->
-//                        val id = document.reference.parent.parent?.id
-//                        val storageRef = storage.reference
-//                        val listOfItems = storageRef.child("users/${id}/school").listAll().await()
-//                        async {
-//                            val uris = listOfItems.items.map {
-//                                val downloadURL = it.downloadUrl.await()
-//                                downloadURL
-//                            }
-//                            SchoolPlusImages(id = id!!, school = document.toObject(School::class.java), images = uris)
-//                        }.await()
-//                    }
-//                    schools.complete(schoolPlusImages)
-//                }.await()
-//            }
-//        }
-//
-//        return schools.await()
-//    }
-
     private fun createQueryOne(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, isPrivate: Boolean) : Query {
-        return firestore.collectionGroup("school")
+        return firestore.collection("schools")
             .whereIn("province", provinces)
             .whereIn("municipalityOrCity", cities)
             .whereArrayContainsAny("courses", courses)
@@ -198,7 +155,7 @@ class SchoolController {
             .whereEqualTo("private", isPrivate)
     }
     private fun createQueryTwo(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, isPublic: Boolean) : Query {
-        return firestore.collectionGroup("school")
+        return firestore.collection("schools")
             .whereIn("province", provinces)
             .whereIn("municipalityOrCity", cities)
             .whereArrayContainsAny("courses", courses)
@@ -206,7 +163,7 @@ class SchoolController {
             .whereEqualTo("public", isPublic)
     }
     private fun createQueryThree(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has2YearCourse: Boolean) : Query {
-        return firestore.collectionGroup("school")
+        return firestore.collection("schools")
             .whereIn("province", provinces)
             .whereIn("municipalityOrCity", cities)
             .whereArrayContainsAny("courses", courses)
@@ -214,7 +171,7 @@ class SchoolController {
             .whereEqualTo("has2YearCourse", has2YearCourse)
     }
     private fun createQueryFour(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has3YearCourse: Boolean) : Query {
-        return firestore.collectionGroup("school")
+        return firestore.collection("schools")
             .whereIn("province", provinces)
             .whereIn("municipalityOrCity", cities)
             .whereArrayContainsAny("courses", courses)
@@ -222,7 +179,7 @@ class SchoolController {
             .whereEqualTo("has3YearCourse", has3YearCourse)
     }
     private fun createQueryFive(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has4YearCourse: Boolean) : Query {
-        return firestore.collectionGroup("school")
+        return firestore.collection("schools")
             .whereIn("province", provinces)
             .whereIn("municipalityOrCity", cities)
             .whereArrayContainsAny("courses", courses)
@@ -230,7 +187,7 @@ class SchoolController {
             .whereEqualTo("has4YearCourse", has4YearCourse)
     }
     private fun createQuerySix(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has5YearCourse: Boolean) : Query {
-        return firestore.collectionGroup("school")
+        return firestore.collection("schools")
             .whereIn("province", provinces)
             .whereIn("municipalityOrCity", cities)
             .whereArrayContainsAny("courses", courses)
@@ -259,9 +216,9 @@ class SchoolController {
                     it.documents
                 }.toMutableSet()
                 val schoolPlusImages = combinedSchools.map { document ->
-                    val id = document.reference.parent.parent?.id
+                    val id = document.reference.id
                     val storageRef = storage.reference
-                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                    val listOfItems = storageRef.child("schools/${id}").listAll().await()
                     async {
                         val uris = listOfItems.items.map {
                             val downloadURL = it.downloadUrl.await()
@@ -291,12 +248,12 @@ class SchoolController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val combinedSchools = firestore.collectionGroup("school")
+                val combinedSchools = firestore.collection("schools")
                     .orderBy("swipeRight", Query.Direction.DESCENDING).get().await()
                 val schoolPlusImages = combinedSchools.map { document ->
-                    val id = document.reference.parent.parent?.id
+                    val id = document.reference.id
                     val storageRef = storage.reference
-                    val listOfItems = storageRef.child("users/${id}/school").listAll().await()
+                    val listOfItems = storageRef.child("schools/${id}").listAll().await()
                     async {
                         val uris = listOfItems.items.map {
                             val downloadURL = it.downloadUrl.await()
@@ -332,10 +289,8 @@ class SchoolController {
     suspend fun getSchool(email: String) : School? {
         val school = CompletableDeferred<School?>()
 
-        firestore.collection("users")
+        firestore.collection("schools")
             .document(email)
-            .collection("school")
-            .document("school")
             .get()
             .addOnSuccessListener {
                 if (it.exists()) school.complete(it.toObject<School>())
@@ -351,7 +306,7 @@ class SchoolController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                firestore.collectionGroup("school")
+                firestore.collection("schools")
                     .whereEqualTo("name", name)
                     .limit(1)
                     .get()
@@ -371,10 +326,8 @@ class SchoolController {
         val response = CompletableDeferred<Boolean>()
 
 
-        firestore.collection("users")
+        firestore.collection("schools")
             .document(email)
-            .collection("school")
-            .document("school")
             .set(school)
             .addOnSuccessListener { response.complete(true) }
             .addOnFailureListener {
@@ -387,12 +340,10 @@ class SchoolController {
     suspend fun updateSchool(email: String, school: School) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
-            firestore.collection("users")
+            firestore.collection("schools")
                 .document(email)
-                .collection("school")
-                .document("school")
                 .update(
                     "name", school.name,
                     "email", school.email,
@@ -422,12 +373,10 @@ class SchoolController {
     suspend fun updateSchoolMissionVision(email: String, school: School) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
-            firestore.collection("users")
+            firestore.collection("schools")
                 .document(email)
-                .collection("school")
-                .document("school")
                 .update(
                     "mission", school.mission,
                     "vision", school.vision,
@@ -445,7 +394,7 @@ class SchoolController {
     suspend fun addSchoolSwipeRightCount(email: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
             schoolRef.update(
                 "swipeRight", FieldValue.increment(1)
@@ -479,7 +428,7 @@ class SchoolController {
     suspend fun addSchoolSwipeLeftCount(email: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
             schoolRef.update(
                 "swipeLeft", FieldValue.increment(1)
@@ -513,7 +462,7 @@ class SchoolController {
     suspend fun getSchoolDurations(email: String) : CourseDurations? {
         val response = CompletableDeferred<CourseDurations?>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         schoolRef.get()
             .addOnSuccessListener {
                 val schoolObject = it.toObject(School::class.java)
@@ -540,12 +489,10 @@ class SchoolController {
     suspend fun updateSchool2YearCourse(email: String, newVal: Boolean) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
-            firestore.collection("users")
+            firestore.collection("schools")
                 .document(email)
-                .collection("school")
-                .document("school")
                 .update(
                     "has2YearCourse", newVal
                 )
@@ -563,12 +510,10 @@ class SchoolController {
     suspend fun updateSchool3YearCourse(email: String, newVal: Boolean) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
-            firestore.collection("users")
+            firestore.collection("schools")
                 .document(email)
-                .collection("school")
-                .document("school")
                 .update(
                     "has3YearCourse", newVal
                 )
@@ -586,12 +531,10 @@ class SchoolController {
     suspend fun updateSchool4YearCourse(email: String, newVal: Boolean) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
-            firestore.collection("users")
+            firestore.collection("schools")
                 .document(email)
-                .collection("school")
-                .document("school")
                 .update(
                     "has4YearCourse", newVal
                 )
@@ -609,12 +552,10 @@ class SchoolController {
     suspend fun updateSchool5YearCourse(email: String, newVal: Boolean) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-        val schoolRef = firestore.collection("users").document(email).collection("school").document("school")
+        val schoolRef = firestore.collection("schools").document(email)
         if (schoolRef.get().await().exists()) {
-            firestore.collection("users")
+            firestore.collection("schools")
                 .document(email)
-                .collection("school")
-                .document("school")
                 .update(
                     "has5YearCourse", newVal
                 )

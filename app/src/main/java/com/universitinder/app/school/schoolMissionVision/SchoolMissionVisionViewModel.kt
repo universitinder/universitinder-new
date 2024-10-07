@@ -6,7 +6,6 @@ import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.School
-import com.universitinder.app.models.UserState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SchoolMissionVisionViewModel(
+    private val school: School,
     private val schoolController: SchoolController,
     val popActivity: () -> Unit
 ) : ViewModel() {
@@ -27,17 +27,11 @@ class SchoolMissionVisionViewModel(
             withContext(Dispatchers.Main) {
                 _uiState.value = _uiState.value.copy(fetchingDataLoading = true)
             }
-            val currentUser = UserState.currentUser
-            if (currentUser != null) {
-                val school = schoolController.getSchool(currentUser.email)
-                if (school != null) {
-                    _uiState.value = _uiState.value.copy(
-                        mission = school.mission,
-                        vision = school.vision,
-                        coreValues = school.coreValues
-                    )
-                }
-            }
+            _uiState.value = _uiState.value.copy(
+                mission = school.mission,
+                vision = school.vision,
+                coreValues = school.coreValues
+            )
             withContext(Dispatchers.Main) {
                 _uiState.value = _uiState.value.copy(fetchingDataLoading = false)
             }
@@ -73,12 +67,12 @@ class SchoolMissionVisionViewModel(
                 _uiState.value = _uiState.value.copy(setInformationLoading = true)
             }
             viewModelScope.async {
-                val school = School(
+                val schoolUpdate = School(
                     mission = _uiState.value.mission,
                     vision = _uiState.value.vision,
                     coreValues = _uiState.value.coreValues,
                 )
-                val result = schoolController.updateSchoolMissionVision(UserState.currentUser?.email!!, school)
+                val result = schoolController.updateSchoolMissionVision(school.email, schoolUpdate)
                 if (result) {
                     showMessage(ResultMessageType.SUCCESS, "Successfully set institution information")
                 }

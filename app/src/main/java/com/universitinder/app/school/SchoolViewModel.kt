@@ -43,8 +43,8 @@ class SchoolViewModel(
                     return@launch
                 } else {
                     var logo : Uri? = null
-                    if (schoolPlusImages.images.isNotEmpty() && schoolPlusImages.images.any { it.lastPathSegment!!.split("/")[3].contains("logo") }) {
-                        logo = schoolPlusImages.images.first { it.lastPathSegment!!.split("/")[3].contains("logo") }
+                    if (schoolPlusImages.images.isNotEmpty() && schoolPlusImages.images.any { it.lastPathSegment!!.split("/")[2].contains("logo") }) {
+                        logo = schoolPlusImages.images.first { it.lastPathSegment!!.split("/")[2].contains("logo") }
                     }
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

@@ -22,7 +22,7 @@ class ImageController {
             val imagesMutableList = mutableListOf<Uri>()
             async {
                 val reference = storage.reference
-                val folderRef = reference.child("users/$email/school")
+                val folderRef = reference.child("schools/$email")
                 val fileList = folderRef.listAll().await()
                 for (item in fileList.items) {
                     val uri = item.downloadUrl.await()
@@ -52,7 +52,7 @@ class ImageController {
         val reference = storage.reference
         val extension = getFileExtensionFromUri(context, uri)
         if (extension != null) {
-            val logoRef = reference.child("users/$email/school/logo.$extension")
+            val logoRef = reference.child("schools/$email/logo.$extension")
             logoRef.putFile(uri)
                 .addOnSuccessListener { response.complete(true) }
                 .addOnFailureListener { response.complete(false) }
@@ -73,7 +73,7 @@ class ImageController {
                 uris.forEachIndexed{ index, uri ->
                     val extension = getFileExtensionFromUri(context, uri)
                     if (extension != null) {
-                        val logoRef = reference.child("users/${email}/school/image-$index.$extension")
+                        val logoRef = reference.child("schools/${email}/image-$index.$extension")
                         logoRef.putFile(uri)
                             .addOnSuccessListener { results.plus(true) }
                             .addOnFailureListener { results.plus(false) }

@@ -22,7 +22,7 @@ class SchoolMissionVisionActivity : AppCompatActivity() {
         if (school == null) finish()
 
         val schoolController = SchoolController()
-        val schoolMissionVisionViewModel = SchoolMissionVisionViewModel(schoolController = schoolController, popActivity = this::finish)
+        val schoolMissionVisionViewModel = SchoolMissionVisionViewModel(school = school!!, schoolController = schoolController, popActivity = this::finish)
 
         setContent {
             UniversitinderTheme {
