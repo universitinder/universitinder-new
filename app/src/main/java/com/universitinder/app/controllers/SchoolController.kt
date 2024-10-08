@@ -1,6 +1,7 @@
 package com.universitinder.app.controllers
 
 //import android.util.Log
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -148,76 +149,140 @@ class SchoolController {
         return school.await()
     }
 
-    private fun createQueryOne(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, isPrivate: Boolean) : Query {
-        return firestore.collection("schools")
-            .whereIn("province", provinces)
-            .whereIn("municipalityOrCity", cities)
-            .whereArrayContainsAny("courses", courses)
-            .whereEqualTo("affordability", affordability)
-            .whereEqualTo("private", isPrivate)
+//    private fun createQueryOne(provinces: List<String>, cities: List<String>) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//    }
+//    private fun createQueryTwo(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, isPublic: Boolean) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereArrayContainsAny("courses", courses)
+//    }
+//    private fun createQueryThree(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has2YearCourse: Boolean) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereEqualTo("has2YearCourse", has2YearCourse)
+//    }
+//    private fun createQueryFour(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has3YearCourse: Boolean) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereEqualTo("has3YearCourse", has3YearCourse)
+//    }
+//    private fun createQueryFive(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has4YearCourse: Boolean) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereEqualTo("has4YearCourse", has4YearCourse)
+//    }
+//    private fun createQuerySix(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has5YearCourse: Boolean) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereEqualTo("has5YearCourse", has5YearCourse)
+//    }
+//    private fun createQuerySeven(provinces: List<String>, cities: List<String>, courses: List<String>) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereArrayContainsAny("courses", courses)
+//    }
+//    private fun createQueryEight(provinces: List<String>, cities: List<String>, isPrivate: Boolean) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereEqualTo("private", isPrivate)
+//    }
+//    private fun createQueryNine(provinces: List<String>, cities: List<String>, isPublic: Boolean) : Query {
+//        return firestore.collection("schools")
+//            .whereIn("province", provinces)
+//            .whereIn("municipalityOrCity", cities)
+//            .whereEqualTo("public", isPublic)
+//    }
+
+//    suspend fun getFilteredSchoolTwo(filter: Filter, userPoint: LocationPoint) : List<SchoolPlusImages> {
+//        val sortedSchools = CompletableDeferred<List<SchoolPlusImages>>()
+//        val schools = CompletableDeferred<List<Pair<SchoolPlusImages, Double>>>()
+//        val provinces = filter.provinces.split("___").toList()
+//        val cities = filter.cities.split("___").toList()
+//        val courses = filter.courses.split("___").toList()
+//        Log.w("SCHOOL CONTROLLER", filter.toString())
+//
+//        coroutineScope {
+//            launch(Dispatchers.IO) {
+//                val queryOne = createQueryOne(provinces, cities)
+//                val queryTwo = createQueryTwo(provinces, cities, courses, filter.affordability, filter.public)
+//                val queryThree = createQueryThree(provinces, cities, courses, filter.affordability, filter.has2YearCourse)
+//                val queryFour = createQueryFour(provinces, cities, courses, filter.affordability, filter.has3YearCourse)
+//                val queryFive = createQueryFive(provinces, cities, courses, filter.affordability, filter.has4YearCourse)
+//                val querySix = createQuerySix(provinces, cities, courses, filter.affordability, filter.has5YearCourse)
+//                val queryTasks = listOf(queryOne.get().await(), queryTwo.get().await(), queryThree.get().await(), queryFour.get().await(), queryFive.get().await(), querySix.get().await())
+//
+//                val combinedSchools = queryTasks.flatMap {
+//                    it.documents
+//                }.toMutableSet()
+//                val schoolPlusImages = combinedSchools.map { document ->
+//                    val id = document.reference.id
+//                    val storageRef = storage.reference
+//                    val listOfItems = storageRef.child("schools/${id}").listAll().await()
+//                    async {
+//                        val uris = listOfItems.items.map {
+//                            val downloadURL = it.downloadUrl.await()
+//                            downloadURL
+//                        }
+//                        val schoolObject = document.toObject(School::class.java)
+//                        val schoolPoint = schoolObject?.coordinates!!
+//                        val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(userPoint = userPoint, schoolPoint = schoolPoint)
+//
+//                        Pair(SchoolPlusImages(id = id, school = document.toObject(School::class.java), images = uris), distance)
+//                    }.await()
+//                }
+//                schools.complete(schoolPlusImages)
+//            }
+//            launch {
+//                val awaitedSchools = schools.await()
+//                sortedSchools.complete(awaitedSchools.sortedBy { it.second }.map { it.first })
+//            }
+//        }
+//
+//        return sortedSchools.await()
+//    }
+
+    private fun schoolIncludeCourses(schoolCourses: List<String>, coursesFilter: List<String>) : Boolean {
+        return schoolCourses.intersect(coursesFilter.toSet()).isNotEmpty()
     }
-    private fun createQueryTwo(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, isPublic: Boolean) : Query {
-        return firestore.collection("schools")
-            .whereIn("province", provinces)
-            .whereIn("municipalityOrCity", cities)
-            .whereArrayContainsAny("courses", courses)
-            .whereEqualTo("affordability", affordability)
-            .whereEqualTo("public", isPublic)
+    private fun schoolInMunicipalityOrCity(schoolMunicipalityOrCity: String, cities: List<String>) : Boolean {
+        return cities.contains(schoolMunicipalityOrCity)
     }
-    private fun createQueryThree(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has2YearCourse: Boolean) : Query {
-        return firestore.collection("schools")
-            .whereIn("province", provinces)
-            .whereIn("municipalityOrCity", cities)
-            .whereArrayContainsAny("courses", courses)
-            .whereEqualTo("affordability", affordability)
-            .whereEqualTo("has2YearCourse", has2YearCourse)
+    private fun schoolHasCourseDurations(school: School, has2YearCourse: Boolean, has3YearCourse: Boolean,  has4YearCourse: Boolean, has5YearCourse: Boolean) : Boolean{
+        return school.has2YearCourse == has2YearCourse || school.has3YearCourse == has3YearCourse || school.has4YearCourse == has4YearCourse || school.has5YearCourse || has5YearCourse
     }
-    private fun createQueryFour(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has3YearCourse: Boolean) : Query {
-        return firestore.collection("schools")
-            .whereIn("province", provinces)
-            .whereIn("municipalityOrCity", cities)
-            .whereArrayContainsAny("courses", courses)
-            .whereEqualTo("affordability", affordability)
-            .whereEqualTo("has3YearCourse", has3YearCourse)
+    private fun schoolMatchPrivatePublic(school: School, isPrivate: Boolean, isPublic: Boolean) : Boolean {
+        return school.isPrivate == isPrivate || school.isPublic == isPublic
     }
-    private fun createQueryFive(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has4YearCourse: Boolean) : Query {
-        return firestore.collection("schools")
-            .whereIn("province", provinces)
-            .whereIn("municipalityOrCity", cities)
-            .whereArrayContainsAny("courses", courses)
-            .whereEqualTo("affordability", affordability)
-            .whereEqualTo("has4YearCourse", has4YearCourse)
-    }
-    private fun createQuerySix(provinces: List<String>, cities: List<String>, courses: List<String>, affordability: Int, has5YearCourse: Boolean) : Query {
-        return firestore.collection("schools")
-            .whereIn("province", provinces)
-            .whereIn("municipalityOrCity", cities)
-            .whereArrayContainsAny("courses", courses)
-            .whereEqualTo("affordability", affordability)
-            .whereEqualTo("has5YearCourse", has5YearCourse)
+    private fun schoolMatchAffordability(schoolAffordability: Int, filterAffordability: Int) : Boolean {
+        return schoolAffordability == filterAffordability
     }
 
-    suspend fun getFilteredSchoolTwo(filter: Filter, userPoint: LocationPoint) : List<SchoolPlusImages> {
+    suspend fun getFilteredSchoolThree(filter: Filter, userPoint: LocationPoint) : List<SchoolPlusImages> {
         val sortedSchools = CompletableDeferred<List<SchoolPlusImages>>()
         val schools = CompletableDeferred<List<Pair<SchoolPlusImages, Double>>>()
-        val provinces = filter.provinces.split("___").toList()
         val cities = filter.cities.split("___").toList()
         val courses = filter.courses.split("___").toList()
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val queryOne = createQueryOne(provinces, cities, courses, filter.affordability, filter.private)
-                val queryTwo = createQueryTwo(provinces, cities, courses, filter.affordability, filter.public)
-                val queryThree = createQueryThree(provinces, cities, courses, filter.affordability, filter.has2YearCourse)
-                val queryFour = createQueryFour(provinces, cities, courses, filter.affordability, filter.has3YearCourse)
-                val queryFive = createQueryFive(provinces, cities, courses, filter.affordability, filter.has4YearCourse)
-                val querySix = createQuerySix(provinces, cities, courses, filter.affordability, filter.has5YearCourse)
-                val queryTasks = listOf(queryOne.get().await(), queryTwo.get().await(), queryThree.get().await(), queryFour.get().await(), queryFive.get().await(), querySix.get().await())
+                val fetchedSchools = firestore.collection("schools").get().await()
+                val filteredFetchedSchools = fetchedSchools.documents.filter {
+                    val schoolObject = it.toObject(School::class.java)
 
-                val combinedSchools = queryTasks.flatMap {
-                    it.documents
-                }.toMutableSet()
-                val schoolPlusImages = combinedSchools.map { document ->
+                    schoolInMunicipalityOrCity(schoolObject?.municipalityOrCity!!, cities) && (schoolHasCourseDurations(schoolObject, filter.has2YearCourse, filter.has3YearCourse, filter.has4YearCourse, filter.has5YearCourse) ||
+                            schoolMatchPrivatePublic(schoolObject, filter.private, filter.public) || schoolIncludeCourses(schoolObject.courses, courses) || schoolMatchAffordability(schoolObject.affordability, filter.affordability))
+                }
+                val schoolPlusImages = filteredFetchedSchools.map { document ->
                     val id = document.reference.id
                     val storageRef = storage.reference
                     val listOfItems = storageRef.child("schools/${id}").listAll().await()
