@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
+import android.util.Log
 //import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
@@ -111,7 +112,8 @@ class HomeViewModel(
                 val filter = filterController.getFilter(currentUser.email)
                 if (filter != null && !isFilterClear(filter)) {
                     if (locationState.value == null) return@launch
-                    val schools = schoolController.getFilteredSchoolTwo(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    val schools = schoolController.getFilteredSchoolThree(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    Log.w("HOME VIEW MODEL", schools.toString())
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
@@ -122,6 +124,7 @@ class HomeViewModel(
                 } else {
                     if (locationState.value == null) return@launch
                     val schools = schoolController.getTopSchools(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    Log.w("HOME VIEW MODEL", schools.toString())
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,

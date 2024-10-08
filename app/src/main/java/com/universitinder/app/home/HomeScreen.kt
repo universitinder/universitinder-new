@@ -14,6 +14,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,12 +65,16 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                             contentAlignment = Alignment.TopCenter
                         ) {
                             if (uiState.currentIndex < uiState.schools.size) {
-                                SwipeableCard(
-                                    school = uiState.schools[uiState.currentIndex],
-                                    onSwipedLeft = { homeViewModel.onSwipeLeft(uiState.schools[uiState.currentIndex].id) },
-                                    onSwipedRight = { homeViewModel.onSwipeRight(school = uiState.schools[uiState.currentIndex]) },
-                                    onMiddleClick = { homeViewModel.startSchoolProfileActivity(uiState.schools[uiState.currentIndex]) }
-                                )
+                                uiState.schools.forEachIndexed{ index, schoolPlusImages ->
+                                    SwipeableCard(
+                                        index = index,
+                                        currentCardIndex = uiState.currentIndex,
+                                        school = schoolPlusImages,
+                                        onSwipedLeft = { homeViewModel.onSwipeLeft(schoolPlusImages.id) },
+                                        onSwipedRight = { homeViewModel.onSwipeRight(schoolPlusImages) },
+                                        onMiddleClick = { homeViewModel.startSchoolProfileActivity(schoolPlusImages) }
+                                    )
+                                }
                             } else {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
@@ -79,6 +84,9 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                                     Text(text = "No More Institutions to show!", fontSize = 16.sp, textAlign = TextAlign.Center)
                                     FilledTonalButton(modifier = Modifier.padding(top = 12.dp), onClick = homeViewModel::refresh) {
                                         Text(text = "Refresh")
+                                    }
+                                    TextButton(onClick = homeViewModel::startFilterActivity) {
+                                        Text(text = "Filters")
                                     }
                                 }
                             }

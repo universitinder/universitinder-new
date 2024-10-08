@@ -35,12 +35,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.universitinder.app.models.SchoolPlusImages
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @Composable
 fun SwipeableCard(
+    index: Int,
+    currentCardIndex: Int,
     school: SchoolPlusImages,
     onSwipedLeft: () -> Unit,
     onSwipedRight: () -> Unit,
@@ -85,6 +88,7 @@ fun SwipeableCard(
                 )
             }
             .offset { IntOffset(swipeOffsetX.value.toInt(), 0) }
+            .zIndex(if (index == currentCardIndex) 1f else 0f)
             .background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.TopCenter
     ) {
