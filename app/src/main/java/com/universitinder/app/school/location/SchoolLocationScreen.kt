@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -62,7 +63,7 @@ fun SchoolLocationScreen(schoolLocationViewModel: SchoolLocationViewModel) {
         bottomBar = {
             BottomAppBar {
                 Button(
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier.padding(20.dp).fillMaxWidth(),
                     onClick = schoolLocationViewModel::saveLocation
                 ) {
                     Text(text = "Save Location")
