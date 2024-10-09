@@ -39,9 +39,6 @@ class AccountSetupViewModel(
     fun onNameChange(newVal: String) { _uiState.value = _uiState.value.copy(name = newVal) }
     fun onAddressChange(newVal: String) { _uiState.value = _uiState.value.copy(address = newVal) }
     fun onContactNumberChange(newVal: String) { _uiState.value = _uiState.value.copy(contactNumber = newVal) }
-    fun onTypeChange(newVal: String) { _uiState.value = _uiState.value.copy(type = UserType.valueOf(newVal), openTypeMenu = false) }
-    fun onTypeMenuExpand() { _uiState.value = _uiState.value.copy(openTypeMenu = true) }
-    fun onTypeMenuDismiss() { _uiState.value = _uiState.value.copy(openTypeMenu = false) }
 
     private fun fieldsNotFilled() : Boolean {
         return _uiState.value.email.isEmpty() || _uiState.value.email.isBlank() || _uiState.value.name.isEmpty() ||
@@ -69,7 +66,7 @@ class AccountSetupViewModel(
             val newUser = User(
                 email = _uiState.value.email,
                 name = _uiState.value.name,
-                type = _uiState.value.type,
+                type = UserType.STUDENT,
                 contactNumber = _uiState.value.contactNumber,
                 address = _uiState.value.address
             )

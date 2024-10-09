@@ -8,7 +8,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.universitinder.app.models.Filter
-import com.universitinder.app.models.School
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserType
 import kotlinx.coroutines.CompletableDeferred
@@ -52,7 +51,7 @@ class UserController {
         val response = CompletableDeferred<Boolean>(null)
         firestore.collection("users").document(user.email).set(user)
             .addOnSuccessListener {
-                createSchoolDocument(user.email)
+//                createSchoolDocument(user.email)
                 createFiltersDocument(user.email)
                 response.complete(true)
             }
@@ -67,12 +66,12 @@ class UserController {
             .addOnFailureListener {  }
     }
 
-    private fun createSchoolDocument(email: String) {
-        firestore.collection("users").document(email).collection("school").document("school")
-            .set(School())
-            .addOnSuccessListener {  }
-            .addOnFailureListener {  }
-    }
+//    private fun createSchoolDocument(email: String) {
+//        firestore.collection("users").document(email).collection("school").document("school")
+//            .set(School())
+//            .addOnSuccessListener {  }
+//            .addOnFailureListener {  }
+//    }
 
     suspend fun updateUser(user: User) : Boolean {
         val response = CompletableDeferred<Boolean>(null)
