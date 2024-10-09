@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
@@ -63,10 +65,20 @@ fun SchoolLocationScreen(schoolLocationViewModel: SchoolLocationViewModel) {
         bottomBar = {
             BottomAppBar {
                 Button(
-                    modifier = Modifier.padding(20.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth(),
                     onClick = schoolLocationViewModel::saveLocation
                 ) {
-                    Text(text = "Save Location")
+                    if (uiState.savingLoading) {
+                        CircularProgressIndicator(color = Color.White)
+                    } else {
+                        if (uiState.resultMessage.show) {
+                            Text(text = uiState.resultMessage.message)
+                        } else {
+                            Text(text = "Save Location")
+                        }
+                    }
                 }
             }
         }
