@@ -1,7 +1,6 @@
 package com.universitinder.app.profile.editAccount
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +12,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.universitinder.app.models.ResultMessageType
-import com.universitinder.app.models.UserType
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,8 +82,7 @@ fun EditAccountScreen(editAccountViewModel: EditAccountViewModel) {
                                 width = 0.5.dp, color = Color.Black, shape = CircleShape.copy(
                                     CornerSize(5.dp)
                                 )
-                            )
-                            .clickable { editAccountViewModel.onTypeMenuExpand() },
+                            ),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ){
@@ -96,22 +90,6 @@ fun EditAccountScreen(editAccountViewModel: EditAccountViewModel) {
                             modifier = Modifier.padding(vertical = 14.dp, horizontal = 18.dp),
                             text = uiState.type.toString()
                         )
-                        Icon(Icons.Filled.ArrowDropDown, contentDescription = "Dropdown Arrow")
-                    }
-                    DropdownMenu(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
-                        expanded = uiState.openTypeMenu,
-                        onDismissRequest = editAccountViewModel::onTypeMenuDismiss
-                    ) {
-                        UserType.entries.forEachIndexed { _, userType ->
-                            if (userType != UserType.UNKNOWN)
-                                DropdownMenuItem(
-                                    text = { Text(text = userType.toString()) },
-                                    onClick = { editAccountViewModel.onTypeChange(userType.toString()) }
-                                )
-                        }
                     }
                 }
                 OutlinedTextField(

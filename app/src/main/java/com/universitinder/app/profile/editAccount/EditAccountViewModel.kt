@@ -9,7 +9,6 @@ import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserState
-import com.universitinder.app.models.UserType
 import com.universitinder.app.preferences.PreferencesKey
 import com.universitinder.app.userDataStore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,20 +21,20 @@ class EditAccountViewModel(
     private val activityStarterHelper: ActivityStarterHelper,
     val popActivity: () -> Unit
 ): ViewModel() {
+    private val currentUser = UserState.currentUser
     private val _uiState = MutableStateFlow(EditAccountUiState())
     val uiState : StateFlow<EditAccountUiState> = _uiState.asStateFlow()
 
     init {
-        val currentUser = UserState.currentUser
         if (currentUser == null)  {
             popActivity()
         } else {
             _uiState.value = _uiState.value.copy(
                 email = currentUser.email,
                 name = currentUser.name,
+                type = currentUser.type,
                 address = currentUser.address,
                 contactNumber = currentUser.contactNumber,
-                type = currentUser.type
             )
         }
     }
@@ -44,9 +43,6 @@ class EditAccountViewModel(
     fun onNameChange(newVal: String) { _uiState.value = _uiState.value.copy(name = newVal) }
     fun onAddressChange(newVal: String) { _uiState.value = _uiState.value.copy(address = newVal) }
     fun onContactNumberChange(newVal: String) { _uiState.value = _uiState.value.copy(contactNumber = newVal) }
-    fun onTypeChange(newVal: String) { _uiState.value = _uiState.value.copy(type = UserType.valueOf(newVal), openTypeMenu = false) }
-    fun onTypeMenuExpand() { _uiState.value = _uiState.value.copy(openTypeMenu = true) }
-    fun onTypeMenuDismiss() { _uiState.value = _uiState.value.copy(openTypeMenu = false) }
 
     private fun fieldsNotFilled() : Boolean {
         return _uiState.value.email.isEmpty() || _uiState.value.email.isBlank() || _uiState.value.name.isEmpty() ||
@@ -69,23 +65,25 @@ class EditAccountViewModel(
             showMessage(ResultMessageType.FAILED, "Please fill in all the fields")
             return
         }
-        _uiState.value = _uiState.value.copy(createLoading = true)
-        viewModelScope.launch {
-            val newUser = User(
-                email = _uiState.value.email,
-                name = _uiState.value.name,
-                type = _uiState.value.type,
-                contactNumber = _uiState.value.contactNumber,
-                address = _uiState.value.address
-            )
-            val result = userController.updateUser(newUser)
-            _uiState.value = _uiState.value.copy(createLoading = false)
-            if (result) {
-                showMessage(ResultMessageType.SUCCESS, "Successfully updated account information")
-                persistUser(newUser)
-                popActivity()
-            } else {
-                showMessage(ResultMessageType.FAILED, "Account information update unsuccessful")
+        if (currentUser != null) {
+            _uiState.value = _uiState.value.copy(createLoading = true)
+            viewModelScope.launch {
+                val newUser = User(
+                    email = _uiState.value.email,
+                    name = _uiState.value.name,
+                    type = currentUser.type,
+                    contactNumber = _uiState.value.contactNumber,
+                    address = _uiState.value.address
+                )
+                val result = userController.updateUser(newUser)
+                _uiState.value = _uiState.value.copy(createLoading = false)
+                if (result) {
+                    showMessage(ResultMessageType.SUCCESS, "Successfully updated account information")
+                    persistUser(newUser)
+                    popActivity()
+                } else {
+                    showMessage(ResultMessageType.FAILED, "Account information update unsuccessful")
+                }
             }
         }
     }
