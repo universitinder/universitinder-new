@@ -45,7 +45,7 @@ class CreateFAQViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(createLoading = true) }
-                val result = faqController.createFAQ(email = school.email, faq = FAQ(question = _uiState.value.question, answer = _uiState.value.answer))
+                val result = faqController.createFAQ(schoolID = school.documentID, faq = FAQ(question = _uiState.value.question, answer = _uiState.value.answer))
                 withContext(Dispatchers.Main) {
                     if (result) {
                         _uiState.value = _uiState.value.copy(

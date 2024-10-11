@@ -63,7 +63,7 @@ class SchoolViewModel(
     fun deleteSchool() {
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = true) }
-            schoolController.deleteSchool(school.email)
+            schoolController.deleteSchool(school.documentID)
             withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = false, showDeleteDialog = false) }
             popActivity()
         }

@@ -67,8 +67,9 @@ class EditCourseViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(updateLoading = true) }
-                val result = courseController.createCourse(
-                    email = school.email,
+                val result = courseController.updateCourse(
+                    schoolID = school.documentID,
+                    documentID = documentID,
                     course = Course(
                         name = _uiState.value.name,
                         duration = COURSE_DURATION_STRING_TO_INT_MAP[_uiState.value.duration] ?: 0,
@@ -107,7 +108,7 @@ class EditCourseViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = true) }
-                val result = courseController.deleteCourse(email = school.email, documentID = documentID)
+                val result = courseController.deleteCourse(schoolID = school.documentID, documentID = documentID)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

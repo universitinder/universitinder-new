@@ -3,6 +3,7 @@ package com.universitinder.app.school.create
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
+import com.universitinder.app.md5
 import com.universitinder.app.models.MUNICIPALITIES_AND_CITIES
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
@@ -67,17 +68,18 @@ class CreateSchoolViewModel(
     }
 
     fun createSchool() {
-        if (fieldsNotFilled()) {
-            showMessage(ResultMessageType.SUCCESS, "Please fill in all required fields")
-            return
-        }
-        if (!validateFields()) return
+//        if (fieldsNotFilled()) {
+//            showMessage(ResultMessageType.SUCCESS, "Please fill in all required fields")
+//            return
+//        }
+//        if (!validateFields()) return
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
                 _uiState.value = _uiState.value.copy(createSchoolLoading = true)
             }
             viewModelScope.async {
                 val school = School(
+                    documentID = _uiState.value.name.md5(),
                     name = _uiState.value.name,
                     email = _uiState.value.email,
                     contactNumber = _uiState.value.contactNumber,
@@ -89,7 +91,7 @@ class CreateSchoolViewModel(
                     street = _uiState.value.street,
                     link = _uiState.value.link
                 )
-                val result = schoolController.updateSchool(_uiState.value.email, school)
+                val result = schoolController.createSchool(school)
                 if (result) {
                     showMessage(ResultMessageType.SUCCESS, "Successfully created School")
                 }

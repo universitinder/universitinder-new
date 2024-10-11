@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.universitinder.app.models.School
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchoolListScreen(schoolListViewModel: SchoolListViewModel) {
@@ -52,18 +51,27 @@ fun SchoolListScreen(schoolListViewModel: SchoolListViewModel) {
                 }
             }
             else -> {
-                LazyColumn(
-                    modifier = Modifier.padding(innerPadding)
-                ){
-                    itemsIndexed(uiState.schools) { index, it ->
-                        val schoolObject = it.toObject(School::class.java)
-                        if (schoolObject != null) {
-                            ListItem(
-                                modifier = Modifier.clickable { schoolListViewModel.startSchoolActivity(schoolObject) },
-                                leadingContent = { Text(text = "${index+1}") },
-                                headlineContent = { Text(text = schoolObject.name) },
-                                supportingContent = { Text(text = schoolObject.email) }
-                            )
+                when (uiState.schools.size) {
+                    0 -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(text = "No Available Schools")
+                        }
+                    }
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.padding(innerPadding)
+                        ){
+                            itemsIndexed(uiState.schools) { index, it ->
+                                val schoolObject = it.toObject(School::class.java)
+                                if (schoolObject != null) {
+                                    ListItem(
+                                        modifier = Modifier.clickable { schoolListViewModel.startSchoolActivity(schoolObject) },
+                                        leadingContent = { Text(text = "${index+1}") },
+                                        headlineContent = { Text(text = schoolObject.name) },
+                                        supportingContent = { Text(text = schoolObject.email) }
+                                    )
+                                }
+                            }
                         }
                     }
                 }

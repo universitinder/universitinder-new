@@ -29,7 +29,7 @@ class EditFAQViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
-                val faq = faqController.getFAQ(school.email, documentID = documentID)
+                val faq = faqController.getFAQ(school.documentID, documentID = documentID)
                 if (faq != null) {
                     _uiState.value = _uiState.value.copy(
                         fetchingLoading = false,
@@ -66,7 +66,7 @@ class EditFAQViewModel(
                     _uiState.value = _uiState.value.copy(updateLoading = true)
                 }
                 val result = faqController.updateFAQ(
-                    email = school.email,
+                    schoolID = school.documentID,
                     documentID = documentID,
                     faq = FAQ(question = _uiState.value.question, answer = _uiState.value.answer)
                 )
@@ -99,7 +99,7 @@ class EditFAQViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(deleteLoading = true) }
-                val result = faqController.deleteFAQ(email = school.email, documentID = documentID)
+                val result = faqController.deleteFAQ(schoolID = school.documentID, documentID = documentID)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

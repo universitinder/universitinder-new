@@ -32,7 +32,7 @@ class SchoolImagesViewModel(
             withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
             val currentUser = UserState.currentUser
             if (currentUser != null) {
-                val imagesMap = imageController.getImages(school.email)
+                val imagesMap = imageController.getImages(school.documentID)
                 onLogoPicked(imagesMap.logo)
                 onImagesPicked(imagesMap.images)
             }
@@ -47,7 +47,7 @@ class SchoolImagesViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(logoLoading = true) }
-                val result = imageController.uploadLogo(context = context, email = school.email, uri = _uiState.value.logo!!)
+                val result = imageController.uploadLogo(context = context, documentID = school.documentID, uri = _uiState.value.logo!!)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
@@ -82,7 +82,7 @@ class SchoolImagesViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(imagesLoading = true) }
-                val result = imageController.uploadImages(context = context, email = school.email, uris = _uiState.value.images)
+                val result = imageController.uploadImages(context = context, documentID = school.documentID, uris = _uiState.value.images)
                 if (result) {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

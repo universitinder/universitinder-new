@@ -35,7 +35,7 @@ class SchoolLocationViewModel(
             if (_uiState.value.location != null) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(savingLoading = true) }
                 val latLng = _uiState.value.location
-                val result = schoolController.updateSchoolLocation(school.email, LocationPoint(latitude = latLng?.latitude!!, longitude = latLng.longitude))
+                val result = schoolController.updateSchoolLocation(school.documentID, LocationPoint(latitude = latLng?.latitude!!, longitude = latLng.longitude))
                 withContext(Dispatchers.Main) {
                     if (result) {
                         _uiState.value = _uiState.value.copy(

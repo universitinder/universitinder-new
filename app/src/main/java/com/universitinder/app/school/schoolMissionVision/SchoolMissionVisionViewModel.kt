@@ -72,7 +72,7 @@ class SchoolMissionVisionViewModel(
                     vision = _uiState.value.vision,
                     coreValues = _uiState.value.coreValues,
                 )
-                val result = schoolController.updateSchoolMissionVision(school.email, schoolUpdate)
+                val result = schoolController.updateSchoolMissionVision(school.documentID, schoolUpdate)
                 if (result) {
                     showMessage(ResultMessageType.SUCCESS, "Successfully set institution information")
                 }

@@ -43,7 +43,7 @@ class SchoolCoursesViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
                 val courses = courseController.getCourses(email = school.email)
-                val durations = schoolController.getSchoolDurations(email = school.email)
+                val durations = schoolController.getSchoolDurations(documentID = school.documentID)
                 val courseDurationMapList = createCourseDurationMapList(durations)
                 withContext(Dispatchers.Main) {
                     _uiState.value = _uiState.value.copy(
@@ -63,16 +63,16 @@ class SchoolCoursesViewModel(
                     viewModelScope.launch(Dispatchers.IO) {
                         if (currentUser != null) {
                             if (title == "2 YEARS") {
-                                schoolController.updateSchool2YearCourse(school.email, !it.clicked)
+                                schoolController.updateSchool2YearCourse(school.documentID, !it.clicked)
                             }
                             if (title == "3 YEARS") {
-                                schoolController.updateSchool3YearCourse(school.email, !it.clicked)
+                                schoolController.updateSchool3YearCourse(school.documentID, !it.clicked)
                             }
                             if (title == "4 YEARS") {
-                                schoolController.updateSchool4YearCourse(school.email, !it.clicked)
+                                schoolController.updateSchool4YearCourse(school.documentID, !it.clicked)
                             }
                             if (title == "5 YEARS") {
-                                schoolController.updateSchool5YearCourse(school.email, !it.clicked)
+                                schoolController.updateSchool5YearCourse(school.documentID, !it.clicked)
                             }
                         }
                     }

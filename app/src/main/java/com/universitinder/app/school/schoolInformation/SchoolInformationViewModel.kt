@@ -138,7 +138,7 @@ class SchoolInformationViewModel(
                     street = _uiState.value.street,
                     link = _uiState.value.link
                 )
-                val result = schoolController.updateSchool(school.email, school)
+                val result = schoolController.updateSchool(school.documentID, school)
                 if (result) {
                     showMessage(ResultMessageType.SUCCESS, "Successfully set institution information")
                 }

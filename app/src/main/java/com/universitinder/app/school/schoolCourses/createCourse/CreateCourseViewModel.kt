@@ -53,7 +53,7 @@ class CreateCourseViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(createLoading = true) }
                 val result = courseController.createCourse(
-                    email = school.email,
+                    documentID = school.documentID,
                     course = Course(
                         name = _uiState.value.name,
                         duration = COURSE_DURATION_STRING_TO_INT_MAP[_uiState.value.duration] ?: 0,
