@@ -28,8 +28,16 @@ import com.universitinder.app.preferences.PreferencesKey
 import com.universitinder.app.ui.theme.UniversitinderTheme
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 val Context.userDataStore by preferencesDataStore(name = "user_preferences")
+
+@OptIn(ExperimentalStdlibApi::class)
+fun String.md5(): String {
+    val md = MessageDigest.getInstance("MD5")
+    val digest = md.digest(this.toByteArray())
+    return digest.toHexString()
+}
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
