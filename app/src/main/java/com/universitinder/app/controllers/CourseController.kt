@@ -63,13 +63,13 @@ class CourseController {
         return response.await()
     }
 
-    suspend fun createCourse(email: String, course: Course) : Boolean {
+    suspend fun createCourse(documentID: String, course: Course) : Boolean {
         val firstResponse = CompletableDeferred<Boolean>()
         val secondResponse = CompletableDeferred<Boolean>()
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val coursesRef = firestore.collection("schools").document(email).collection("courses")
+                val coursesRef = firestore.collection("schools").document(documentID).collection("courses")
                 coursesRef
                     .document()
                     .set(course)
@@ -77,7 +77,7 @@ class CourseController {
                     .addOnFailureListener { firstResponse.complete(false) }
             }
             launch(Dispatchers.IO) {
-                firestore.collection("schools").document(email)
+                firestore.collection("schools").document(documentID)
                     .update("courses", FieldValue.arrayUnion(course.name))
                     .addOnSuccessListener { secondResponse.complete(true) }
                     .addOnSuccessListener { secondResponse.complete(false) }
@@ -87,12 +87,12 @@ class CourseController {
         return firstResponse.await() && secondResponse.await()
     }
 
-    suspend fun updateCourse(email: String, documentID: String, course: Course) : Boolean {
+    suspend fun updateCourse(schoolID: String, documentID: String, course: Course) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val coursesRef = firestore.collection("schools").document(email).collection("courses")
+                val coursesRef = firestore.collection("schools").document(schoolID).collection("courses")
                 coursesRef
                     .document(documentID)
                     .update(
@@ -108,12 +108,12 @@ class CourseController {
         return response.await()
     }
 
-    suspend fun deleteCourse(email: String, documentID: String) : Boolean {
+    suspend fun deleteCourse(schoolID: String, documentID: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val coursesRef = firestore.collection("schools").document(email).collection("courses")
+                val coursesRef = firestore.collection("schools").document(schoolID).collection("courses")
                 coursesRef
                     .document(documentID)
                     .delete()

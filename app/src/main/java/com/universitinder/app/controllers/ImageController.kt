@@ -14,7 +14,7 @@ import kotlinx.coroutines.tasks.await
 class ImageController {
     private val storage = Firebase.storage
 
-    suspend fun getImages(email: String) : ImagesMap {
+    suspend fun getImages(documentID: String) : ImagesMap {
         val response = CompletableDeferred<ImagesMap>(null)
 
         coroutineScope {
@@ -22,7 +22,7 @@ class ImageController {
             val imagesMutableList = mutableListOf<Uri>()
             async {
                 val reference = storage.reference
-                val folderRef = reference.child("schools/$email")
+                val folderRef = reference.child("schools/$documentID")
                 val fileList = folderRef.listAll().await()
                 for (item in fileList.items) {
                     val uri = item.downloadUrl.await()
@@ -46,13 +46,13 @@ class ImageController {
         return response.await()
     }
 
-    suspend fun uploadLogo(context: Context, email: String, uri: Uri) : Boolean {
+    suspend fun uploadLogo(context: Context, documentID: String, uri: Uri) : Boolean {
         val response = CompletableDeferred<Boolean>(null)
 
         val reference = storage.reference
         val extension = getFileExtensionFromUri(context, uri)
         if (extension != null) {
-            val logoRef = reference.child("schools/$email/logo.$extension")
+            val logoRef = reference.child("schools/$documentID/logo.$extension")
             logoRef.putFile(uri)
                 .addOnSuccessListener { response.complete(true) }
                 .addOnFailureListener { response.complete(false) }
@@ -63,7 +63,7 @@ class ImageController {
         return response.await()
     }
 
-    suspend fun uploadImages(context: Context, email: String, uris: List<Uri>) : Boolean {
+    suspend fun uploadImages(context: Context, documentID: String, uris: List<Uri>) : Boolean {
         val response = CompletableDeferred<Boolean>(null)
         val results = listOf<Boolean>()
 
@@ -73,7 +73,7 @@ class ImageController {
                 uris.forEachIndexed{ index, uri ->
                     val extension = getFileExtensionFromUri(context, uri)
                     if (extension != null) {
-                        val logoRef = reference.child("schools/${email}/image-$index.$extension")
+                        val logoRef = reference.child("schools/${documentID}/image-$index.$extension")
                         logoRef.putFile(uri)
                             .addOnSuccessListener { results.plus(true) }
                             .addOnFailureListener { results.plus(false) }
