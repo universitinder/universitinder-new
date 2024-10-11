@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -46,7 +47,10 @@ fun SchoolFAQsScreen(schoolFAQsViewModel: SchoolFAQsViewModel) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = schoolFAQsViewModel::startAddFaqActivity) {
+            FloatingActionButton(
+                onClick = schoolFAQsViewModel::startAddFaqActivity,
+                shape = CircleShape
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
         }

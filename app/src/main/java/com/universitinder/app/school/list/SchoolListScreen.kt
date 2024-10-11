@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,7 +35,10 @@ fun SchoolListScreen(schoolListViewModel: SchoolListViewModel) {
             TopAppBar(title = { Text(text = "Schools") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { schoolListViewModel.startRegisterSchool() }) {
+            FloatingActionButton(
+                onClick = { schoolListViewModel.startRegisterSchool() },
+                shape = CircleShape
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add School")
             }
         }
