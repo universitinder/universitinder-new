@@ -11,6 +11,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class School (
+    val documentID: String = "",
     val name: String = "",
     val email: String = "",
     val contactNumber: String = "",
