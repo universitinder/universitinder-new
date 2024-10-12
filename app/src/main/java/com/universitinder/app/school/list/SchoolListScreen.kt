@@ -61,7 +61,12 @@ fun SchoolListScreen(schoolListViewModel: SchoolListViewModel) {
                         LazyColumn(
                             modifier = Modifier.padding(innerPadding)
                         ){
-                            itemsIndexed(uiState.schools) { index, it ->
+                            itemsIndexed(
+                                uiState.schools,
+                                key = { _, it ->
+                                    it.id
+                                }
+                            ) { index, it ->
                                 val schoolObject = it.toObject(School::class.java)
                                 if (schoolObject != null) {
                                     ListItem(
