@@ -105,4 +105,6 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.maps.android:maps-compose:2.5.3")
+
+    implementation("com.opencsv:opencsv:5.7.1")
 }
