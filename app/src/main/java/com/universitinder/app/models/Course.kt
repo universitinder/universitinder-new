@@ -12,3 +12,9 @@ class Course (
     val duration : Int = 0,
     val level : EducationLevel = EducationLevel.BACHELORS
 )
+
+class CourseBatchHelper (
+    val schoolID: String = "",
+    val courses: List<Course> = emptyList(),
+    val twoYearCourses: List<Course> = emptyList(),
+)

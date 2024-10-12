@@ -1,6 +1,5 @@
 package com.universitinder.app.controllers
 
-//import android.util.Log
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
@@ -12,6 +11,7 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.storage
 import com.universitinder.app.helpers.DistanceCalculator
+import com.universitinder.app.md5
 import com.universitinder.app.models.CourseDurations
 import com.universitinder.app.models.Filter
 import com.universitinder.app.models.LocationPoint
@@ -684,4 +684,86 @@ class SchoolController {
         return response.await()
     }
 
+    companion object {
+        fun createSchoolObjectFromRow(row: List<String>): School {
+            val nameOfSchool = row[0]
+            val email = row[1]
+            val link = row[2]
+            val city = row[3]
+            val barangay = row[4]
+            val street = row[5]
+            val minimum = if (row[6].isEmpty() || row[6].isBlank() || row[6] == "Free") {
+                0
+            } else {
+                row[6].toInt()
+            }
+            val maximum = if (row[7].isEmpty() || row[7].isBlank() || row[7] == "Free") {
+                0
+            } else {
+                row[7].toInt()
+            }
+            val courses = row[8].split(",")
+            val twoYearCourses = row[9].split(",")
+            val mission = row[10]
+            val vision = row[11]
+            val coreValues = row[12]
+
+            return School(
+                documentID = nameOfSchool.md5(),
+                name = nameOfSchool,
+                email = email,
+                link = link,
+                province = "Pampanga",
+                municipalityOrCity = city,
+                barangay = barangay,
+                street = street,
+                minimum = minimum,
+                maximum = maximum,
+                affordability = determineAffordability(maximum),
+                courses = courses + twoYearCourses,
+                has2YearCourse = twoYearCourses.isNotEmpty(),
+                has4YearCourse = courses.isNotEmpty(),
+                mission = mission,
+                vision = vision,
+                coreValues = coreValues
+            )
+        }
+        private fun determineAffordability(maxVal: Int) : Int {
+            if (maxVal == 0) return 0
+            else if (maxVal <= 10000) return 1
+            else if (maxVal <= 50000) return 2
+            return 3
+        }
+    }
+
+    suspend fun seedDatabase(schools: List<School>) : Boolean {
+        val firestore = Firebase.firestore
+        val batchRef = firestore.batch()
+        val response = CompletableDeferred<Boolean>()
+        Log.w("MAIN ACTIVITY SCHOOLS", schools.toString())
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                try {
+                    async {
+                        val collectionRef = firestore.collection("schools")
+                        for (school in schools) {
+                            val documentRef = collectionRef.document(school.documentID)
+                            batchRef.set(documentRef, school)
+                        }
+                    }.await()
+                    async {
+                        batchRef.commit().await()
+                        Log.w("MAIN ACTIVITY", "COMMITTED SCHOOL BATCH")
+                        response.complete(true)
+                    }.await()
+                } catch (e: FirebaseFirestoreException) {
+                    Log.w("MAIN ACTIVITY EXCEPTION", e.localizedMessage!!)
+                    response.complete(false)
+                }
+            }
+        }
+
+        return response.await()
+    }
 }

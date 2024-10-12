@@ -1,15 +1,21 @@
 package com.universitinder.app.controllers
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObjects
 import com.universitinder.app.models.Course
+import com.universitinder.app.models.CourseBatchHelper
+import com.universitinder.app.models.EducationLevel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class CourseController {
     private val firestore = Firebase.firestore
@@ -125,4 +131,57 @@ class CourseController {
         return response.await()
     }
 
+    suspend fun createCourseInBatch(courseBatches: List<CourseBatchHelper>) : Boolean {
+        val batch = firestore.batch()
+        val response = CompletableDeferred<Boolean>()
+        Log.w("MAIN ACTIVITY COURSE", courseBatches.toString())
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                try {
+                    async {
+                        for (courseBatchHelper in courseBatches) {
+                            val collectionRef = firestore.collection("schools").document(courseBatchHelper.schoolID).collection("courses")
+                            for (course in courseBatchHelper.courses) {
+                                val courseRef = collectionRef.document()
+                                batch.set(courseRef, course)
+                            }
+                            for (course in courseBatchHelper.twoYearCourses) {
+                                val courseRef = collectionRef.document()
+                                batch.set(courseRef, course)
+                            }
+                        }
+                    }.await()
+                    async {
+                        batch.commit().await()
+                        Log.w("MAIN ACTIVITY", "COMMITTED COURSE BATCH")
+                        response.complete(true)
+                    }.await()
+                } catch (e: FirebaseFirestoreException) {
+                    Log.w("MAIN ACTIVITY EXCEPTION", e.localizedMessage!!)
+                    response.complete(false)
+                }
+            }
+        }
+
+        return response.await()
+    }
+
+    companion object {
+        fun createFourYearCourse(name: String) : Course {
+            return Course(
+                name = name,
+                duration = 4,
+                level = EducationLevel.BACHELORS
+            )
+        }
+
+        fun createTwoYearCourse(name: String) : Course {
+            return Course(
+                name = name,
+                duration = 2,
+                level = EducationLevel.VOCATIONAL
+            )
+        }
+    }
 }

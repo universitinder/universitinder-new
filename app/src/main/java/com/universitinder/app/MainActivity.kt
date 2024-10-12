@@ -39,8 +39,62 @@ fun String.md5(): String {
     return digest.toHexString()
 }
 
+//private data class PopulateSchoolCourse (
+//    val schools: List<School> = emptyList(),
+//    val courses: List<CourseBatchHelper> = emptyList(),
+//)
+
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+
+//    DO NOT TOUCH -- ONLY FOR POPULATING SCHOOL COLLECTION
+//    private suspend fun populateSchoolList(reader: CSVReader) : PopulateSchoolCourse {
+//        val schoolList = mutableListOf<School>()
+//        val courseList = mutableListOf<CourseBatchHelper>()
+//        var nextLine: Array<String>?
+//
+//        while (reader.readNext().also { nextLine = it } != null) {
+//            val row = nextLine!!.toList()
+//            val fourYearCourses = row[8].split(",").map { CourseController.createFourYearCourse(it) }
+//            val twoYearCourses = row[9].split(",").map { CourseController.createTwoYearCourse(it) }
+//            val school = SchoolController.createSchoolObjectFromRow(row)
+//            Log.w("MAIN ACTIVITY", school.toString())
+//            schoolList.add(school)
+//            courseList.add(CourseBatchHelper(school.documentID, fourYearCourses, twoYearCourses))
+//        }
+//
+//        Log.w("MAIN ACTIVITY", schoolList.toList().toString())
+//        Log.w("MAIN ACTIVITY", courseList.toList().toString())
+//
+//        return PopulateSchoolCourse(schoolList, courseList)
+//    }
+//
+//    private suspend fun seedSchoolCollection() {
+//        val assetsManager = this.assets
+//        val filename = "schools.csv"
+//
+//        lifecycleScope.launch {
+//            try {
+//                val inputStream = assetsManager.open(filename)
+//                val reader = CSVReader(InputStreamReader(inputStream))
+//                reader.readNext()
+//
+//                val populateSchoolsCourses = populateSchoolList(reader)
+//
+//                if (populateSchoolsCourses.schools.isNotEmpty()) {
+//                    val result = SchoolController().seedDatabase(populateSchoolsCourses.schools.toList())
+//                    Log.w("MAIN ACTIVITY", result.toString())
+//                }
+//
+//                if (populateSchoolsCourses.courses.isNotEmpty()) {
+//                    val resultTwo =CourseController().createCourseInBatch(populateSchoolsCourses.courses.toList())
+//                    Log.w("MAIN ACTIVITY", resultTwo.toString())
+//                }
+//            } catch (e: IOException) {
+//                Log.w("MAIN ACTIVITY EXCEPTION", e.localizedMessage!!)
+//            }
+//        }
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -71,6 +125,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
 
+//        DO NOT UNCOMMENT UNLESS POPULATING SCHOOL COLLECTION
+//        lifecycleScope.launch { seedSchoolCollection() }
         lifecycleScope.launch { getUser() }
 
         setContent {
