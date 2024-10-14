@@ -7,6 +7,7 @@ import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.matched.MatchedActivity
+import com.universitinder.app.md5
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import kotlinx.coroutines.Dispatchers
@@ -42,10 +43,24 @@ class MatchesViewModel(
         }
     }
 
+    fun removeMatch(school: String) {
+        if (currentUser != null) {
+            viewModelScope.launch {
+                withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true)}
+                val removed = userController.removeMatchedSchool(currentUser, school)
+                withContext(Dispatchers.Main) {
+                    _uiState.value = _uiState.value.copy(fetchingLoading = false)
+                    if (removed)
+                        _uiState.value = _uiState.value.copy(matches = _uiState.value.matches.filter { it != school })
+                }
+            }
+        }
+    }
+
     fun startMatchedSchool(school: String) {
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(matchClickLoading = true) }
-            val schoolPlusImage = schoolController.getSchoolPlusImageByName(school)
+            val schoolPlusImage = schoolController.getSchoolPlusImageByName(school.md5())
             if (schoolPlusImage == null) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(matchClickLoading = false) }
                 return@launch

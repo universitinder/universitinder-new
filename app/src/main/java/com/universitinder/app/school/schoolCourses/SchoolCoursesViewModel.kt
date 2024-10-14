@@ -42,7 +42,7 @@ class SchoolCoursesViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
-                val courses = courseController.getCourses(email = school.email)
+                val courses = courseController.getCourses(documentID = school.documentID)
                 val durations = schoolController.getSchoolDurations(documentID = school.documentID)
                 val courseDurationMapList = createCourseDurationMapList(durations)
                 withContext(Dispatchers.Main) {

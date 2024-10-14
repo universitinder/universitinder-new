@@ -30,7 +30,7 @@ class EditCourseViewModel(
     init {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
-                val course = courseController.getCourse(email = school.email, documentID = documentID)
+                val course = courseController.getCourse(schoolID = school.documentID, documentID = documentID)
                 if (course != null) {
                     onNameChange(course.name)
                     onDurationChange(course.duration.toString())

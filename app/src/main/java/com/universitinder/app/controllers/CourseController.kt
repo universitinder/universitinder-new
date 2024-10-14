@@ -37,12 +37,12 @@ class CourseController {
         return response.await()
     }
 
-    suspend fun getCourse(email: String, documentID: String) : Course? {
+    suspend fun getCourse(schoolID: String, documentID: String) : Course? {
         val response = CompletableDeferred<Course?>()
 
         coroutineScope {
             launch (Dispatchers.IO) {
-                val coursesRef = firestore.collection("schools").document(email).collection("courses")
+                val coursesRef = firestore.collection("schools").document(schoolID).collection("courses")
                 coursesRef
                     .document(documentID)
                     .get()
@@ -54,12 +54,12 @@ class CourseController {
         return response.await()
     }
 
-    suspend fun getCourses(email: String) : List<DocumentSnapshot> {
+    suspend fun getCourses(documentID: String) : List<DocumentSnapshot> {
         val response = CompletableDeferred<List<DocumentSnapshot>>()
 
         coroutineScope {
             launch (Dispatchers.IO) {
-                val coursesRef = firestore.collection("schools").document(email).collection("courses")
+                val coursesRef = firestore.collection("schools").document(documentID).collection("courses")
                 coursesRef.get()
                     .addOnSuccessListener { response.complete(it.documents) }
                     .addOnFailureListener { response.complete(listOf()) }

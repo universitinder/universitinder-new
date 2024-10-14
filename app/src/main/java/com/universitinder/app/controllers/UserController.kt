@@ -90,7 +90,6 @@ class UserController {
     suspend fun addMatchedSchool(user: User, schoolName: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-//        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
         firestore.collection("users").document(user.email)
             .set(mapOf("matched" to FieldValue.arrayUnion(schoolName)), SetOptions.merge())
             .addOnSuccessListener { response.complete(true) }
@@ -102,7 +101,6 @@ class UserController {
     suspend fun removeMatchedSchool(user: User, schoolName: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 
-//        val schoolRef = firestore.collection("users").document(id).collection("school").document("school")
         firestore.collection("users").document(user.email)
             .update("matched", FieldValue.arrayRemove(schoolName))
             .addOnSuccessListener { response.complete(true) }

@@ -18,8 +18,11 @@ class MatchedViewModel(
     val uiState : StateFlow<MatchedUiState> = _uiState.asStateFlow()
 
     init {
-        val logo = school.images.first { it.lastPathSegment!!.split("/")[3].contains("logo") }
-        _uiState.value = _uiState.value.copy(schoolPlusImages = school, logo = logo)
+        if (school.images.isNotEmpty()) {
+            val logo = school.images.first { it.lastPathSegment!!.split("/")[3].contains("logo") }
+            _uiState.value = _uiState.value.copy(logo = logo)
+        }
+        _uiState.value = _uiState.value.copy(schoolPlusImages = school)
     }
 
     fun onTabChange(newVal: Int) { _uiState.value = _uiState.value.copy(activeTab = newVal) }

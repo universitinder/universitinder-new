@@ -113,35 +113,33 @@ class SchoolController {
 //        return school.await()
 //    }
 
-    suspend fun getSchoolPlusImageByName(name: String) : SchoolPlusImages? {
+    suspend fun getSchoolPlusImageByName(documentID: String) : SchoolPlusImages? {
         val school = CompletableDeferred<SchoolPlusImages?>()
-        val filteredSchools = CompletableDeferred<List<DocumentSnapshot>>()
+        val filteredSchools = CompletableDeferred<DocumentSnapshot?>()
 
         coroutineScope {
             launch(Dispatchers.IO) {
                 async {
                     firestore.collection("schools")
-                        .whereEqualTo("name", name)
-                        .limit(1)
+                        .document(documentID)
                         .get()
-                        .addOnSuccessListener { objects -> filteredSchools.complete(objects.documents) }
-                        .addOnFailureListener { filteredSchools.complete(emptyList()) }
+                        .addOnSuccessListener { document -> filteredSchools.complete(document) }
+                        .addOnFailureListener { filteredSchools.complete(null) }
                 }.await()
                 async {
                     val filtered = filteredSchools.await()
-                    if (filtered.isEmpty()) {
+                    if (filtered == null) {
                         school.complete(null)
                         return@async
                     }
-                    val first = filtered.first()
-                    val id = first.reference.id
+                    val id = filtered.reference.id
                     val storageRef = storage.reference
                     val listOfItems = storageRef.child("schools/${id}").listAll().await()
                     val uris = listOfItems.items.map {
                         val downloadURL = it.downloadUrl.await()
                         downloadURL
                     }
-                    school.complete(SchoolPlusImages(id = id, school = first.toObject(School::class.java), images = uris))
+                    school.complete(SchoolPlusImages(id = id, school = filtered.toObject(School::class.java), images = uris))
                 }.await()
             }
         }
