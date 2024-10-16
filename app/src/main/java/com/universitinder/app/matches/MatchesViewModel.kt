@@ -60,7 +60,7 @@ class MatchesViewModel(
     fun startMatchedSchool(school: String) {
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(matchClickLoading = true) }
-            val schoolPlusImage = schoolController.getSchoolPlusImageByName(school.md5())
+            val schoolPlusImage = schoolController.getSchoolPlusImageByDocumentID(school.md5())
             if (schoolPlusImage == null) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(matchClickLoading = false) }
                 return@launch

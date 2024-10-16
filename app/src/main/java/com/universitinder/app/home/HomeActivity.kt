@@ -4,17 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.universitinder.app.accountSetup.AccountSetupActivity
-//import com.universitinder.app.controllers.CourseController
 import com.universitinder.app.controllers.FilterController
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
-//import com.universitinder.app.filters.FiltersViewModel
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.login.LoginActivity
 import com.universitinder.app.matches.MatchesViewModel
@@ -22,9 +25,7 @@ import com.universitinder.app.models.UserState
 import com.universitinder.app.navigation.NavigationScreen
 import com.universitinder.app.navigation.NavigationViewModel
 import com.universitinder.app.profile.ProfileViewModel
-//import com.universitinder.app.school.SchoolViewModel
 import com.universitinder.app.school.list.SchoolListViewModel
-//import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationViewModel
 import com.universitinder.app.ui.theme.UniversitinderTheme
 import com.universitinder.app.userDataStore
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ class HomeActivity : AppCompatActivity() {
 
         if (auth.currentUser != null){
             val currentUser = UserState.currentUser
-            if (currentUser == null) {
+            if (currentUser == null || UserState.userIsEmpty()) {
                 val intent = Intent(this@HomeActivity, AccountSetupActivity::class.java)
                 startActivity(intent)
             }
@@ -65,37 +66,40 @@ class HomeActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
-        val schoolController = SchoolController()
-        val filterController = FilterController()
-//        val courseController = CourseController()
-        val userController = UserController()
-        val activityStarterHelper = ActivityStarterHelper(this)
-        homeViewModel = HomeViewModel(
-            application = application,
-            schoolController = schoolController,
-            filterController = filterController,
-            activityStarterHelper = activityStarterHelper,
-            userController = userController
-        )
-//        val schoolInformationNavigationViewModel = SchoolInformationNavigationViewModel(activityStarterHelper = activityStarterHelper, popActivity = this::finish)
-//        val schoolViewModel = SchoolViewModel(documentId = "", schoolController = schoolController, activityStarterHelper = activityStarterHelper, popActivity = this::finish)
-//        val filtersViewModel = FiltersViewModel(filterController = filterController, courseController = courseController, popActivity = this::finish)
-        val matchesViewModel = MatchesViewModel(userController = userController, schoolController = schoolController, activityStarterHelper = activityStarterHelper)
-        schoolListViewModel = SchoolListViewModel(schoolController = schoolController, activityStarterHelper = activityStarterHelper)
-        profileViewModel = ProfileViewModel(auth = auth, userController = userController, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
-        navigationViewModel = NavigationViewModel(
-//            schoolInformationNavigationViewModel = schoolInformationNavigationViewModel,
-//            schoolViewModel = schoolViewModel,
-            homeViewModel = homeViewModel,
-            profileViewModel = profileViewModel,
-//            filtersViewModel = filtersViewModel,
-            matchesViewModel = matchesViewModel,
-            schoolListViewModel = schoolListViewModel
-        )
+        if (auth.currentUser != null && !UserState.userIsEmpty()) {
+            val schoolController = SchoolController()
+            val filterController = FilterController()
+            val userController = UserController()
+            val activityStarterHelper = ActivityStarterHelper(this)
+            homeViewModel = HomeViewModel(
+                application = application,
+                schoolController = schoolController,
+                filterController = filterController,
+                activityStarterHelper = activityStarterHelper,
+                userController = userController
+            )
+            val matchesViewModel = MatchesViewModel(userController = userController, schoolController = schoolController, activityStarterHelper = activityStarterHelper)
+            schoolListViewModel = SchoolListViewModel(schoolController = schoolController, activityStarterHelper = activityStarterHelper)
+            profileViewModel = ProfileViewModel(auth = auth, userController = userController, activityStarterHelper = activityStarterHelper, clearUser = this::clearUser)
+            navigationViewModel = NavigationViewModel(
+                homeViewModel = homeViewModel,
+                profileViewModel = profileViewModel,
+                matchesViewModel = matchesViewModel,
+                schoolListViewModel = schoolListViewModel
+            )
 
-        setContent {
-            UniversitinderTheme {
-                NavigationScreen(navigationViewModel = navigationViewModel)
+            setContent {
+                UniversitinderTheme {
+                    NavigationScreen(navigationViewModel = navigationViewModel)
+                }
+            }
+        } else {
+            setContent {
+                UniversitinderTheme {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
     }

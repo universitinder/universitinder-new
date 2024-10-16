@@ -113,7 +113,7 @@ class SchoolController {
 //        return school.await()
 //    }
 
-    suspend fun getSchoolPlusImageByName(documentID: String) : SchoolPlusImages? {
+    suspend fun getSchoolPlusImageByDocumentID(documentID: String) : SchoolPlusImages? {
         val school = CompletableDeferred<SchoolPlusImages?>()
         val filteredSchools = CompletableDeferred<DocumentSnapshot?>()
 

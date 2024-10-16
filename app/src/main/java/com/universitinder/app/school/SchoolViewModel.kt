@@ -39,7 +39,7 @@ class SchoolViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
-                val schoolPlusImages = schoolController.getSchoolPlusImageByName(school.name)
+                val schoolPlusImages = schoolController.getSchoolPlusImageByDocumentID(school.documentID)
                 if (schoolPlusImages == null) {
                     withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = false) }
                     return@launch

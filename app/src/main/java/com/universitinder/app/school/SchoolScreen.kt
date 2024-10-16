@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -109,7 +110,8 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                     Image(
                                         modifier = Modifier.fillMaxSize(),
                                         painter = rememberAsyncImagePainter(model = uiState.logo),
-                                        contentDescription = "Logo"
+                                        contentDescription = "Logo",
+                                        contentScale = ContentScale.FillWidth
                                     )
                                 }
                                 Text(

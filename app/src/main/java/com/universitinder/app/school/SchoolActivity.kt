@@ -10,6 +10,13 @@ import com.universitinder.app.models.School
 import com.universitinder.app.ui.theme.UniversitinderTheme
 
 class SchoolActivity : AppCompatActivity() {
+    private lateinit var schoolViewModel: SchoolViewModel
+
+    override fun onResume() {
+        super.onResume()
+        schoolViewModel.refresh()
+    }
+
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +31,7 @@ class SchoolActivity : AppCompatActivity() {
 
         val schoolController = SchoolController()
         val activityStarterHelper = ActivityStarterHelper(this)
-        val schoolViewModel = SchoolViewModel(
+        schoolViewModel = SchoolViewModel(
             school = school!!,
             schoolController = schoolController,
             activityStarterHelper = activityStarterHelper,

@@ -2,22 +2,25 @@ package com.universitinder.app.school.schoolImages
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -30,15 +33,20 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImagePainter
 import com.universitinder.app.models.ResultMessageType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,11 +56,11 @@ fun SchoolImagesScreen(schoolImagesViewModel: SchoolImagesViewModel) {
     val uiState by schoolImagesViewModel.uiState.collectAsState()
 
     val pickLogo = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) schoolImagesViewModel.onLogoPicked(uri)
+        if (uri != null) schoolImagesViewModel.saveLogo(context, uri)
     }
 
     val pickImages = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()) { uris ->
-        schoolImagesViewModel.onImagesPicked(uris)
+        if (uris.isNotEmpty()) schoolImagesViewModel.saveImages(context, uris)
     }
 
     Scaffold (
@@ -65,7 +73,7 @@ fun SchoolImagesScreen(schoolImagesViewModel: SchoolImagesViewModel) {
                 },
                 title = { Text(text = "Images") }
             )
-        }
+        },
     ){ innerPadding ->
         when (uiState.fetchingLoading) {
             true -> {
@@ -82,23 +90,52 @@ fun SchoolImagesScreen(schoolImagesViewModel: SchoolImagesViewModel) {
                     columns = GridCells.Fixed(3)
                 ){
                     item (span = { GridItemSpan(3) }){
-                        Box(
-                            modifier = Modifier
-                                .widthIn(max = 200.dp)
-                                .aspectRatio(ratio = (10 / 10).toFloat())
-                                .background(MaterialTheme.colorScheme.primaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (uiState.logo != null)
-                                Image(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(ratio = (10 / 10).toFloat()),
-                                    painter = rememberAsyncImagePainter(uiState.logo),
-                                    contentDescription = "Logo"
-                                )
-                            else
-                                Text(text = "No Logo")
+                        var loading by remember { mutableStateOf(false) }
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ){
+                            Box(
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .border(
+                                        3.dp,
+                                        MaterialTheme.colorScheme.secondaryContainer,
+                                        CircleShape
+                                    )
+                                    .aspectRatio(ratio = (2 / 2).toFloat())
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                                ,
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (uiState.logo != null)
+                                    AsyncImage(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight(),
+                                        model = uiState.logo!!.uri,
+                                        contentDescription = uiState.logo!!.name,
+                                        contentScale = ContentScale.FillWidth,
+                                        onState = {
+                                            loading = when(it) {
+                                                is AsyncImagePainter.State.Loading -> {
+                                                    true
+                                                }
+
+                                                else -> {
+                                                    false
+                                                }
+                                            }
+                                        }
+                                    )
+                                else
+                                    Text(text = "No Logo")
+                                if (loading) {
+                                    CircularProgressIndicator()
+                                }
+                            }
                         }
                     }
                     item (span = { GridItemSpan(3) }) {
@@ -118,14 +155,48 @@ fun SchoolImagesScreen(schoolImagesViewModel: SchoolImagesViewModel) {
                                 )
                         }
                     }
-                    items(uiState.images) { uri ->
-                        AsyncImage(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                            model = uri,
-                            contentDescription = "Images"
-                        )
+                    items(uiState.images) { imageMetaData ->
+                        var showDeleteIcon by remember { mutableStateOf(false) }
+                        var loading by remember { mutableStateOf(false) }
+
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
+                            AsyncImage(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .clickable { showDeleteIcon = !showDeleteIcon },
+                                model = imageMetaData.uri,
+                                contentDescription = imageMetaData.name,
+                                contentScale = ContentScale.FillWidth,
+                                onState = {
+                                    loading = when(it) {
+                                        is AsyncImagePainter.State.Loading -> {
+                                            true
+                                        }
+
+                                        else -> {
+                                            false
+                                        }
+                                    }
+                                }
+                            )
+                            if (loading) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                            if (showDeleteIcon) {
+                                Icon(
+                                    Icons.Filled.Clear,
+                                    contentDescription = "Clear",
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White)
+                                        .clickable { schoolImagesViewModel.removeImage(imageMetaData.name) }
+                                )
+                            }
+                        }
                     }
                     item (span = { GridItemSpan(3) }) {
                         if (uiState.imagesResultMessage.show)
@@ -139,17 +210,7 @@ fun SchoolImagesScreen(schoolImagesViewModel: SchoolImagesViewModel) {
                             if (uiState.imagesLoading)
                                 CircularProgressIndicator()
                             else
-                                Text(text = if (uiState.images.isEmpty()) "Select Images" else "Change Images")
-                        }
-                    }
-                    item(span = { GridItemSpan(3) }){
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 30.dp),
-                            onClick = { schoolImagesViewModel.save(context) }
-                        ) {
-                            Text(text = "Save")
+                                Text(text = if (uiState.images.isEmpty()) "Select Images" else "Add Images")
                         }
                     }
                 }
