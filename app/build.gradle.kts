@@ -10,9 +10,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile =
-                file("/Users/francisjamestolentino/Desktop/Business/Universitinder/new-keystore.jks")
-            storePassword = "universitinder2024"
-            keyAlias = "key0"
+                file("/Users/francisjamestolentino/Desktop/Business/Universitinder/final-keystore.jks")
+            storePassword = "francisjames11"
+            keyAlias = "universitinder"
             keyPassword = "universitinder2024"
         }
     }
@@ -40,6 +40,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

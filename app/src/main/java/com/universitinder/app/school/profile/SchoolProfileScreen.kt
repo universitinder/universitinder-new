@@ -20,22 +20,28 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.universitinder.app.components.AffordabilityIndicator
+import com.universitinder.app.helpers.CurrencyFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SchoolProfileScreen(schoolProfileViewModel: SchoolProfileViewModel) {
-    val school = schoolProfileViewModel.school.school!!
-//    val images = schoolProfileViewModel.school.images
+    val uiState by schoolProfileViewModel.uiState.collectAsState()
 
     Scaffold (
         topBar = {
@@ -70,10 +76,13 @@ fun SchoolProfileScreen(schoolProfileViewModel: SchoolProfileViewModel) {
                     ){
                         Box(modifier = Modifier
                             .clip(CircleShape)
-                            .background(Color.Gray)
-                            .size(100.dp)) {
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .size(100.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AsyncImage(model = uiState.logo, contentDescription = "Logo", contentScale = ContentScale.FillWidth, modifier = Modifier.fillMaxWidth())
                         }
-                        Text(text = school.name, modifier = Modifier.padding(top = 10.dp))
+                        Text(text = uiState.school.name, modifier = Modifier.padding(top = 10.dp))
                     }
                     OutlinedCard(
                         border = BorderStroke(0.2.dp, Color.Black),
@@ -87,11 +96,11 @@ fun SchoolProfileScreen(schoolProfileViewModel: SchoolProfileViewModel) {
                         ListItem(
                             modifier = Modifier.background(Color.White),
                             leadingContent = { Icon(Icons.Filled.Email, "Email") },
-                            headlineContent = { Text(text = school.email) }
+                            headlineContent = { Text(text = uiState.school.email) }
                         )
                         ListItem(
                             leadingContent = { Icon(Icons.Filled.Phone, "Email") },
-                            headlineContent = { Text(text = school.contactNumber) }
+                            headlineContent = { Text(text = uiState.school.contactNumber) }
                         )
                     }
                 }
@@ -99,63 +108,63 @@ fun SchoolProfileScreen(schoolProfileViewModel: SchoolProfileViewModel) {
             item {
                 ListItem(
                     overlineContent = { Text(text = "Province") },
-                    headlineContent = { Text(text = school.province) }
+                    headlineContent = { Text(text = uiState.school.province) }
                 )
             }
             item {
                 ListItem(
                     overlineContent = { Text(text = "Municipality/City") },
-                    headlineContent = { Text(text = school.municipalityOrCity) }
+                    headlineContent = { Text(text = uiState.school.municipalityOrCity) }
                 )
             }
             item {
                 ListItem(
                     overlineContent = { Text(text = "Barangay") },
-                    headlineContent = { Text(text = school.barangay) }
+                    headlineContent = { Text(text = uiState.school.barangay) }
                 )
             }
             item {
                 ListItem(
                     overlineContent = { Text(text = "Street") },
-                    headlineContent = { Text(text = school.street) }
+                    headlineContent = { Text(text = uiState.school.street) }
                 )
             }
             item {
                 ListItem(
                     modifier = Modifier.padding(top = 20.dp),
                     overlineContent = { Text(text = "Minimum") },
-                    headlineContent = { Text(text = school.minimum.toString()) }
+                    headlineContent = { Text(text = CurrencyFormatter.format(uiState.school.minimum.toDouble())) }
                 )
             }
             item {
                 ListItem(
                     overlineContent = { Text(text = "Maximum") },
-                    headlineContent = { Text(text = school.maximum.toString()) }
+                    headlineContent = { Text(text = CurrencyFormatter.format(uiState.school.maximum.toDouble())) }
                 )
             }
             item {
                 ListItem(
                     overlineContent = { Text(text = "Affordability") },
-                    headlineContent = { Text(text = school.affordability.toString()) }
+                    headlineContent = { AffordabilityIndicator(affordability = uiState.school.affordability) }
                 )
             }
             item {
                 ListItem(
                     modifier = Modifier.padding(top = 20.dp),
                     overlineContent = { Text(text = "Mission") },
-                    headlineContent = { Text(text = school.mission) }
+                    headlineContent = { Text(text = uiState.school.mission) }
                 )
             }
             item {
                 ListItem(
                     overlineContent = { Text(text = "Vision") },
-                    headlineContent = { Text(text = school.vision) }
+                    headlineContent = { Text(text = uiState.school.vision) }
                 )
             }
             item {
                 ListItem(
                     overlineContent = { Text(text = "Core Values") },
-                    headlineContent = { Text(text = school.coreValues) }
+                    headlineContent = { Text(text = uiState.school.coreValues) }
                 )
             }
         }

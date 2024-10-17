@@ -50,6 +50,7 @@ import com.universitinder.app.components.AffordabilityIndicator
 import com.universitinder.app.components.SchoolBasicInfo
 import com.universitinder.app.components.SchoolPhotos
 import com.universitinder.app.components.dialogs.ConfirmDeleteSchoolDialog
+import com.universitinder.app.helpers.CurrencyFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -215,8 +216,8 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Municipality/City", value = school!!.municipalityOrCity) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Barangay", value = school!!.barangay) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Street", value = school!!.street) }
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Minimum", value =  school!!.minimum.toString()) }
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Maximum", value =  school!!.maximum.toString()) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Minimum", value =  CurrencyFormatter.format(school!!.minimum.toDouble())) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Maximum", value =  CurrencyFormatter.format(school!!.maximum.toDouble())) }
                                 item(span = { GridItemSpan(3) }) { AffordabilityIndicator(affordability = school!!.affordability) }
                             }
                             1 -> {
