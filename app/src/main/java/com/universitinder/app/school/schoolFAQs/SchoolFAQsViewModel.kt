@@ -35,7 +35,7 @@ class SchoolFAQsViewModel(
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
-                val faqs = faqController.getFAQs(school.email)
+                val faqs = faqController.getFAQs(school.documentID)
                 onFaqsChange(faqs)
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = false) }
             }

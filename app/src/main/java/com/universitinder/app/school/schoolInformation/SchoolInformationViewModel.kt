@@ -123,7 +123,8 @@ class SchoolInformationViewModel(
                 _uiState.value = _uiState.value.copy(createSchoolLoading = true)
             }
             viewModelScope.async {
-                val school = School(
+                val createdSchool = School(
+                    documentID = school.documentID,
                     name = _uiState.value.name,
                     email = _uiState.value.email,
                     contactNumber = _uiState.value.contactNumber,
@@ -138,7 +139,7 @@ class SchoolInformationViewModel(
                     street = _uiState.value.street,
                     link = _uiState.value.link
                 )
-                val result = schoolController.updateSchool(school.documentID, school)
+                val result = schoolController.updateSchool(school.documentID, createdSchool)
                 if (result) {
                     showMessage(ResultMessageType.SUCCESS, "Successfully set institution information")
                 }

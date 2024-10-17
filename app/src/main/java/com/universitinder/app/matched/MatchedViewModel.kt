@@ -19,7 +19,7 @@ class MatchedViewModel(
 
     init {
         if (school.images.isNotEmpty()) {
-            val logo = school.images.first { it.lastPathSegment!!.split("/")[3].contains("logo") }
+            val logo = school.images.first { it.lastPathSegment!!.split("/")[2].contains("logo") }
             _uiState.value = _uiState.value.copy(logo = logo)
         }
         _uiState.value = _uiState.value.copy(schoolPlusImages = school)

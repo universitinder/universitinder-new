@@ -25,7 +25,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCEnxLopLhY2wjX4iwjqMmBDwX4fmFxezE" />
+            android:value="AIzaSyCms1a7SFF-oyipZ33BDMxcBRT--i1KPGI" />
 
         <activity
             android:name=".school.location.SchoolLocationActivity"
