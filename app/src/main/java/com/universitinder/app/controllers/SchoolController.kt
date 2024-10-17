@@ -5,7 +5,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.StorageException
@@ -299,7 +298,8 @@ class SchoolController {
             }
             launch {
                 val awaitedSchools = schools.await()
-                sortedSchools.complete(awaitedSchools.sortedBy { it.second }.map { it.first })
+                sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<SchoolPlusImages, Double>> { it.second }.thenByDescending { it.first.school!!.swipeRight }).map { it.first })
+//                sortedSchools.complete(awaitedSchools.sortedBy { it.second }.map { it.first })
             }
         }
 
@@ -312,8 +312,7 @@ class SchoolController {
 
         coroutineScope {
             launch(Dispatchers.IO) {
-                val combinedSchools = firestore.collection("schools")
-                    .orderBy("swipeRight", Query.Direction.DESCENDING).get().await()
+                val combinedSchools = firestore.collection("schools").get().await()
                 val schoolPlusImages = combinedSchools.map { document ->
                     val schoolObject = document.toObject(School::class.java)
                     val storageRef = storage.reference
@@ -342,7 +341,8 @@ class SchoolController {
             }
             launch {
                 val awaitedSchools = schools.await()
-                sortedSchools.complete(awaitedSchools.sortedBy { it.second }.map { it.first })
+                sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<SchoolPlusImages, Double>> { it.second }.thenByDescending { it.first.school!!.swipeRight }).map { it.first })
+//                sortedSchools.complete(awaitedSchools.sortedBy { it.second }.map { it.first })
             }
         }
 
