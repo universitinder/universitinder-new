@@ -7,6 +7,15 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile =
+                file("/Users/francisjamestolentino/Desktop/Business/Universitinder/new-keystore.jks")
+            storePassword = "universitinder2024"
+            keyAlias = "key0"
+            keyPassword = "universitinder2024"
+        }
+    }
     namespace = "com.universitinder.app"
     compileSdk = 34
 
@@ -21,6 +30,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        signingConfig = signingConfigs.getByName("release")
     }
 
     buildTypes {

@@ -1,6 +1,5 @@
 package com.universitinder.app.school.schoolImages
 
-import android.net.Uri
 import com.universitinder.app.models.ImageMetadata
 import com.universitinder.app.models.ResultMessage
 

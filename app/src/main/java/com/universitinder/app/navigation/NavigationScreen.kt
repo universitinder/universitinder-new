@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -25,15 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.universitinder.app.filters.FiltersScreen
 import com.universitinder.app.home.HomeScreen
 import com.universitinder.app.matches.MatchesScreen
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import com.universitinder.app.profile.ProfileScreen
-import com.universitinder.app.school.SchoolScreen
 import com.universitinder.app.school.list.SchoolListScreen
-import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationScreen
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Heart
 

@@ -48,14 +48,14 @@ class CreateSchoolViewModel(
     fun onBarangayChange(newVal: String) { _uiState.value = _uiState.value.copy(barangay = newVal) }
     fun onStreetChange(newVal: String) { _uiState.value = _uiState.value.copy(street = newVal) }
 
-    private fun fieldsNotFilled() : Boolean {
-        return _uiState.value.name.isEmpty() || _uiState.value.name.isBlank() || _uiState.value.email.isEmpty() ||
-                _uiState.value.email.isBlank() || _uiState.value.contactNumber.isEmpty() || _uiState.value.contactNumber.isBlank()
-    }
-
-    private fun validateFields() : Boolean {
-        return true
-    }
+//    private fun fieldsNotFilled() : Boolean {
+//        return _uiState.value.name.isEmpty() || _uiState.value.name.isBlank() || _uiState.value.email.isEmpty() ||
+//                _uiState.value.email.isBlank() || _uiState.value.contactNumber.isEmpty() || _uiState.value.contactNumber.isBlank()
+//    }
+//
+//    private fun validateFields() : Boolean {
+//        return true
+//    }
 
     private fun showMessage(type: ResultMessageType, message: String) {
         _uiState.value = _uiState.value.copy(

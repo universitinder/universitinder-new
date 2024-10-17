@@ -5,7 +5,6 @@ import android.os.Build.VERSION
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.universitinder.app.models.School
 import com.universitinder.app.models.SchoolPlusImages
 import com.universitinder.app.ui.theme.UniversitinderTheme
 
