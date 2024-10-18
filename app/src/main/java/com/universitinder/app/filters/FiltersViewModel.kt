@@ -115,6 +115,19 @@ class FiltersViewModel(
         )
     }
 
+    fun clear() {
+        _uiState.value = _uiState.value.copy(
+            checkedDurations = emptyList(),
+            checkedPrivatePublic = emptyList(),
+            checkedCourses = emptyList(),
+            checkedCities = emptyList(),
+            checkedProvinces = emptyList(),
+            minimum = 0,
+            maximum = 0,
+            affordability = 0
+        )
+    }
+
     fun save() {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {

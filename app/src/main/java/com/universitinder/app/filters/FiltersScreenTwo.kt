@@ -63,6 +63,11 @@ fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
                         IconButton(onClick = { filtersViewModel.popActivity() }) {
                             Icon(Icons.Filled.ArrowBack, contentDescription = "Go Back")
                         }
+                    },
+                    actions = {
+                        TextButton(onClick = { filtersViewModel.clear() }) {
+                            Text(text = "Clear")
+                        }
                     }
                 )
                 LazyRow {
