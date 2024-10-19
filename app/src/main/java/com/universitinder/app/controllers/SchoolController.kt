@@ -258,7 +258,7 @@ class SchoolController {
         return school.has2YearCourse == has2YearCourse || school.has3YearCourse == has3YearCourse || school.has4YearCourse == has4YearCourse || school.has5YearCourse || has5YearCourse
     }
     private fun schoolMatchPrivatePublic(school: School, isPrivate: Boolean, isPublic: Boolean) : Boolean {
-        return school.isPrivate == isPrivate || school.isPublic == isPublic
+        return school.private == isPrivate || school.public == isPublic
     }
     private fun schoolMatchAffordability(schoolAffordability: Int, filterAffordability: Int) : Boolean {
         return schoolAffordability == filterAffordability
@@ -410,8 +410,8 @@ class SchoolController {
                     "name", school.name,
                     "email", school.email,
                     "contactNumber", school.contactNumber,
-                    "isPrivate", school.isPrivate,
-                    "isPublic", school.isPublic,
+                    "private", school.private,
+                    "public", school.public,
                     "minimum", school.minimum,
                     "maximum", school.maximum,
                     "affordability", school.affordability,

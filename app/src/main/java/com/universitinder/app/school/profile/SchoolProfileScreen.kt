@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.universitinder.app.components.AffordabilityIndicator
+import com.universitinder.app.components.EmailText
 import com.universitinder.app.helpers.CurrencyFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,10 +97,10 @@ fun SchoolProfileScreen(schoolProfileViewModel: SchoolProfileViewModel) {
                         ListItem(
                             modifier = Modifier.background(Color.White),
                             leadingContent = { Icon(Icons.Filled.Email, "Email") },
-                            headlineContent = { Text(text = uiState.school.email) }
+                            headlineContent = { EmailText(email = uiState.school.email) }
                         )
                         ListItem(
-                            leadingContent = { Icon(Icons.Filled.Phone, "Email") },
+                            leadingContent = { Icon(Icons.Filled.Phone, "Contact Number") },
                             headlineContent = { Text(text = uiState.school.contactNumber) }
                         )
                     }

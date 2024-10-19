@@ -161,6 +161,7 @@ class FiltersViewModel(
                             )
                         )
                     }
+                    popActivity()
                 } else {
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(

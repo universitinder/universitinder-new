@@ -37,8 +37,8 @@ class CreateSchoolViewModel(
     fun onProvinceMenuDismiss() { _uiState.value = _uiState.value.copy(provinceMenuExpand = false) }
     fun privateToggle() {
         _uiState.value = _uiState.value.copy(
-            isPublic = _uiState.value.isPrivate,
-            isPrivate = !_uiState.value.isPrivate,
+            public = _uiState.value.private,
+            private = !_uiState.value.private,
         )
     }
 
@@ -83,8 +83,8 @@ class CreateSchoolViewModel(
                     name = _uiState.value.name,
                     email = _uiState.value.email,
                     contactNumber = _uiState.value.contactNumber,
-                    isPrivate = _uiState.value.isPrivate,
-                    isPublic = _uiState.value.isPublic,
+                    private = _uiState.value.private,
+                    public = _uiState.value.public,
                     province = _uiState.value.province,
                     municipalityOrCity = _uiState.value.municipalityOrCity,
                     barangay = _uiState.value.barangay,

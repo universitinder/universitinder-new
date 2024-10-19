@@ -14,8 +14,8 @@ data class CreateSchoolUiState(
     val municipalityOrCityMenuExpand: Boolean = false,
     val barangay: String = "",
     val street: String = "",
-    val isPrivate: Boolean = false,
-    val isPublic : Boolean = false,
+    val private : Boolean = false,
+    val public : Boolean = false,
     val createSchoolLoading: Boolean = false,
     val resultMessage: ResultMessage = ResultMessage()
 )

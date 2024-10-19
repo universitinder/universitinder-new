@@ -47,7 +47,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.universitinder.app.components.AffordabilityIndicator
+import com.universitinder.app.components.EmailText
+import com.universitinder.app.components.LinkText
 import com.universitinder.app.components.SchoolBasicInfo
+import com.universitinder.app.components.SchoolBasicInfoComposable
 import com.universitinder.app.components.SchoolPhotos
 import com.universitinder.app.components.dialogs.ConfirmDeleteSchoolDialog
 import com.universitinder.app.helpers.CurrencyFormatter
@@ -209,8 +212,10 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                         when (uiState.activeTab) {
                             0 -> {
                                 val school = uiState.schoolPlusImages?.school
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Email", value = school!!.email) }
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Link", value = school!!.link) }
+//                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Email", value = school!!.email) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Email", component = { EmailText(email = school!!.email) }) }
+//                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Link", value = school!!.link) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Link", component = { LinkText(link = school!!.link) }) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Contact Number", value = school!!.contactNumber) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Province", value = school!!.province) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Municipality/City", value = school!!.municipalityOrCity) }

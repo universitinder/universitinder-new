@@ -26,7 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -37,6 +39,7 @@ import com.universitinder.app.filters.duration.DurationFilterScreen
 import com.universitinder.app.filters.privatePublic.PrivatePublicFilterScreen
 import com.universitinder.app.filters.province.ProvinceFilterScreen
 import com.universitinder.app.models.COURSE_DURATION
+import com.universitinder.app.models.ResultMessageType
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
@@ -113,16 +116,20 @@ fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
             }
         },
         bottomBar = {
-            Button(
-                onClick = filtersViewModel::save,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                if (uiState.saveLoading) {
-                    CircularProgressIndicator(color = Color.White)
-                } else {
-                    Text(text = "Save")
+            Column {
+                if (uiState.resultMessage.show)
+                    Text(text = uiState.resultMessage.message, color = if (uiState.resultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, fontSize = 12.sp)
+                Button(
+                    onClick = filtersViewModel::save,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    if (uiState.saveLoading) {
+                        CircularProgressIndicator(color = Color.White)
+                    } else {
+                        Text(text = "Save")
+                    }
                 }
             }
         }

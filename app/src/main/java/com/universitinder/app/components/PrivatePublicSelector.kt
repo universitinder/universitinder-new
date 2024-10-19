@@ -31,6 +31,8 @@ fun PrivatePublicSelector(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ){
+//                Text(text = isPrivate.toString())
+//                Text(text = isPublic.toString())
                 Text(text = if (isPrivate && !isPublic) "PRIVATE" else "PUBLIC")
             }
         }

@@ -1,5 +1,6 @@
 package com.universitinder.app.school.schoolInformation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
@@ -33,6 +34,7 @@ class SchoolInformationViewModel(
                 }
                 val school = schoolController.getSchoolByName(name = school.name)
                 if (school != null) {
+                    Log.w("VIEW MODEL", school.toString())
                     _uiState.value = _uiState.value.copy(
                         name = school.name,
                         email = school.email,
@@ -45,7 +47,8 @@ class SchoolInformationViewModel(
                         municipalityOrCity = school.municipalityOrCity,
                         barangay = school.barangay,
                         street = school.street,
-                        isPrivate = school.isPrivate,
+                        private = school.private,
+                        public = school.public,
                         municipalitiesAndCities = MUNICIPALITIES_AND_CITIES[school.province]?.toList() ?: listOf()
                     )
                 }
@@ -70,8 +73,8 @@ class SchoolInformationViewModel(
     fun onProvinceMenuDismiss() { _uiState.value = _uiState.value.copy(provinceMenuExpand = false) }
     fun privateToggle() {
         _uiState.value = _uiState.value.copy(
-            isPublic = _uiState.value.isPrivate,
-            isPrivate = !_uiState.value.isPrivate,
+            public = _uiState.value.private,
+            private = !_uiState.value.private
         )
     }
 
@@ -128,8 +131,8 @@ class SchoolInformationViewModel(
                     name = _uiState.value.name,
                     email = _uiState.value.email,
                     contactNumber = _uiState.value.contactNumber,
-                    isPrivate = _uiState.value.isPrivate,
-                    isPublic = _uiState.value.isPublic,
+                    private = _uiState.value.private,
+                    public = _uiState.value.public,
                     minimum = _uiState.value.minimum,
                     maximum = _uiState.value.maximum,
                     affordability = _uiState.value.affordability,

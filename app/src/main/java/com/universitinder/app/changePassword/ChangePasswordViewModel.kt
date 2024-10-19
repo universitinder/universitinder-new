@@ -48,6 +48,7 @@ class ChangePasswordViewModel(
                             type = ResultMessageType.SUCCESS
                         )
                     )
+                    popActivity()
                 } else {
                     _uiState.value = _uiState.value.copy(
                         loading = false,

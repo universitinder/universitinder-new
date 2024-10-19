@@ -68,7 +68,7 @@ fun CreateSchoolScreen(createSchoolViewModel: CreateSchoolViewModel) {
                     onValueChange = createSchoolViewModel::onNameChange
                 )
             }
-            item { PrivatePublicSelector(isPrivate = uiState.isPrivate, isPublic = uiState.isPublic, toggle = createSchoolViewModel::privateToggle) }
+            item { PrivatePublicSelector(isPrivate = uiState.private, isPublic = uiState.public, toggle = createSchoolViewModel::privateToggle) }
             item {
                 OutlinedTextField(
                     modifier = Modifier

@@ -17,3 +17,13 @@ fun SchoolBasicInfo(label: String, value: String) {
         Text(text = value, fontSize = 16.sp)
     }
 }
+
+@Composable
+fun SchoolBasicInfoComposable(label: String, component: @Composable () -> Unit) {
+    Column (
+        modifier = Modifier.padding(vertical = 8.dp)
+    ) {
+        Text(text = label, fontSize = 12.sp)
+        component()
+    }
+}
