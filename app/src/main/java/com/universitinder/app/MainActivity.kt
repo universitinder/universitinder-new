@@ -3,6 +3,7 @@ package com.universitinder.app
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +20,13 @@ import androidx.lifecycle.lifecycleScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.opencsv.CSVReader
+import com.universitinder.app.controllers.CourseController
+import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.home.HomeActivity
 import com.universitinder.app.login.LoginActivity
+import com.universitinder.app.models.CourseBatchHelper
+import com.universitinder.app.models.School
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
@@ -28,6 +34,8 @@ import com.universitinder.app.preferences.PreferencesKey
 import com.universitinder.app.ui.theme.UniversitinderTheme
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import java.io.IOException
+import java.io.InputStreamReader
 import java.security.MessageDigest
 
 val Context.userDataStore by preferencesDataStore(name = "user_preferences")
@@ -71,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 //
 //    private suspend fun seedSchoolCollection() {
 //        val assetsManager = this.assets
-//        val filename = "schools.csv"
+//        val filename = "schools-2-processed.csv"
 //
 //        lifecycleScope.launch {
 //            try {

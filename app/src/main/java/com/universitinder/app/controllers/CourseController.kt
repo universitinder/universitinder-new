@@ -170,7 +170,7 @@ class CourseController {
     companion object {
         fun createFourYearCourse(name: String) : Course {
             return Course(
-                name = name,
+                name = name.trim(),
                 duration = 4,
                 level = EducationLevel.BACHELORS
             )
@@ -178,7 +178,7 @@ class CourseController {
 
         fun createTwoYearCourse(name: String) : Course {
             return Course(
-                name = name,
+                name = name.trim(),
                 duration = 2,
                 level = EducationLevel.VOCATIONAL
             )
