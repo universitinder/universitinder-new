@@ -78,6 +78,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                         ) {
                             if (uiState.currentIndex < uiState.schools.size) {
                                 uiState.schools.forEachIndexed{ index, schoolPlusImages ->
+                                    // Show SwipeableCard Component
                                     SwipeableCard(
                                         index = index,
                                         currentCardIndex = uiState.currentIndex,
@@ -102,20 +103,6 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                                     }
                                 }
                             }
-//                            Row(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(top = 12.dp, end = 10.dp),
-//                                horizontalArrangement = Arrangement.End
-//                            ) {
-//                                Column(
-//                                    modifier = Modifier.clickable { homeViewModel.startFilterActivity() },
-//                                    horizontalAlignment = Alignment.CenterHorizontally
-//                                ){
-//                                    Icon(FeatherIcons.Filter, contentDescription = "Filter", tint = Color.White)
-//                                    Text(text = "Filters", fontSize = 12.sp, color = Color.White)
-//                                }
-//                            }
                         }
                     }
                 }
@@ -126,8 +113,8 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "Locaiton Permission Required to access universities")
-                    Button(onClick = { fineLocationPermissionState.launchPermissionRequest() }) {
+                    Text(text = "Location Permission Required to access universities")
+                    Button(modifier = Modifier.padding(top=12.dp), onClick = { fineLocationPermissionState.launchPermissionRequest() }) {
                         Text(text = "Request Location Permission")
                     }
                 }

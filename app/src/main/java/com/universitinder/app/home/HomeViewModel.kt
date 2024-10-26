@@ -1,13 +1,10 @@
 package com.universitinder.app.home
 
-//import android.util.Log
 import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
-import android.util.Log
-//import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,7 +19,6 @@ import com.universitinder.app.controllers.UserController
 import com.universitinder.app.filters.FiltersActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.Filter
-//import com.universitinder.app.matched.MatchedActivity
 import com.universitinder.app.models.LocationPoint
 import com.universitinder.app.models.SchoolPlusImages
 import com.universitinder.app.models.UserState
@@ -112,8 +108,8 @@ class HomeViewModel(
                 val filter = filterController.getFilter(currentUser.email)
                 if (filter != null && !isFilterClear(filter)) {
                     if (locationState.value == null) return@launch
+                    // GET ALL FILTERED SCHOOLS
                     val schools = schoolController.getFilteredSchoolThree(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
-                    Log.w("HOME VIEW MODEL", schools.toString())
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
@@ -124,7 +120,6 @@ class HomeViewModel(
                 } else {
                     if (locationState.value == null) return@launch
                     val schools = schoolController.getTopSchools(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
-                    Log.w("HOME VIEW MODEL", schools.toString())
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
@@ -137,17 +132,18 @@ class HomeViewModel(
         }
     }
 
+    // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO RIGHT
+    // HomeScreen - Line 86
     fun onSwipeRight(school: SchoolPlusImages) {
         _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
-//        val intent = Intent(activityStarterHelper.getContext(), MatchedActivity::class.java)
-//        intent.putExtra("school", school)
-//        activityStarterHelper.startActivity(intent)
         viewModelScope.launch(Dispatchers.IO) {
             schoolController.addSchoolSwipeRightCount(school.id)
             if (currentUser != null && school.school != null) userController.addMatchedSchool(currentUser, school.school.name)
         }
     }
 
+    // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO LEFT
+    // HomeScreen - Line 87
     fun onSwipeLeft(id: String) {
         _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
         viewModelScope.launch(Dispatchers.IO) {
