@@ -41,6 +41,11 @@ import com.universitinder.app.models.SchoolPlusImages
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
+/**
+ * Reusable Component for With swiping mechanism
+ * @ HomeScreen - Line 82
+ * takes swipeLeft, swipeRight, and middleClick callback functions
+ * **/
 @Composable
 fun SwipeableCard(
     index: Int,
@@ -51,7 +56,7 @@ fun SwipeableCard(
     onMiddleClick: () -> Unit,
 ) {
     val swipeOffsetX = remember { Animatable(0f) }
-    val swipeThreshold = 300f
+    val swipeThreshold = 300f // SWIPE THRESHOLD TO TRIGGER FUNCTIONS
     val coroutineScope = rememberCoroutineScope()
 
     Box(
@@ -61,11 +66,10 @@ fun SwipeableCard(
                 detectDragGestures(
                     onDragEnd = {
                         if (abs(swipeOffsetX.value) > swipeThreshold) {
-                            if (swipeOffsetX.value > 0) {
-                                onSwipedRight()
-                            } else {
-                                onSwipedLeft()
-                            }
+                            // IF OFFSET X IS POSITIVE THEN CALL onSwipedRight
+                            if (swipeOffsetX.value > 0) onSwipedRight()
+                            // IF OFFSET X IS NEGATIVE THEN CALL onSwipedLeft
+                            else onSwipedLeft()
                         } else {
                             coroutineScope.launch {
                                 swipeOffsetX.animateTo(
@@ -78,12 +82,15 @@ fun SwipeableCard(
                     onDrag = { change, dragAmount ->
                         change.consume()
                         coroutineScope.launch {
+                            // ACTUAL SWIPING MECHANISM
+                            // DRAGGING THE CARD
                             swipeOffsetX.snapTo(swipeOffsetX.value + dragAmount.x)
                         }
                     }
                 )
             }
             .pointerInput(Unit) {
+                // GESTURE DETECTOR FOR MIDDLE CLICK
                 detectTapGestures(
                     onTap = { onMiddleClick() }
                 )
@@ -93,6 +100,7 @@ fun SwipeableCard(
             .background(MaterialTheme.colorScheme.primaryContainer),
         contentAlignment = Alignment.TopCenter
     ) {
+        // IMAGE DISPLAY
         ImageCarousel(imageUris = school.images, onMiddleClick = onMiddleClick)
         Column(
             modifier = Modifier.fillMaxSize(),
