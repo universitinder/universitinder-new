@@ -162,7 +162,7 @@ class HomeViewModel(
         activityStarterHelper.startActivity(intent)
     }
 
-    private fun getCurrentLocation() {
+    fun getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
                 application,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
