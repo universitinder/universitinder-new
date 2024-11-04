@@ -44,7 +44,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
     )
 
     LaunchedEffect(uiState.currentIndex) {
-        if (uiState.schoolsTwo.isNotEmpty() && uiState.currentIndex <= uiState.schoolsTwo.size) {
+        if (uiState.schoolsTwo.isNotEmpty() && uiState.currentIndex < uiState.schoolsTwo.size) {
             homeViewModel.fetchImages(uiState.schoolsTwo[uiState.currentIndex].documentID)
         }
     }
