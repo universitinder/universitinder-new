@@ -28,6 +28,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.universitinder.app.components.SwipeableCard
+import com.universitinder.app.components.SwipeableSchoolCard
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Filter
 
@@ -42,13 +43,21 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         }
     )
 
+    LaunchedEffect(uiState.currentIndex) {
+        if (uiState.schoolsTwo.isNotEmpty() && uiState.currentIndex <= uiState.schoolsTwo.size) {
+            homeViewModel.fetchImages(uiState.schoolsTwo[uiState.currentIndex].documentID)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Home") },
                 actions = {
                     Column(
-                        modifier = Modifier.padding(horizontal = 8.dp).clickable { homeViewModel.startFilterActivity() },
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clickable { homeViewModel.startFilterActivity() },
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         Icon(FeatherIcons.Filter, contentDescription = "Filter")
@@ -76,16 +85,34 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                                 .padding(innerPadding),
                             contentAlignment = Alignment.TopCenter
                         ) {
-                            if (uiState.currentIndex < uiState.schools.size) {
-                                uiState.schools.forEachIndexed{ index, schoolPlusImages ->
+                            if (uiState.middleClickLoading) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            if (uiState.currentIndex < uiState.schoolsTwo.size) {
+//                                uiState.schools.forEachIndexed{ index, schoolPlusImages ->
+//                                    // Show SwipeableCard Component
+//                                    SwipeableCard(
+//                                        index = index,
+//                                        currentCardIndex = uiState.currentIndex,
+//                                        school = schoolPlusImages,
+//                                        onSwipedLeft = { homeViewModel.onSwipeLeft(schoolPlusImages.id) },
+//                                        onSwipedRight = { homeViewModel.onSwipeRight(schoolPlusImages) },
+//                                        onMiddleClick = { homeViewModel.startSchoolProfileActivity(schoolPlusImages) }
+//                                    )
+//                                }
+                                uiState.schoolsTwo.forEachIndexed{ index, school ->
                                     // Show SwipeableCard Component
-                                    SwipeableCard(
+                                    SwipeableSchoolCard(
                                         index = index,
                                         currentCardIndex = uiState.currentIndex,
-                                        school = schoolPlusImages,
-                                        onSwipedLeft = { homeViewModel.onSwipeLeft(schoolPlusImages.id) },
-                                        onSwipedRight = { homeViewModel.onSwipeRight(schoolPlusImages) },
-                                        onMiddleClick = { homeViewModel.startSchoolProfileActivity(schoolPlusImages) }
+                                        school = school,
+                                        onSwipedLeft = { homeViewModel.onSwipeLeft(school.documentID) },
+                                        onSwipedRight = { homeViewModel.onSwipeRightTwo(school) },
+                                        images = uiState.images[uiState.currentIndex],
+                                        onMiddleClick = { homeViewModel.startSchoolProfileActivityTwo(school) }
                                     )
                                 }
                             } else {
@@ -113,7 +140,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "Location Permission Required to access universities")
+                    Text(text = "Location Permission Required to access universities", textAlign = TextAlign.Center)
                     Button(modifier = Modifier.padding(top=12.dp), onClick = { fineLocationPermissionState.launchPermissionRequest() }) {
                         Text(text = "Request Location Permission")
                     }

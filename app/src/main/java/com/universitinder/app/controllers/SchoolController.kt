@@ -154,6 +154,46 @@ class SchoolController {
         return sortedSchools.await()
     }
 
+    suspend fun getFilteredSchoolFour(filter: Filter, userPoint: LocationPoint) : List<School> {
+        val sortedSchools = CompletableDeferred<List<School>>()
+        val schools = CompletableDeferred<List<Pair<School, Double>>>()
+        val cities = filter.cities.split("___").toList()
+        val courses = filter.courses.split("___").toList()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                // FETCH ALL SCHOOLS
+                val fetchedSchools = firestore.collection("schools").get().await()
+                // RUN FILTER BY CALLING ALL MATCHING FUNCTIONS
+                val filteredFetchedSchools = fetchedSchools.documents.filter {
+                    val schoolObject = it.toObject(School::class.java)
+
+                    schoolInMunicipalityOrCity(schoolObject?.municipalityOrCity!!, cities) && (schoolHasCourseDurations(schoolObject, filter.has2YearCourse, filter.has3YearCourse, filter.has4YearCourse, filter.has5YearCourse) ||
+                            schoolMatchPrivatePublic(schoolObject, filter.private, filter.public) || schoolIncludeCourses(schoolObject.courses, courses) || schoolMatchAffordability(schoolObject.affordability, filter.affordability))
+                }
+                val mappedFilteredSchools = filteredFetchedSchools.map {
+                    val schoolObject = it.toObject(School::class.java)
+                    val schoolPoint = schoolObject?.coordinates!!
+                    // CALCULATE THE DISTANCE BETWEEN THE USER AND THE SCHOOL USING schoolPoint and userPoint
+                    val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(userPoint = userPoint, schoolPoint = schoolPoint)
+
+                    // RETURN THE SCHOOL OBJECT WITH IMAGES
+                    Pair(schoolObject, distance)
+                }
+                schools.complete(mappedFilteredSchools.toList())
+            }
+            launch {
+                val awaitedSchools = schools.await()
+                // SORT LIST BASED ON DISTANCE AND SWIPE RIGHTS.
+                // DISTANCE IS MORE PRIORITY, THEN SWIPE RIGHTS
+                // MORE SWIPE RIGHTS = TOP SCHOOL
+                sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<School, Double>> { it.second }.thenByDescending { it.first.swipeRight }).map { it.first })
+            }
+        }
+
+        return sortedSchools.await()
+    }
+
     suspend fun getTopSchools(userPoint: LocationPoint) : List<SchoolPlusImages> {
         val sortedSchools = CompletableDeferred<List<SchoolPlusImages>>()
         val schools = CompletableDeferred<List<Pair<SchoolPlusImages, Double>>>()
@@ -190,6 +230,34 @@ class SchoolController {
             launch {
                 val awaitedSchools = schools.await()
                 sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<SchoolPlusImages, Double>> { it.second }.thenByDescending { it.first.school!!.swipeRight }).map { it.first })
+            }
+        }
+
+        return sortedSchools.await()
+    }
+
+    suspend fun getTopSchoolsTwo(userPoint: LocationPoint) : List<School> {
+        val sortedSchools = CompletableDeferred<List<School>>()
+        val schools = CompletableDeferred<List<Pair<School, Double>>>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val combinedSchools = firestore.collection("schools").get().await()
+                val schoolPlusImages = combinedSchools.map { document ->
+                    val schoolObject = document.toObject(School::class.java)
+                    val schoolPoint = schoolObject.coordinates
+                    val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(
+                        userPoint = userPoint,
+                        schoolPoint = schoolPoint
+                    )
+
+                    Pair(schoolObject, distance)
+                }
+                schools.complete(schoolPlusImages)
+            }
+            launch {
+                val awaitedSchools = schools.await()
+                sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<School, Double>> { it.second }.thenByDescending { it.first.swipeRight }).map { it.first })
             }
         }
 

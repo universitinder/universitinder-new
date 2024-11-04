@@ -13,22 +13,28 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import com.universitinder.app.controllers.FilterController
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
 import com.universitinder.app.filters.FiltersActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
+import com.universitinder.app.helpers.DistanceCalculator
 import com.universitinder.app.models.Filter
 import com.universitinder.app.models.LocationPoint
+import com.universitinder.app.models.School
 import com.universitinder.app.models.SchoolPlusImages
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import com.universitinder.app.school.profile.SchoolProfileActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 @Suppress("DEPRECATION")
@@ -39,6 +45,7 @@ class HomeViewModel(
     private val filterController: FilterController,
     private val activityStarterHelper: ActivityStarterHelper
 ): ViewModel() {
+    private val storage = Firebase.storage
     private val currentUser = UserState.currentUser
     private val _uiState = MutableStateFlow(HomeUiState())
     private val _locationState = MutableStateFlow<Location?>(null)
@@ -109,27 +116,45 @@ class HomeViewModel(
                 if (filter != null && !isFilterClear(filter)) {
                     if (locationState.value == null) return@launch
                     // GET ALL FILTERED SCHOOLS
-                    val schools = schoolController.getFilteredSchoolThree(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+//                    val schools = schoolController.getFilteredSchoolThree(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    val schools = schoolController.getFilteredSchoolFour(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
                             fetchingLoading = false,
-                            schools = schools.shuffled()
+//                            schools = schools
+                            schoolsTwo = schools,
+                            images = schools.map { listOf() }
                         )
                     }
                 } else {
                     if (locationState.value == null) return@launch
-                    val schools = schoolController.getTopSchools(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+//                    val schools = schoolController.getTopSchools(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    val schools = schoolController.getTopSchoolsTwo(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
                             fetchingLoading = false,
-                            schools = schools
+                            schoolsTwo = schools,
+                            images = schools.map { listOf() }
                         )
                     }
                 }
             }
         }
+    }
+
+    suspend  fun fetchImages(documentID: String) {
+        val storageRef = storage.reference
+        // FETCH ALL IMAGES OF SCHOOL
+        val listOfItems = storageRef.child("schools/$documentID").listAll().await()
+        val uris = listOfItems.items.map {
+            val downloadURL = it.downloadUrl.await()
+            downloadURL
+        }
+        val mutableList = _uiState.value.images.toMutableList()
+        mutableList[_uiState.value.currentIndex] = uris
+        _uiState.value = _uiState.value.copy(images = mutableList.toList())
     }
 
     // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO RIGHT
@@ -139,6 +164,16 @@ class HomeViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             schoolController.addSchoolSwipeRightCount(school.id)
             if (currentUser != null && school.school != null) userController.addMatchedSchool(currentUser, school.school.name)
+        }
+    }
+
+    // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO RIGHT
+    // HomeScreen - Line 86
+    fun onSwipeRightTwo(school: School) {
+        _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
+        viewModelScope.launch(Dispatchers.IO) {
+            schoolController.addSchoolSwipeRightCount(school.documentID)
+            if (currentUser != null) userController.addMatchedSchool(currentUser, school.name)
         }
     }
 
@@ -155,6 +190,17 @@ class HomeViewModel(
         val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
         intent.putExtra("school", school)
         activityStarterHelper.startActivity(intent)
+    }
+
+    fun startSchoolProfileActivityTwo(school: School) {
+        val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
+        _uiState.value = _uiState.value.copy(middleClickLoading = true)
+        viewModelScope.launch {
+            val schoolPlusImages = schoolController.getSchoolPlusImageByDocumentID(school.documentID)
+            intent.putExtra("school", schoolPlusImages)
+            activityStarterHelper.startActivity(intent)
+            _uiState.value = _uiState.value.copy(middleClickLoading = false)
+        }
     }
 
     fun startFilterActivity() {
