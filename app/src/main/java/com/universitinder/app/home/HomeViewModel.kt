@@ -95,12 +95,12 @@ class HomeViewModel(
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    init {
-        getCurrentLocation()
-        if (currentUser != null && currentUser.type == UserType.STUDENT) {
-            refresh()
-        }
-    }
+//    init {
+//        getCurrentLocation()
+//        if (currentUser != null && currentUser.type == UserType.STUDENT) {
+//            refresh()
+//        }
+//    }
 
     private fun isFilterClear(filter: Filter) : Boolean {
         return filter.affordability == 0 && !filter.has5YearCourse && !filter.has3YearCourse && !filter.has4YearCourse && !filter.has2YearCourse &&

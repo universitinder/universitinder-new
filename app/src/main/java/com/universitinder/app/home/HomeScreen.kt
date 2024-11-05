@@ -27,10 +27,10 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
-import com.universitinder.app.components.SwipeableCard
 import com.universitinder.app.components.SwipeableSchoolCard
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Filter
+import compose.icons.feathericons.RefreshCcw
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +54,15 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
             TopAppBar(
                 title = { Text(text = "Home") },
                 actions = {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clickable { homeViewModel.refresh() },
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Icon(FeatherIcons.RefreshCcw, contentDescription = "Refresh")
+                        Text(text = "Refresh", fontSize = 12.sp)
+                    }
                     Column(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -92,17 +101,6 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                             }
 
                             if (uiState.currentIndex < uiState.schoolsTwo.size) {
-//                                uiState.schools.forEachIndexed{ index, schoolPlusImages ->
-//                                    // Show SwipeableCard Component
-//                                    SwipeableCard(
-//                                        index = index,
-//                                        currentCardIndex = uiState.currentIndex,
-//                                        school = schoolPlusImages,
-//                                        onSwipedLeft = { homeViewModel.onSwipeLeft(schoolPlusImages.id) },
-//                                        onSwipedRight = { homeViewModel.onSwipeRight(schoolPlusImages) },
-//                                        onMiddleClick = { homeViewModel.startSchoolProfileActivity(schoolPlusImages) }
-//                                    )
-//                                }
                                 uiState.schoolsTwo.forEachIndexed{ index, school ->
                                     // Show SwipeableCard Component
                                     SwipeableSchoolCard(
