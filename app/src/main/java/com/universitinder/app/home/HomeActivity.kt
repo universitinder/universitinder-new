@@ -32,7 +32,7 @@ import com.universitinder.app.userDataStore
 import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
-    private val currentUser = UserState.currentUser
+//    private val currentUser = UserState.currentUser
     private lateinit var auth: FirebaseAuth
     private lateinit var profileViewModel : ProfileViewModel
     private lateinit var navigationViewModel : NavigationViewModel
@@ -45,10 +45,10 @@ class HomeActivity : AppCompatActivity() {
             profileViewModel.refreshUser(this@HomeActivity)
             navigationViewModel.refreshUser()
             schoolListViewModel.refresh()
-            if (currentUser != null && currentUser.type == UserType.STUDENT) {
-                homeViewModel.getCurrentLocation()
-                homeViewModel.refresh()
-            }
+//            if (currentUser != null && currentUser.type == UserType.STUDENT) {
+//                homeViewModel.getCurrentLocation()
+//                homeViewModel.refresh()
+//            }
         }
     }
 

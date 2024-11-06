@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import com.universitinder.app.controllers.FilterController
@@ -20,16 +21,12 @@ import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
 import com.universitinder.app.filters.FiltersActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
-import com.universitinder.app.helpers.DistanceCalculator
 import com.universitinder.app.models.Filter
 import com.universitinder.app.models.LocationPoint
 import com.universitinder.app.models.School
-import com.universitinder.app.models.SchoolPlusImages
 import com.universitinder.app.models.UserState
-import com.universitinder.app.models.UserType
 import com.universitinder.app.school.profile.SchoolProfileActivity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +34,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-@Suppress("DEPRECATION")
 class HomeViewModel(
     private val application: Application,
     private val schoolController: SchoolController,
@@ -55,11 +51,10 @@ class HomeViewModel(
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(application)
 
-    private val locationRequest: LocationRequest = LocationRequest.create().apply {
-        interval = 10000  // Update every 10 seconds
-        fastestInterval = 5000  // Fastest update every 5 seconds
-        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    }
+    private val locationRequest: LocationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
+        .setWaitForAccurateLocation(false)
+        .setMinUpdateIntervalMillis(5000)
+        .build()
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -95,12 +90,10 @@ class HomeViewModel(
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-//    init {
-//        getCurrentLocation()
-//        if (currentUser != null && currentUser.type == UserType.STUDENT) {
-//            refresh()
-//        }
-//    }
+    init {
+        getCurrentLocation()
+        refresh()
+    }
 
     private fun isFilterClear(filter: Filter) : Boolean {
         return filter.affordability == 0 && !filter.has5YearCourse && !filter.has3YearCourse && !filter.has4YearCourse && !filter.has2YearCourse &&
@@ -116,20 +109,17 @@ class HomeViewModel(
                 if (filter != null && !isFilterClear(filter)) {
                     if (locationState.value == null) return@launch
                     // GET ALL FILTERED SCHOOLS
-//                    val schools = schoolController.getFilteredSchoolThree(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     val schools = schoolController.getFilteredSchoolFour(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
                             fetchingLoading = false,
-//                            schools = schools
                             schoolsTwo = schools,
                             images = schools.map { listOf() }
                         )
                     }
                 } else {
                     if (locationState.value == null) return@launch
-//                    val schools = schoolController.getTopSchools(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     val schools = schoolController.getTopSchoolsTwo(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
@@ -159,13 +149,13 @@ class HomeViewModel(
 
     // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO RIGHT
     // HomeScreen - Line 86
-    fun onSwipeRight(school: SchoolPlusImages) {
-        _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
-        viewModelScope.launch(Dispatchers.IO) {
-            schoolController.addSchoolSwipeRightCount(school.id)
-            if (currentUser != null && school.school != null) userController.addMatchedSchool(currentUser, school.school.name)
-        }
-    }
+//    fun onSwipeRight(school: SchoolPlusImages) {
+//        _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
+//        viewModelScope.launch(Dispatchers.IO) {
+//            schoolController.addSchoolSwipeRightCount(school.id)
+//            if (currentUser != null && school.school != null) userController.addMatchedSchool(currentUser, school.school.name)
+//        }
+//    }
 
     // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO RIGHT
     // HomeScreen - Line 86
@@ -186,11 +176,11 @@ class HomeViewModel(
         }
     }
 
-    fun startSchoolProfileActivity(school: SchoolPlusImages) {
-        val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
-        intent.putExtra("school", school)
-        activityStarterHelper.startActivity(intent)
-    }
+//    fun startSchoolProfileActivity(school: SchoolPlusImages) {
+//        val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
+//        intent.putExtra("school", school)
+//        activityStarterHelper.startActivity(intent)
+//    }
 
     fun startSchoolProfileActivityTwo(school: School) {
         val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
