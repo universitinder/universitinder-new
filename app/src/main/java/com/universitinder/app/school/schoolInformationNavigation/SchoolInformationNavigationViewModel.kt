@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
+import com.universitinder.app.school.analytics.SchoolAnalyticsActivity
 import com.universitinder.app.school.location.SchoolLocationActivity
 import com.universitinder.app.school.schoolCourses.SchoolCoursesActivity
 import com.universitinder.app.school.schoolFAQs.SchoolFAQsActivity
@@ -19,6 +20,12 @@ class SchoolInformationNavigationViewModel(
 
     fun startSchoolInformationActivity() {
         val intent = Intent(activityStarterHelper.getContext(), SchoolInformationActivity::class.java)
+        intent.putExtra("SCHOOL", school)
+        activityStarterHelper.startActivity(intent)
+    }
+
+    fun startSchoolAnalyticsActivity() {
+        val intent = Intent(activityStarterHelper.getContext(), SchoolAnalyticsActivity::class.java)
         intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }

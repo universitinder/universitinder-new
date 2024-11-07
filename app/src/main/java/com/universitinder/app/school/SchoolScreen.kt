@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.universitinder.app.components.AffordabilityIndicator
+import com.universitinder.app.components.Analytics
 import com.universitinder.app.components.EmailText
 import com.universitinder.app.components.LinkText
 import com.universitinder.app.components.SchoolBasicInfo
@@ -164,7 +165,7 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                             containerColor = if (uiState.activeTab == 1) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
                                         )
                                     ) {
-                                        Text(text = "Photos")
+                                        Text(text = "Analytics")
                                     }
                                 }
                                 item {
@@ -174,7 +175,7 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                             containerColor = if (uiState.activeTab == 2) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
                                         )
                                     ) {
-                                        Text(text = "Courses")
+                                        Text(text = "Photos")
                                     }
                                 }
                                 item {
@@ -184,7 +185,7 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                             containerColor = if (uiState.activeTab == 3) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
                                         )
                                     ) {
-                                        Text(text = "Mission")
+                                        Text(text = "Courses")
                                     }
                                 }
                                 item {
@@ -194,7 +195,7 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                             containerColor = if (uiState.activeTab == 4) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
                                         )
                                     ) {
-                                        Text(text = "Vision")
+                                        Text(text = "Mission")
                                     }
                                 }
                                 item {
@@ -202,6 +203,16 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                         onClick = { schoolViewModel.onTabChange(5) },
                                         colors = ButtonDefaults.textButtonColors(
                                             containerColor = if (uiState.activeTab == 5) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                        )
+                                    ) {
+                                        Text(text = "Vision")
+                                    }
+                                }
+                                item {
+                                    TextButton(
+                                        onClick = { schoolViewModel.onTabChange(6) },
+                                        colors = ButtonDefaults.textButtonColors(
+                                            containerColor = if (uiState.activeTab == 6) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
                                         )
                                     ) {
                                         Text(text = "Core Values")
@@ -212,9 +223,7 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                         when (uiState.activeTab) {
                             0 -> {
                                 val school = uiState.schoolPlusImages?.school
-//                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Email", value = school!!.email) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Email", component = { EmailText(email = school!!.email) }) }
-//                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Link", value = school!!.link) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Link", component = { LinkText(link = school!!.link) }) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Contact Number", value = school!!.contactNumber) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Province", value = school!!.province) }
@@ -226,24 +235,34 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                 item(span = { GridItemSpan(3) }) { AffordabilityIndicator(affordability = school!!.affordability) }
                             }
                             1 -> {
+                                item(span = { GridItemSpan(3) } ){
+                                    Analytics(
+                                        schoolAnalytics = uiState.schoolAnalytics,
+                                        lineChartLoading = uiState.lineChartLoading,
+                                        selectedYearLevel = uiState.selectedYear,
+                                        onYearLevelSelected = schoolViewModel::onYearLevelSelected
+                                    )
+                                }
+                            }
+                            2 -> {
                                 item(span = { GridItemSpan(3) }) { Spacer(modifier = Modifier.height(10.dp)) }
                                 items(uiState.schoolPlusImages?.images!!){ uri ->
                                     SchoolPhotos(photo = uri)
                                 }
                             }
-                            2 -> {
+                            3 -> {
                                 item(span = { GridItemSpan(3) }) { Spacer(modifier = Modifier.height(10.dp)) }
                                 items(uiState.schoolPlusImages?.school!!.courses, span = { GridItemSpan(3) }) { course ->
                                     ListItem(headlineContent = { Text(text = course) })
                                 }
                             }
-                            3 -> {
+                            4 -> {
                                 item(span = { GridItemSpan(3) }){ SchoolBasicInfo(label = "Mission", value = uiState.schoolPlusImages?.school!!.mission) }
                             }
-                            4 -> {
+                            5 -> {
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Vision", value = uiState.schoolPlusImages?.school!!.vision) }
                             }
-                            5 -> {
+                            6 -> {
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Core Values", value = uiState.schoolPlusImages?.school!!.coreValues) }
                             }
                         }

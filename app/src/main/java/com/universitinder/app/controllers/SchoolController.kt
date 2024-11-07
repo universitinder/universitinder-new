@@ -15,6 +15,7 @@ import com.universitinder.app.models.CourseDurations
 import com.universitinder.app.models.Filter
 import com.universitinder.app.models.LocationPoint
 import com.universitinder.app.models.School
+import com.universitinder.app.models.SchoolAnalytics
 import com.universitinder.app.models.SchoolPlusImages
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -589,6 +590,39 @@ class SchoolController {
             launch(Dispatchers.IO)  {
                 firestore.collection("schools").document(documentID)
                     .update("coordinates", locationPoint)
+                    .addOnSuccessListener { response.complete(true) }
+                    .addOnFailureListener { response.complete(false) }
+            }
+        }
+
+        return response.await()
+    }
+
+    suspend fun getSchoolAnalytics(documentID: String) : List<SchoolAnalytics> {
+        val response = CompletableDeferred<List<SchoolAnalytics>>()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                firestore.collection("schools").document(documentID).collection("analytics").get()
+                    .addOnSuccessListener { response.complete(it.toObjects(SchoolAnalytics::class.java)) }
+                    .addOnFailureListener { response.complete(emptyList()) }
+            }
+        }
+
+        return response.await()
+    }
+
+    suspend fun setSchoolAnalytics(documentID: String, schoolAnalyticsList: List<SchoolAnalytics>) : Boolean{
+        val response = CompletableDeferred<Boolean>()
+        val batch = firestore.batch()
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                schoolAnalyticsList.forEach {
+                    val documentRef = firestore.collection("schools").document(documentID).collection("analytics").document(it.documentID)
+                    batch.set(documentRef, it)
+                }
+                batch.commit()
                     .addOnSuccessListener { response.complete(true) }
                     .addOnFailureListener { response.complete(false) }
             }

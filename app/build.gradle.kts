@@ -122,4 +122,6 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:2.5.3")
 
     implementation("com.opencsv:opencsv:5.7.1")
+
+    implementation ("io.github.ehsannarmani:compose-charts:0.0.16")
 }

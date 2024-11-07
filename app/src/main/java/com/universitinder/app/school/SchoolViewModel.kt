@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
+import com.universitinder.app.models.SchoolAnalytics
+import com.universitinder.app.models.SchoolAnalyticsYears
+import com.universitinder.app.models.StudentByYear
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
 import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationActivity
@@ -40,6 +43,7 @@ class SchoolViewModel(
             viewModelScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
                 val schoolPlusImages = schoolController.getSchoolPlusImageByDocumentID(school.documentID)
+                val schoolAnalyticsList = schoolController.getSchoolAnalytics(school.documentID)
                 if (schoolPlusImages == null) {
                     withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = false) }
                     return@launch
@@ -52,9 +56,84 @@ class SchoolViewModel(
                         _uiState.value = _uiState.value.copy(
                             fetchingLoading = false,
                             schoolPlusImages = schoolPlusImages,
+                            schoolAnalyticsList = schoolAnalyticsList,
                             logo = logo
                         )
                     }
+                    onYearLevelSelected(SchoolAnalyticsYears.ALL.toString())
+                }
+            }
+        }
+    }
+
+    fun onYearLevelSelected(newVal: String) {
+        if (_uiState.value.schoolAnalyticsList.isEmpty()) {
+            _uiState.value = _uiState.value.copy(
+                selectedYear = newVal,
+                schoolAnalytics = SchoolAnalytics()
+            )
+        } else {
+            when(SchoolAnalyticsYears.valueOf(newVal)) {
+                SchoolAnalyticsYears.FIRST -> {
+                    _uiState.value = _uiState.value.copy(
+                        selectedYear = newVal,
+                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FIRST }
+                    )
+                }
+                SchoolAnalyticsYears.SECOND -> {
+                    _uiState.value = _uiState.value.copy(
+                        selectedYear = newVal,
+                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.SECOND }
+                    )
+                }
+                SchoolAnalyticsYears.THIRD -> {
+                    _uiState.value = _uiState.value.copy(
+                        selectedYear = newVal,
+                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.THIRD }
+                    )
+                }
+                SchoolAnalyticsYears.FOURTH -> {
+                    _uiState.value = _uiState.value.copy(
+                        selectedYear = newVal,
+                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FOURTH }
+                    )
+                }
+                SchoolAnalyticsYears.FIFTH -> {
+                    _uiState.value = _uiState.value.copy(
+                        selectedYear = newVal,
+                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FIFTH }
+                    )
+                }
+                SchoolAnalyticsYears.ALL -> {
+                    val aggregatedAnalytics = _uiState.value.schoolAnalyticsList.reduce { acc, analytics ->
+                        SchoolAnalytics(
+                            year = SchoolAnalyticsYears.ALL,
+                            students = acc.students + analytics.students,
+                            faculty = acc.faculty + analytics.faculty,
+                            admitted = acc.admitted + analytics.admitted,
+                            applicants = acc.applicants + analytics.applicants,
+                            graduates = acc.graduates + analytics.graduates
+                        )
+                    }
+
+                    val aggregatedStudentByYear = _uiState.value.schoolAnalyticsList
+                        .flatMap { it.studentByYear }
+                        .groupBy { it.year }
+                        .map { (year, studentList) ->
+                            StudentByYear(
+                                year = year,
+                                students = studentList.sumOf { it.students }
+                            )
+                        }
+
+                    _uiState.value = _uiState.value.copy(
+                        selectedYear = newVal,
+                        schoolAnalytics = aggregatedAnalytics.copy(
+                            admissionRate = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FIRST }.admissionRate,
+                            graduationRate = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FOURTH }.graduationRate,
+                            studentByYear = aggregatedStudentByYear
+                        )
+                    )
                 }
             }
         }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.universitinder.app.components.AffordabilityIndicator
+import com.universitinder.app.components.Analytics
 import com.universitinder.app.components.EmailText
 import com.universitinder.app.components.LinkText
 import com.universitinder.app.components.SchoolBasicInfo
@@ -85,152 +87,185 @@ fun MatchedScreen(matchedViewModel: MatchedViewModel) {
                 .fillMaxWidth(),
             columns = GridCells.Fixed(3)
         ) {
-            item(span = { GridItemSpan(3) }) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(200.dp)
-                            .border(3.dp, MaterialTheme.colorScheme.secondaryContainer, CircleShape)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            modifier = Modifier.fillMaxSize(),
-                            painter = rememberAsyncImagePainter(model = uiState.logo),
-                            contentDescription = "Logo",
-                            contentScale = ContentScale.FillWidth
-                        )
+            when(uiState.schoolPlusImages.school) {
+                null -> {
+                    item(span = { GridItemSpan(3) }){
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
                     }
-                    Text(
-                        modifier = Modifier.padding(top = 8.dp),
-                        text = uiState.schoolPlusImages.school!!.name,
-                        fontSize = 18.sp
-                    )
-                    Row(
-                        modifier = Modifier.padding(top = 12.dp)
-                    ){
+                }
+                else -> {
+                    item(span = { GridItemSpan(3) }) {
                         Column(
-                            modifier = Modifier.padding(horizontal = 8.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Text(text = uiState.schoolPlusImages.school!!.swipeLeft.toString(), fontWeight = FontWeight.Medium)
-                            Text(text = "Left Swipes", fontSize = 12.sp)
-                        }
-                        Column(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Text(text = uiState.schoolPlusImages.school!!.swipeRight.toString(), fontWeight = FontWeight.Medium)
-                            Text(text = "Right Swipes", fontSize = 12.sp)
-                        }
-                    }
-                }
-            }
-            item(span = { GridItemSpan(3) }) {
-                LazyRow(
-                    modifier = Modifier.padding(top = 12.dp)
-                ) {
-                    item {
-                        TextButton(
-                            onClick = { matchedViewModel.onTabChange(0) },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (uiState.activeTab == 0) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                            )
                         ) {
-                            Text(text = "Basic Info")
-                        }
-                    }
-                    item {
-                        TextButton(
-                            onClick = { matchedViewModel.onTabChange(1) },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (uiState.activeTab == 1) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                            Box(
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .border(
+                                        3.dp,
+                                        MaterialTheme.colorScheme.secondaryContainer,
+                                        CircleShape
+                                    )
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    modifier = Modifier.fillMaxSize(),
+                                    painter = rememberAsyncImagePainter(model = uiState.logo),
+                                    contentDescription = "Logo",
+                                    contentScale = ContentScale.FillWidth
+                                )
+                            }
+                            Text(
+                                modifier = Modifier.padding(top = 8.dp),
+                                text = uiState.schoolPlusImages.school!!.name,
+                                fontSize = 18.sp
                             )
-                        ) {
-                            Text(text = "Photos")
+                            Row(
+                                modifier = Modifier.padding(top = 12.dp)
+                            ){
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
+                                    Text(text = uiState.schoolPlusImages.school!!.swipeLeft.toString(), fontWeight = FontWeight.Medium)
+                                    Text(text = "Left Swipes", fontSize = 12.sp)
+                                }
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ){
+                                    Text(text = uiState.schoolPlusImages.school!!.swipeRight.toString(), fontWeight = FontWeight.Medium)
+                                    Text(text = "Right Swipes", fontSize = 12.sp)
+                                }
+                            }
                         }
                     }
-                    item {
-                        TextButton(
-                            onClick = { matchedViewModel.onTabChange(2) },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (uiState.activeTab == 2) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                            )
+                    item(span = { GridItemSpan(3) }) {
+                        LazyRow(
+                            modifier = Modifier.padding(top = 12.dp)
                         ) {
-                            Text(text = "Courses")
+                            item {
+                                TextButton(
+                                    onClick = { matchedViewModel.onTabChange(0) },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = if (uiState.activeTab == 0) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                    )
+                                ) {
+                                    Text(text = "Basic Info")
+                                }
+                            }
+                            item {
+                                TextButton(
+                                    onClick = { matchedViewModel.onTabChange(1) },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = if (uiState.activeTab == 1) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                    )
+                                ) {
+                                    Text(text = "Analytics")
+                                }
+                            }
+                            item {
+                                TextButton(
+                                    onClick = { matchedViewModel.onTabChange(2) },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = if (uiState.activeTab == 2) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                    )
+                                ) {
+                                    Text(text = "Photos")
+                                }
+                            }
+                            item {
+                                TextButton(
+                                    onClick = { matchedViewModel.onTabChange(3) },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = if (uiState.activeTab == 3) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                    )
+                                ) {
+                                    Text(text = "Courses")
+                                }
+                            }
+                            item {
+                                TextButton(
+                                    onClick = { matchedViewModel.onTabChange(4) },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = if (uiState.activeTab == 4) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                    )
+                                ) {
+                                    Text(text = "Mission")
+                                }
+                            }
+                            item {
+                                TextButton(
+                                    onClick = { matchedViewModel.onTabChange(5) },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = if (uiState.activeTab == 5) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                    )
+                                ) {
+                                    Text(text = "Vision")
+                                }
+                            }
+                            item {
+                                TextButton(
+                                    onClick = { matchedViewModel.onTabChange(6) },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = if (uiState.activeTab == 6) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
+                                    )
+                                ) {
+                                    Text(text = "Core Values")
+                                }
+                            }
                         }
                     }
-                    item {
-                        TextButton(
-                            onClick = { matchedViewModel.onTabChange(3) },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (uiState.activeTab == 3) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                            )
-                        ) {
-                            Text(text = "Mission")
+                    when (uiState.activeTab) {
+                        0 -> {
+                            val school = uiState.schoolPlusImages.school
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Email", component = { EmailText(email = school!!.email) }) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Link", component = { LinkText(link = school!!.link) }) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Contact Number", value = school!!.contactNumber) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Province", value = school!!.province) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Municipality/City", value = school!!.municipalityOrCity) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Barangay", value = school!!.barangay) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Street", value = school!!.street) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Minimum", value =  CurrencyFormatter.format(school!!.minimum.toDouble())) }
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Maximum", value =  CurrencyFormatter.format(school!!.maximum.toDouble())) }
+                            item(span = { GridItemSpan(3) }) { AffordabilityIndicator(affordability = school!!.affordability) }
+                        }
+                        1 -> {
+                            item(span = { GridItemSpan(3) } ){
+                                Analytics(
+                                    schoolAnalytics = uiState.schoolAnalytics,
+                                    lineChartLoading = uiState.lineChartLoading,
+                                    selectedYearLevel = uiState.selectedYear,
+                                    onYearLevelSelected = matchedViewModel::onYearLevelSelected
+                                )
+                            }
+                        }
+                        2 -> {
+                            item(span = { GridItemSpan(3) }) { Spacer(modifier = Modifier.height(10.dp)) }
+                            items(uiState.schoolPlusImages.images){ uri ->
+                                SchoolPhotos(photo = uri)
+                            }
+                        }
+                        3 -> {
+                            item(span = { GridItemSpan(3) }) { Spacer(modifier = Modifier.height(10.dp)) }
+                            items(uiState.schoolPlusImages.school!!.courses, span = { GridItemSpan(3) }) { course ->
+                                ListItem(headlineContent = { Text(text = course) })
+                            }
+                        }
+                        4 -> {
+                            item( span = { GridItemSpan(3) } ){ SchoolBasicInfo(label = "Mission", value = uiState.schoolPlusImages.school!!.mission) }
+                        }
+                        5 -> {
+                            item(span = { GridItemSpan(3) } ) { SchoolBasicInfo(label = "Vision", value = uiState.schoolPlusImages.school!!.vision) }
+                        }
+                        6 -> {
+                            item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Core Values", value = uiState.schoolPlusImages.school!!.coreValues) }
                         }
                     }
-                    item {
-                        TextButton(
-                            onClick = { matchedViewModel.onTabChange(4) },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (uiState.activeTab == 4) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                            )
-                        ) {
-                            Text(text = "Vision")
-                        }
-                    }
-                    item {
-                        TextButton(
-                            onClick = { matchedViewModel.onTabChange(5) },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if (uiState.activeTab == 5) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                            )
-                        ) {
-                            Text(text = "Core Values")
-                        }
-                    }
-                }
-            }
-            when (uiState.activeTab) {
-                0 -> {
-                    val school = uiState.schoolPlusImages.school
-//                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Email", value = school!!.email) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Email", component = { EmailText(email = school!!.email) }) }
-//                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Link", value = school!!.link) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Link", component = { LinkText(link = school!!.link) }) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Contact Number", value = school!!.contactNumber) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Province", value = school!!.province) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Municipality/City", value = school!!.municipalityOrCity) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Barangay", value = school!!.barangay) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Street", value = school!!.street) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Minimum", value =  CurrencyFormatter.format(school!!.minimum.toDouble())) }
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Maximum", value =  CurrencyFormatter.format(school!!.maximum.toDouble())) }
-                    item(span = { GridItemSpan(3) }) { AffordabilityIndicator(affordability = school!!.affordability) }
-                }
-                1 -> {
-                    item(span = { GridItemSpan(3) }) { Spacer(modifier = Modifier.height(10.dp)) }
-                    items(uiState.schoolPlusImages.images){ uri ->
-                        SchoolPhotos(photo = uri)
-                    }
-                }
-                2 -> {
-                    item(span = { GridItemSpan(3) }) { Spacer(modifier = Modifier.height(10.dp)) }
-                    items(uiState.schoolPlusImages.school!!.courses, span = { GridItemSpan(3) }) { course ->
-                        ListItem(headlineContent = { Text(text = course) })
-                    }
-                }
-                3 -> {
-                    item( span = { GridItemSpan(3) } ){ SchoolBasicInfo(label = "Mission", value = uiState.schoolPlusImages.school!!.mission) }
-                }
-                4 -> {
-                    item(span = { GridItemSpan(3) } ) { SchoolBasicInfo(label = "Vision", value = uiState.schoolPlusImages.school!!.vision) }
-                }
-                5 -> {
-                    item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Core Values", value = uiState.schoolPlusImages.school!!.coreValues) }
                 }
             }
         }
