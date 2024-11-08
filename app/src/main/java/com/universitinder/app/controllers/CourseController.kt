@@ -28,7 +28,7 @@ class CourseController {
                 firestore.collectionGroup("courses").get()
                     .addOnSuccessListener {
                         val courses = it.toObjects<Course>()
-                        response.complete(courses.distinctBy { course -> course.name })
+                        response.complete(courses.distinctBy { course -> course.name }.filter { course -> course.name != "" })
                     }
                     .addOnFailureListener { response.complete(emptyList()) }
             }

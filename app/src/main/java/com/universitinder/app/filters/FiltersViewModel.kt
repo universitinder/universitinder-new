@@ -38,13 +38,13 @@ class FiltersViewModel(
                 if (filter != null) {
                     _uiState.value = _uiState.value.copy(
                         cities = MUNICIPALITIES_AND_CITIES["Pampanga"]?.toList()!!,
-                        checkedCities = filter.cities.split("___"),
+                        checkedCities = if (filter.cities == "") emptyList() else filter.cities.split("___"),
                         affordability = filter.affordability,
                         minimum = filter.minimum,
                         maximum = filter.maximum,
                         courses = courses.map { course -> course.name },
-                        checkedCourses = filter.courses.split("___"),
-                        checkedProvinces = filter.provinces.split("___"),
+                        checkedCourses = if (filter.courses == "") emptyList() else filter.courses.split("___"),
+                        checkedProvinces = if (filter.provinces == "") emptyList() else  filter.provinces.split("___"),
                         checkedPrivatePublic = listOf(if (filter.private) "PRIVATE" else "", if (filter.public) "PUBLIC" else ""),
                         checkedDurations = listOf(if (filter.has2YearCourse) "2 YEARS" else "", if (filter.has3YearCourse) "3 YEARS" else "", if (filter.has4YearCourse) "4 YEARS" else "", if (filter.has5YearCourse) "5 YEARS" else "")
                     )

@@ -23,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import okhttp3.internal.toImmutableList
 
 class SchoolController {
     private val firestore = Firebase.firestore
@@ -80,23 +81,26 @@ class SchoolController {
 
     /** CONDITION FOR INCLUDING SCHOOL WITH SPECIFIC COURSES **/
     private fun schoolIncludeCourses(schoolCourses: List<String>, coursesFilter: List<String>) : Boolean {
-        return schoolCourses.intersect(coursesFilter.toSet()).isNotEmpty()
+        val normalizedSchoolCourses = schoolCourses.map { it.lowercase().trim() }
+        val normalizedCoursesFilter = coursesFilter.map { it.lowercase().trim() }.toSet()
+        return coursesFilter.isEmpty() || normalizedSchoolCourses.intersect(normalizedCoursesFilter).isNotEmpty()
     }
     /** CONDITION FOR INCLUDING SCHOOL IN SPECIFIC MUNICIPALITY OR CITY **/
     private fun schoolInMunicipalityOrCity(schoolMunicipalityOrCity: String, cities: List<String>) : Boolean {
-        return cities.contains(schoolMunicipalityOrCity)
+        return cities.isEmpty() || cities.contains(schoolMunicipalityOrCity)
     }
     /** CONDITION FOR INCLUDING SCHOOL WITH SPECIFIC COURSE DURATIONS **/
     private fun schoolHasCourseDurations(school: School, has2YearCourse: Boolean, has3YearCourse: Boolean,  has4YearCourse: Boolean, has5YearCourse: Boolean) : Boolean{
-        return school.has2YearCourse == has2YearCourse || school.has3YearCourse == has3YearCourse || school.has4YearCourse == has4YearCourse || school.has5YearCourse || has5YearCourse
+        return (!has2YearCourse && !has3YearCourse && !has4YearCourse && !has5YearCourse) ||
+            (school.has2YearCourse == has2YearCourse || school.has3YearCourse == has3YearCourse || school.has4YearCourse == has4YearCourse || school.has5YearCourse)
     }
     /** CONDITION FOR INCLUDING SCHOOL THAT ARE EITHER PRIVATE OR PUBLIC OR BOTH **/
     private fun schoolMatchPrivatePublic(school: School, isPrivate: Boolean, isPublic: Boolean) : Boolean {
-        return school.private == isPrivate || school.public == isPublic
+        return (!isPublic && !isPrivate) || (school.private == isPrivate || school.public == isPublic)
     }
     /** CONDITION FOR INCLUDING SCHOOL THAT MATCH GIVEN AFFORDABILITY **/
     private fun schoolMatchAffordability(schoolAffordability: Int, filterAffordability: Int) : Boolean {
-        return schoolAffordability == filterAffordability
+        return filterAffordability == 0 || schoolAffordability == filterAffordability
     }
 
     /**
@@ -105,72 +109,32 @@ class SchoolController {
      * Input user filter and location
      * output list of SchoolPlusImages
      * **/
-    suspend fun getFilteredSchoolThree(filter: Filter, userPoint: LocationPoint) : List<SchoolPlusImages> {
-        val sortedSchools = CompletableDeferred<List<SchoolPlusImages>>()
-        val schools = CompletableDeferred<List<Pair<SchoolPlusImages, Double>>>()
-        val cities = filter.cities.split("___").toList()
-        val courses = filter.courses.split("___").toList()
-
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                // FETCH ALL SCHOOLS
-                val fetchedSchools = firestore.collection("schools").get().await()
-                // RUN FILTER BY CALLING ALL MATCHING FUNCTIONS
-                val filteredFetchedSchools = fetchedSchools.documents.filter {
-                    val schoolObject = it.toObject(School::class.java)
-
-                    schoolInMunicipalityOrCity(schoolObject?.municipalityOrCity!!, cities) && (schoolHasCourseDurations(schoolObject, filter.has2YearCourse, filter.has3YearCourse, filter.has4YearCourse, filter.has5YearCourse) ||
-                            schoolMatchPrivatePublic(schoolObject, filter.private, filter.public) || schoolIncludeCourses(schoolObject.courses, courses) || schoolMatchAffordability(schoolObject.affordability, filter.affordability))
-                }
-                // MAP LIST OF SCHOOLS TO SCHOOLPLUSIMAGE
-                val schoolPlusImages = filteredFetchedSchools.map { document ->
-                    val schoolObject = document.toObject(School::class.java)
-                    val storageRef = storage.reference
-                    // FETCH ALL IMAGES OF SCHOOL
-                    val listOfItems = storageRef.child("schools/${schoolObject?.documentID}").listAll().await()
-                    async {
-                        val uris = listOfItems.items.map {
-                            val downloadURL = it.downloadUrl.await()
-                            downloadURL
-                        }
-                        val schoolPoint = schoolObject?.coordinates!!
-                        // CALCULATE THE DISTANCE BETWEEN THE USER AND THE SCHOOL USING schoolPoint and userPoint
-                        val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(userPoint = userPoint, schoolPoint = schoolPoint)
-
-                        // RETURN THE SCHOOL OBJECT WITH IMAGES
-                        Pair(SchoolPlusImages(id = schoolObject.documentID, school = document.toObject(School::class.java), images = uris), distance)
-                    }.await()
-                }
-                schools.complete(schoolPlusImages)
-            }
-            launch {
-                val awaitedSchools = schools.await()
-                // SORT LIST BASED ON DISTANCE AND SWIPE RIGHTS.
-                // DISTANCE IS MORE PRIORITY, THEN SWIPE RIGHTS
-                // MORE SWIPE RIGHTS = TOP SCHOOL
-                sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<SchoolPlusImages, Double>> { it.second }.thenByDescending { it.first.school!!.swipeRight }).map { it.first })
-            }
-        }
-
-        return sortedSchools.await()
-    }
-
     suspend fun getFilteredSchoolFour(filter: Filter, userPoint: LocationPoint) : List<School> {
         val sortedSchools = CompletableDeferred<List<School>>()
         val schools = CompletableDeferred<List<Pair<School, Double>>>()
-        val cities = filter.cities.split("___").toList()
-        val courses = filter.courses.split("___").toList()
+        val cities : List<String> = if (filter.cities == "") emptyList() else filter.cities.split("___").toImmutableList()
+        val courses : List<String> = if (filter.courses == "") emptyList() else filter.courses.split("___").toImmutableList()
 
         coroutineScope {
             launch(Dispatchers.IO) {
                 // FETCH ALL SCHOOLS
                 val fetchedSchools = firestore.collection("schools").get().await()
                 // RUN FILTER BY CALLING ALL MATCHING FUNCTIONS
-                val filteredFetchedSchools = fetchedSchools.documents.filter {
-                    val schoolObject = it.toObject(School::class.java)
+                val filteredFetchedSchools = fetchedSchools.documents.filter { school ->
+                    val schoolObject = school.toObject(School::class.java)
 
-                    schoolInMunicipalityOrCity(schoolObject?.municipalityOrCity!!, cities) && (schoolHasCourseDurations(schoolObject, filter.has2YearCourse, filter.has3YearCourse, filter.has4YearCourse, filter.has5YearCourse) ||
-                            schoolMatchPrivatePublic(schoolObject, filter.private, filter.public) || schoolIncludeCourses(schoolObject.courses, courses) || schoolMatchAffordability(schoolObject.affordability, filter.affordability))
+                    // Define conditions
+                    val inCity = schoolInMunicipalityOrCity(schoolObject!!.municipalityOrCity, cities)
+                    val hasDuration = schoolHasCourseDurations(schoolObject, filter.has2YearCourse, filter.has3YearCourse, filter.has4YearCourse, filter.has5YearCourse)
+                    val matchPrivatePublic = schoolMatchPrivatePublic(schoolObject, filter.private, filter.public)
+                    val includesCourses = schoolIncludeCourses(schoolObject.courses, courses)
+                    val matchAffordability = schoolMatchAffordability(schoolObject.affordability, filter.affordability)
+
+                    // At least one true condition to include, and no condition that must be false
+                    val shouldInclude = listOf(inCity, hasDuration, matchPrivatePublic, includesCourses, matchAffordability).any { it }
+
+                    // Only include if at least one condition is true and none of the conditions are explicitly false
+                    shouldInclude && !(listOf(inCity, hasDuration, matchPrivatePublic, includesCourses, matchAffordability).contains(false))
                 }
                 val mappedFilteredSchools = filteredFetchedSchools.map {
                     val schoolObject = it.toObject(School::class.java)
@@ -189,48 +153,6 @@ class SchoolController {
                 // DISTANCE IS MORE PRIORITY, THEN SWIPE RIGHTS
                 // MORE SWIPE RIGHTS = TOP SCHOOL
                 sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<School, Double>> { it.second }.thenByDescending { it.first.swipeRight }).map { it.first })
-            }
-        }
-
-        return sortedSchools.await()
-    }
-
-    suspend fun getTopSchools(userPoint: LocationPoint) : List<SchoolPlusImages> {
-        val sortedSchools = CompletableDeferred<List<SchoolPlusImages>>()
-        val schools = CompletableDeferred<List<Pair<SchoolPlusImages, Double>>>()
-
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                val combinedSchools = firestore.collection("schools").get().await()
-                val schoolPlusImages = combinedSchools.map { document ->
-                    val schoolObject = document.toObject(School::class.java)
-                    val storageRef = storage.reference
-                    val listOfItems = storageRef.child("schools/${schoolObject.documentID}").listAll().await()
-                    async {
-                        val uris = listOfItems.items.map {
-                            val downloadURL = it.downloadUrl.await()
-                            downloadURL
-                        }
-                        val schoolPoint = schoolObject.coordinates
-                        val distance = DistanceCalculator.calculateDistanceBetweenUserAndSchool(
-                            userPoint = userPoint,
-                            schoolPoint = schoolPoint
-                        )
-
-                        Pair(
-                            SchoolPlusImages(
-                                id = schoolObject.documentID,
-                                school = document.toObject(School::class.java),
-                                images = uris
-                            ), distance
-                        )
-                    }.await()
-                }
-                schools.complete(schoolPlusImages)
-            }
-            launch {
-                val awaitedSchools = schools.await()
-                sortedSchools.complete(awaitedSchools.sortedWith(compareBy<Pair<SchoolPlusImages, Double>> { it.second }.thenByDescending { it.first.school!!.swipeRight }).map { it.first })
             }
         }
 
