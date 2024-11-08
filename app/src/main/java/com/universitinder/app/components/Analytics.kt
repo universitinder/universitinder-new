@@ -185,8 +185,9 @@ fun StyledCircularProgressIndicator(
 
 @Composable
 fun AnalyticsStudentsPerYearLineChart(loading: Boolean, studentPerYearList: List<StudentByYear>, modifier: Modifier) {
-    val labelValues = studentPerYearList.map { it.year }
-    val dataValues = studentPerYearList.map { it.students }
+    val sorted = studentPerYearList.sortedBy { it.year }
+    val labelValues = sorted.map { it.year }
+    val dataValues = sorted.map { it.students }
 
     Card(
         modifier = modifier.padding(vertical = 4.dp),
