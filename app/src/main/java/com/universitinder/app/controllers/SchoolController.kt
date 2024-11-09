@@ -98,6 +98,16 @@ class SchoolController {
     private fun schoolMatchPrivatePublic(school: School, isPrivate: Boolean, isPublic: Boolean) : Boolean {
         return (!isPublic && !isPrivate) || (school.private == isPrivate || school.public == isPublic)
     }
+    /** CONDITION FOR INCLUDING SCHOOL THAT MATCH GIVEN MIN MAX **/
+    private fun schoolMatchMinMax(schoolMin: Int, schoolMax: Int, filterMin: Int, filterMax: Int) : Boolean {
+        // Assume that 0 or negative filter values indicate no specific min/max filtering
+        val minFilterActive = filterMin > 0
+        val maxFilterActive = filterMax > 0
+
+        // Apply min/max filtering logic based on active filters
+        return (!minFilterActive || schoolMin >= filterMin) &&
+                (!maxFilterActive || schoolMax <= filterMax)
+    }
     /** CONDITION FOR INCLUDING SCHOOL THAT MATCH GIVEN AFFORDABILITY **/
     private fun schoolMatchAffordability(schoolAffordability: Int, filterAffordability: Int) : Boolean {
         return filterAffordability == 0 || schoolAffordability == filterAffordability
@@ -128,13 +138,14 @@ class SchoolController {
                     val hasDuration = schoolHasCourseDurations(schoolObject, filter.has2YearCourse, filter.has3YearCourse, filter.has4YearCourse, filter.has5YearCourse)
                     val matchPrivatePublic = schoolMatchPrivatePublic(schoolObject, filter.private, filter.public)
                     val includesCourses = schoolIncludeCourses(schoolObject.courses, courses)
+                    val matchMinMax = schoolMatchMinMax(schoolObject.minimum, schoolObject.maximum, filter.minimum, filter.maximum)
                     val matchAffordability = schoolMatchAffordability(schoolObject.affordability, filter.affordability)
 
                     // At least one true condition to include, and no condition that must be false
-                    val shouldInclude = listOf(inCity, hasDuration, matchPrivatePublic, includesCourses, matchAffordability).any { it }
+                    val shouldInclude = listOf(inCity, hasDuration, matchPrivatePublic, includesCourses, matchMinMax, matchAffordability).any { it }
 
                     // Only include if at least one condition is true and none of the conditions are explicitly false
-                    shouldInclude && !(listOf(inCity, hasDuration, matchPrivatePublic, includesCourses, matchAffordability).contains(false))
+                    shouldInclude && !(listOf(inCity, hasDuration, matchPrivatePublic, includesCourses, matchMinMax, matchAffordability).contains(false))
                 }
                 val mappedFilteredSchools = filteredFetchedSchools.map {
                     val schoolObject = it.toObject(School::class.java)
