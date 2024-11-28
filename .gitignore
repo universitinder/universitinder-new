@@ -15,3 +15,12 @@
 local.properties
 google-services.json
 /app/src/main/assets/schools.csv
+.idea/compiler.xml
+.idea/deploymentTargetSelector.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/runConfigurations.xml
+.idea/compiler.xml
+.idea/compiler.xml
+.idea/gradle.xml
+/.idea
