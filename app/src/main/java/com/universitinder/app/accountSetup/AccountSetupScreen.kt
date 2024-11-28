@@ -43,7 +43,8 @@ fun AccountSetupScreen(accountSetupViewModel: AccountSetupViewModel) {
                 Text(
                     text = "Account Information",
                     fontSize = 36.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 40.sp
                 )
                 Text(
                     text = "Please fill in the form to continue",

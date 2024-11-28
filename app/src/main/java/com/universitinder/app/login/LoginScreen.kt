@@ -131,12 +131,12 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                             verticalAlignment = Alignment.CenterVertically
                         ){
                             Checkbox(checked = uiState.showPassword, onCheckedChange = loginViewModel::onShowPasswordChange)
-                            Text(text = "Show Password", fontSize = 16.sp)
+                            Text(text = "Show Password", fontSize = 14.sp)
                         }
                         Text(
                             modifier = Modifier.clickable { loginViewModel.startForgotPasswordActivity() },
                             text = "Forgot Password",
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
