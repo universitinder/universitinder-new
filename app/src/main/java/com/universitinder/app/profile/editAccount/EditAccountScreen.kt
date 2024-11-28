@@ -113,8 +113,10 @@ fun EditAccountScreen(editAccountViewModel: EditAccountViewModel) {
                         .fillMaxWidth()
                         .padding(vertical = 10.dp),
                     label = { Text(text = "Contact Number") },
+                    leadingIcon = { Text(text = "+63 ", modifier = Modifier.padding(start = 16.dp)) },
                     value = uiState.contactNumber,
-                    onValueChange = editAccountViewModel::onContactNumberChange
+                    onValueChange = editAccountViewModel::onContactNumberChange,
+                    placeholder = { Text(text = "09XXXXXXXXX") }
                 )
                 if (uiState.resultMessage.show)
                     Text(text = uiState.resultMessage.message, color = if (uiState.resultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, fontSize = 12.sp)

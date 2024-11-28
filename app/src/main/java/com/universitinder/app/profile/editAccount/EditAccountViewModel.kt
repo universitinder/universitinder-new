@@ -42,7 +42,22 @@ class EditAccountViewModel(
     fun onEmailChange(newVal: String) { _uiState.value = _uiState.value.copy(email = newVal) }
     fun onNameChange(newVal: String) { _uiState.value = _uiState.value.copy(name = newVal) }
     fun onAddressChange(newVal: String) { _uiState.value = _uiState.value.copy(address = newVal) }
-    fun onContactNumberChange(newVal: String) { _uiState.value = _uiState.value.copy(contactNumber = newVal) }
+    fun onContactNumberChange(newVal: String) {
+        if (newVal.isEmpty() || newVal.all { it.isDigit() } && newVal.length <= 11) {
+            _uiState.value = _uiState.value.copy(contactNumber = newVal)
+        }
+    }
+
+    private fun validateContactNumber(): String? {
+        val number = _uiState.value.contactNumber
+        return when {
+            number.isEmpty() -> "Contact number is required"
+            !number.startsWith("09") -> "Contact number must start with 09"
+            number.length != 11 -> "Contact number must be 11 digits"
+            !number.all { it.isDigit() } -> "Contact number must contain only numbers"
+            else -> null
+        }
+    }
 
     private fun fieldsNotFilled() : Boolean {
         return _uiState.value.email.isEmpty() || _uiState.value.email.isBlank() || _uiState.value.name.isEmpty() ||
@@ -61,6 +76,14 @@ class EditAccountViewModel(
     }
 
     suspend fun updateUser() {
+
+        val contactError = validateContactNumber()
+        if (contactError != null) {
+            showMessage(ResultMessageType.FAILED, contactError)
+            return
+        }
+
+
         if (fieldsNotFilled()) {
             showMessage(ResultMessageType.FAILED, "Please fill in all the fields")
             return
