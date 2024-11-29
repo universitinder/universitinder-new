@@ -12,5 +12,6 @@ data class HomeUiState(
     val images: List<List<Uri>> = listOf(),
     val middleClickLoading: Boolean = false,
     val currentIndex: Int = -1,
-    val filter: Filter = Filter()
+    val filter: Filter = Filter(),
+    val isLocationEnabled: Boolean = true
 )

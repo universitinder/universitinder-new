@@ -1,9 +1,11 @@
 package com.universitinder.app.home
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
@@ -60,6 +62,10 @@ class HomeViewModel(
         override fun onLocationResult(locationResult: LocationResult) {
             for (location in locationResult.locations) {
                 viewModelScope.launch {
+                    checkLocationEnabled()
+                    if (!_uiState.value.isLocationEnabled) {
+                        return@launch
+                    }
                     _locationState.emit(location)
                     getCurrentLocation()
                     refresh()
@@ -70,6 +76,12 @@ class HomeViewModel(
     }
 
     fun startLocationUpdates() {
+        checkLocationEnabled()
+        if (!_uiState.value.isLocationEnabled) {
+            _uiState.value = _uiState.value.copy(fetchingLoading = true)
+            return
+        }
+        
         if (ActivityCompat.checkSelfPermission(
                 application,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -91,6 +103,7 @@ class HomeViewModel(
     }
 
     init {
+        checkLocationEnabled()
         getCurrentLocation()
         refresh()
     }
@@ -104,10 +117,23 @@ class HomeViewModel(
     fun refresh() {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
-                withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(fetchingLoading = true) }
+                withContext(Dispatchers.Main) { 
+                    checkLocationEnabled()
+                    _uiState.value = _uiState.value.copy(fetchingLoading = true) 
+                }
+
+                if (!_uiState.value.isLocationEnabled) {
+                    return@launch
+                }
+                
                 val filter = filterController.getFilter(currentUser.email)
                 if (filter != null && !isFilterClear(filter)) {
-                    if (locationState.value == null) return@launch
+                    if (locationState.value == null) {
+                        withContext(Dispatchers.Main) {
+                            _uiState.value = _uiState.value.copy(fetchingLoading = false)
+                        }
+                        return@launch
+                    }
                     // GET ALL FILTERED SCHOOLS
                     val schools = schoolController.getFilteredSchoolFour(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
@@ -119,7 +145,12 @@ class HomeViewModel(
                         )
                     }
                 } else {
-                    if (locationState.value == null) return@launch
+                    if (locationState.value == null) {
+                        withContext(Dispatchers.Main) {
+                            _uiState.value = _uiState.value.copy(fetchingLoading = false)
+                        }
+                        return@launch
+                    }
                     val schools = schoolController.getTopSchoolsTwo(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
@@ -199,6 +230,12 @@ class HomeViewModel(
     }
 
     fun getCurrentLocation() {
+        checkLocationEnabled()
+        if (!_uiState.value.isLocationEnabled) {
+            _uiState.value = _uiState.value.copy(fetchingLoading = true)
+            return
+        }
+
         if (ActivityCompat.checkSelfPermission(
                 application,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -208,8 +245,21 @@ class HomeViewModel(
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                viewModelScope.launch { _locationState.emit(location) }
+                viewModelScope.launch { 
+                    _locationState.emit(location)
+                }
             }
         }
+    }
+
+    private fun checkLocationEnabled() {
+        val locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                               locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        
+        _uiState.value = _uiState.value.copy(
+            isLocationEnabled = isLocationEnabled,
+            fetchingLoading = !isLocationEnabled
+        )
     }
 }

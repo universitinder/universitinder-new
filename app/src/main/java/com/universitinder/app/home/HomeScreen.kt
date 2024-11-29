@@ -84,7 +84,19 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                 when (uiState.fetchingLoading) {
                     true -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator()
+                                if (!uiState.isLocationEnabled) {
+                                    Text(
+                                        text = "Please turn on your location",
+                                        modifier = Modifier.padding(top = 16.dp),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
                         }
                     }
                     false -> {

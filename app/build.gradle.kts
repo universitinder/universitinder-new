@@ -124,4 +124,6 @@ dependencies {
     implementation("com.opencsv:opencsv:5.7.1")
 
     implementation ("io.github.ehsannarmani:compose-charts:0.0.16")
+
+    implementation ("com.google.android.gms:play-services-location:21.1.0")
 }
