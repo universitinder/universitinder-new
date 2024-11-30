@@ -77,7 +77,7 @@ fun AccountSetupScreen(accountSetupViewModel: AccountSetupViewModel) {
                     leadingIcon = { Text(text = "+63 ", modifier = Modifier.padding(start = 16.dp)) },
                     value = uiState.contactNumber,
                     onValueChange = accountSetupViewModel::onContactNumberChange,
-                    placeholder = { Text(text = "09XXXXXXXXX") }
+                    placeholder = { Text(text = "9XXXXXXXXX") }
                 )
 
                 if (uiState.resultMessage.show)

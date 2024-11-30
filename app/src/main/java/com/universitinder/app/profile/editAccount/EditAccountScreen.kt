@@ -116,7 +116,7 @@ fun EditAccountScreen(editAccountViewModel: EditAccountViewModel) {
                     leadingIcon = { Text(text = "+63 ", modifier = Modifier.padding(start = 16.dp)) },
                     value = uiState.contactNumber,
                     onValueChange = editAccountViewModel::onContactNumberChange,
-                    placeholder = { Text(text = "09XXXXXXXXX") }
+                    placeholder = { Text(text = "9XXXXXXXXX") }
                 )
                 if (uiState.resultMessage.show)
                     Text(text = uiState.resultMessage.message, color = if (uiState.resultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, fontSize = 12.sp)

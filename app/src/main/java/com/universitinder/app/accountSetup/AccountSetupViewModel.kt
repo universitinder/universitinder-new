@@ -39,7 +39,7 @@ class AccountSetupViewModel(
     fun onNameChange(newVal: String) { _uiState.value = _uiState.value.copy(name = newVal) }
     fun onAddressChange(newVal: String) { _uiState.value = _uiState.value.copy(address = newVal) }
     fun onContactNumberChange(newVal: String) {
-        if (newVal.isEmpty() || newVal.all { it.isDigit() } && newVal.length <= 11) {
+        if (newVal.isEmpty() || newVal.all { it.isDigit() } && newVal.length <= 10) {
             _uiState.value = _uiState.value.copy(contactNumber = newVal)
         }
     }
@@ -64,8 +64,8 @@ class AccountSetupViewModel(
         val number = _uiState.value.contactNumber
         return when {
             number.isEmpty() -> "Contact number is required"
-            !number.startsWith("09") -> "Contact number must start with 09"
-            number.length != 11 -> "Contact number must be 11 digits"
+            !number.startsWith("9") -> "Contact number must start with 9"
+            number.length != 10 -> "Contact number must be 10 digits"
             !number.all { it.isDigit() } -> "Contact number must contain only numbers"
             else -> null
         }
