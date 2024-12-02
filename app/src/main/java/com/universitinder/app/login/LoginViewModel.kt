@@ -67,8 +67,13 @@ class LoginViewModel(
                     _uiState.value = _uiState.value.copy(loginLoading = false)
                 }
             }
-            .addOnFailureListener {
-                showMessage(ResultMessageType.FAILED, it.message.toString())
+            .addOnFailureListener { exception ->
+                val errorMessage = if (exception.message?.contains("credential") == true) {
+                    "Account not found or not yet registered"
+                } else {
+                    exception.message.toString()
+                }
+                showMessage(ResultMessageType.FAILED, errorMessage)
                 _uiState.value = _uiState.value.copy(loginLoading = false)
             }
     }

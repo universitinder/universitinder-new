@@ -40,7 +40,11 @@ class EditAccountViewModel(
     }
 
     fun onEmailChange(newVal: String) { _uiState.value = _uiState.value.copy(email = newVal) }
-    fun onNameChange(newVal: String) { _uiState.value = _uiState.value.copy(name = newVal) }
+    fun onNameChange(newVal: String) { 
+        if (newVal.isEmpty() || newVal.all { !it.isDigit() }) {
+            _uiState.value = _uiState.value.copy(name = newVal) 
+        }
+    }
     fun onAddressChange(newVal: String) { _uiState.value = _uiState.value.copy(address = newVal) }
     fun onContactNumberChange(newVal: String) {
         if (newVal.isEmpty() || newVal.all { it.isDigit() } && newVal.length <= 10) {
