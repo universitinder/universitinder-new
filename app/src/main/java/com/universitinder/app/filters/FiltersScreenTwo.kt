@@ -40,6 +40,7 @@ import com.universitinder.app.filters.privatePublic.PrivatePublicFilterScreen
 import com.universitinder.app.filters.province.ProvinceFilterScreen
 import com.universitinder.app.models.COURSE_DURATION
 import com.universitinder.app.models.ResultMessageType
+import kotlin.text.toIntOrNull
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable

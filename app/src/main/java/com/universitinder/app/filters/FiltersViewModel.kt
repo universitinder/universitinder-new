@@ -40,8 +40,8 @@ class FiltersViewModel(
                         cities = MUNICIPALITIES_AND_CITIES["Pampanga"]?.toList()!!,
                         checkedCities = if (filter.cities == "") emptyList() else filter.cities.split("___"),
                         affordability = filter.affordability,
-                        minimum = filter.minimum,
-                        maximum = filter.maximum,
+                        minimum = filter.minimum.toString(), // Convert to String
+                        maximum = filter.maximum.toString(), // Convert to String
                         courses = courses.map { course -> course.name },
                         checkedCourses = if (filter.courses == "") emptyList() else filter.courses.split("___"),
                         checkedProvinces = if (filter.provinces == "") emptyList() else  filter.provinces.split("___"),
@@ -55,14 +55,11 @@ class FiltersViewModel(
     }
 
     fun onMinimumChange(newVal: String) {
-        _uiState.value =
-            _uiState.value.copy(minimum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt())
+        _uiState.value = _uiState.value.copy(minimum = newVal)
     }
 
     fun onMaximumChange(newVal: String) {
-        _uiState.value =
-            _uiState.value.copy(maximum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt())
-        determineAffordability(_uiState.value.maximum)
+        _uiState.value = _uiState.value.copy(maximum = newVal)
     }
 
     private fun onAffordabilityChange(newVal: Int) {
@@ -122,8 +119,8 @@ class FiltersViewModel(
             checkedCourses = emptyList(),
             checkedCities = emptyList(),
             checkedProvinces = emptyList(),
-            minimum = 0,
-            maximum = 0,
+            minimum = "",
+            maximum = "",
             affordability = 0
         )
     }
@@ -138,8 +135,8 @@ class FiltersViewModel(
                         provinces = _uiState.value.checkedProvinces.joinToString("___"),
                         cities = _uiState.value.checkedCities.joinToString("___"),
                         affordability = _uiState.value.affordability,
-                        minimum = _uiState.value.minimum,
-                        maximum = _uiState.value.maximum,
+                        minimum = _uiState.value.minimum.toIntOrNull() ?: 0, // Convert to Int with default value
+                        maximum = _uiState.value.maximum.toIntOrNull() ?: 0, // Convert to Int with default value
                         courses = _uiState.value.checkedCourses.joinToString("___"),
                         public = _uiState.value.checkedPrivatePublic.contains("PUBLIC"),
                         private = _uiState.value.checkedPrivatePublic.contains("PRIVATE"),

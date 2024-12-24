@@ -61,12 +61,29 @@ class RegistrationViewModel(
         )
     }
 
+    private fun validatePassword(password: String): Boolean {
+        if (password.length < 12) return false // Minimum 12 characters
+
+        val hasUppercase = password.any { it.isUpperCase() }
+        val hasLowercase = password.any { it.isLowerCase() }
+        val hasSpecialChar = password.any { !it.isLetterOrDigit() }
+
+        return hasUppercase && hasLowercase && hasSpecialChar
+    }
+
     fun register() {
         if (fieldsNotFilled()) {
             return showMessage(ResultMessageType.FAILED, "Please fill in all the fields")
         }
         if (!passwordMatching()) {
             return showMessage(ResultMessageType.FAILED, "Passwords not Matching")
+        }
+
+        if (!validatePassword(_uiState.value.password)) {
+            return showMessage(ResultMessageType.FAILED, "Password must meet the requirements. \nMinimum 12 letter\n" +
+                    "at least 1 Upper Case\n" +
+                    "at least 1 Lower Case\n" +
+                    "at least 1 Special Character")
         }
 
         _uiState.value = _uiState.value.copy(registrationLoading = true)

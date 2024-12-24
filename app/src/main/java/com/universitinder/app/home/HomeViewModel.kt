@@ -117,15 +117,18 @@ class HomeViewModel(
     fun refresh() {
         if (currentUser != null) {
             viewModelScope.launch(Dispatchers.IO) {
-                withContext(Dispatchers.Main) { 
+                withContext(Dispatchers.Main) {
                     checkLocationEnabled()
-                    _uiState.value = _uiState.value.copy(fetchingLoading = true) 
+                    _uiState.value = _uiState.value.copy(fetchingLoading = true)
                 }
 
                 if (!_uiState.value.isLocationEnabled) {
                     return@launch
                 }
-                
+
+                // Get the user's matched schools
+                val matchedSchools = userController.getMatchedSchools(currentUser)
+
                 val filter = filterController.getFilter(currentUser.email)
                 if (filter != null && !isFilterClear(filter)) {
                     if (locationState.value == null) {
@@ -135,13 +138,19 @@ class HomeViewModel(
                         return@launch
                     }
                     // GET ALL FILTERED SCHOOLS
-                    val schools = schoolController.getFilteredSchoolFour(filter = filter, LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    val schools = schoolController.getFilteredSchoolFour(
+                        filter = filter,
+                        LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!)
+                    )
+                    // Filter out matched schools
+                    val filteredSchools = schools.filterNot { matchedSchools.contains(it.name) }
+
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
                             fetchingLoading = false,
-                            schoolsTwo = schools,
-                            images = schools.map { listOf() }
+                            schoolsTwo = filteredSchools,
+                            images = filteredSchools.map { listOf() }
                         )
                     }
                 } else {
@@ -152,12 +161,15 @@ class HomeViewModel(
                         return@launch
                     }
                     val schools = schoolController.getTopSchoolsTwo(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
+                    // Filter out matched schools
+                    val filteredSchools = schools.filterNot { matchedSchools.contains(it.name) }
+
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
                             currentIndex = 0,
                             fetchingLoading = false,
-                            schoolsTwo = schools,
-                            images = schools.map { listOf() }
+                            schoolsTwo = filteredSchools,
+                            images = filteredSchools.map { listOf() }
                         )
                     }
                 }
@@ -174,7 +186,7 @@ class HomeViewModel(
             downloadURL
         }
         val mutableList = _uiState.value.images.toMutableList()
-        mutableList[_uiState.value.currentIndex] = uris
+        mutableList[_uiState.value.current  Index] = uris
         _uiState.value = _uiState.value.copy(images = mutableList.toList())
     }
 

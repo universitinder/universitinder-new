@@ -141,7 +141,13 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                         Text(text = "Show Password", fontSize = 16.sp)
                     }
                     if (uiState.resultMessage.show)
-                        Text(text = uiState.resultMessage.message, color = if (uiState.resultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, fontSize = 12.sp)
+                        Text(
+                            text = uiState.resultMessage.message,
+                            color = if (uiState.resultMessage.type == ResultMessageType.FAILED) Color.Red else MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     Column (
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -157,7 +163,7 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                             else
                                 Text("Register")
                         }
-                        Text(text = "By Clicking Register, you agree on out Privacy Policy for Universitinder", textAlign = TextAlign.Center, fontSize = 14.sp)
+                        Text(text = "By Clicking Register, you agree on our Privacy Policy for Universitinder", textAlign = TextAlign.Center, fontSize = 14.sp)
                     }
                 }
                 Column(
