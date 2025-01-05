@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.universitinder.app.controllers.FaqController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import com.universitinder.app.school.schoolFAQs.createFAQ.CreateFAQActivity
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.universitinder.app.helpers.ActivityStarterHelper
 
 class SchoolFAQsViewModel(
     private val school: School,

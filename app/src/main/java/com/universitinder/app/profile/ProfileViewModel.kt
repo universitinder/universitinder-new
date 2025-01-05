@@ -9,7 +9,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.universitinder.app.MainActivity
 import com.universitinder.app.changePassword.ChangePasswordActivity
 import com.universitinder.app.controllers.UserController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.login.LoginActivity
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserState
@@ -25,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.universitinder.app.helpers.ActivityStarterHelper
 
 class ProfileViewModel(
     private val auth: FirebaseAuth,

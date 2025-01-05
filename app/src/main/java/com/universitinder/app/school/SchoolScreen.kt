@@ -230,8 +230,7 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Municipality/City", value = school!!.municipalityOrCity) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Barangay", value = school!!.barangay) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Street", value = school!!.street) }
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Minimum", value =  CurrencyFormatter.format(school!!.minimum.toDouble())) }
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Maximum", value =  CurrencyFormatter.format(school!!.maximum.toDouble())) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Tuition", value =  CurrencyFormatter.format(school!!.maximum.toDouble())) }
                                 item(span = { GridItemSpan(3) }) { AffordabilityIndicator(affordability = school!!.affordability) }
                             }
                             1 -> {

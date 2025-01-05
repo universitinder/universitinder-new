@@ -7,8 +7,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.universitinder.app.controllers.UserController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.ui.theme.UniversitinderTheme
+import com.universitinder.app.helpers.ActivityStarterHelper
 
 class RegistrationActivity : AppCompatActivity() {
 

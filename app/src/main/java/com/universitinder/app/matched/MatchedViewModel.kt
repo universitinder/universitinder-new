@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.faq.FAQActivity
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.SchoolAnalytics
 import com.universitinder.app.models.SchoolAnalyticsYears
 import com.universitinder.app.models.SchoolPlusImages
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.universitinder.app.helpers.ActivityStarterHelper
 
 class MatchedViewModel(
     val school: SchoolPlusImages,

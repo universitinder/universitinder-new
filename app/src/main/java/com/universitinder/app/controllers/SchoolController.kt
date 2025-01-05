@@ -45,6 +45,20 @@ class SchoolController {
         return schools.await()
     }
 
+    suspend fun isSchoolEmail(email: String): Boolean {
+        val school = firestore.collection("schools").whereEqualTo("email", email).get().await()
+        return !school.isEmpty
+    }
+
+    suspend fun getSchoolByEmail(email: String): School? {
+        val result = firestore.collection("schools").whereEqualTo("email", email).get().await()
+        return if (result.documents.isNotEmpty()) {
+            result.documents[0].toObject(School::class.java)
+        } else {
+            null
+        }
+    }
+
     suspend fun getSchoolPlusImageByDocumentID(documentID: String) : SchoolPlusImages? {
         val school = CompletableDeferred<SchoolPlusImages?>()
         val filteredSchools = CompletableDeferred<DocumentSnapshot?>()
@@ -298,6 +312,8 @@ class SchoolController {
         return response.await()
     }
 
+
+    
     suspend fun addSchoolSwipeRightCount(documentID: String) : Boolean {
         val response = CompletableDeferred<Boolean>()
 

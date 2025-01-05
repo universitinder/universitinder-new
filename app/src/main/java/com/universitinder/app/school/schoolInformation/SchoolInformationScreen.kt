@@ -206,16 +206,7 @@ fun SchoolInformationScreen(schoolInformationViewModel: SchoolInformationViewMod
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 10.dp),
-                        label = { Text(text = "Minimum Price Range") },
-                        value = uiState.minimum.toString(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onValueChange = schoolInformationViewModel::onMinimumChange
-                    )
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        label = { Text(text = "Maximum Price Range") },
+                        label = { Text(text = "Tuition") },
                         value = uiState.maximum.toString(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = schoolInformationViewModel::onMaximumChange

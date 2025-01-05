@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.universitinder.app.controllers.UserController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.home.HomeActivity
 import com.universitinder.app.login.LoginActivity
 import com.universitinder.app.models.ResultMessage
@@ -15,6 +14,7 @@ import com.universitinder.app.models.User
 import com.universitinder.app.models.UserState
 import com.universitinder.app.preferences.PreferencesKey
 import com.universitinder.app.userDataStore
+import com.universitinder.app.helpers.ActivityStarterHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.app.Activity
 
 class RegistrationViewModel(
     private val auth: FirebaseAuth,
@@ -78,14 +79,29 @@ class RegistrationViewModel(
         if (!passwordMatching()) {
             return showMessage(ResultMessageType.FAILED, "Passwords not Matching")
         }
-
         if (!validatePassword(_uiState.value.password)) {
-            return showMessage(ResultMessageType.FAILED, "Password must meet the requirements. \nMinimum 12 letter\n" +
-                    "at least 1 Upper Case\n" +
-                    "at least 1 Lower Case\n" +
-                    "at least 1 Special Character")
+            return showMessage(ResultMessageType.FAILED, "Password requirements not met: 1 uppercase, 1 lowercase, 1 special character, 12 characters")
         }
-
+    
+        val intent = Intent(activityStarterHelper.getContext(), OtpActivity::class.java).apply {
+            putExtra("email", _uiState.value.email)
+            putExtra("password", _uiState.value.password)
+        }
+        
+        activityStarterHelper.launchActivityForResult(intent) { resultCode ->
+            if (resultCode == Activity.RESULT_OK) {
+                // Check if email is verified before completing registration
+                val user = auth.currentUser
+                if (user?.isEmailVerified == true) {
+                    completeRegistration()
+                } else {
+                    showMessage(ResultMessageType.FAILED, "Email verification required")
+                }
+            }
+        }
+    }
+    
+    private fun completeRegistration() {
         _uiState.value = _uiState.value.copy(registrationLoading = true)
         auth.createUserWithEmailAndPassword(_uiState.value.email, _uiState.value.password)
             .addOnSuccessListener {
@@ -97,7 +113,9 @@ class RegistrationViewModel(
                         persistUser(user)
                     }.await()
                     startHomeActivity()
-                    withContext(Dispatchers.Main) { _uiState.value = _uiState.value.copy(registrationLoading = false) }
+                    withContext(Dispatchers.Main) { 
+                        _uiState.value = _uiState.value.copy(registrationLoading = false) 
+                    }
                 }
             }
             .addOnFailureListener {
@@ -118,7 +136,7 @@ class RegistrationViewModel(
             }
         }
     }
-
+    
     private fun startHomeActivity() {
         val intent = Intent(activityStarterHelper.getContext(), HomeActivity::class.java)
         activityStarterHelper.startActivity(intent)

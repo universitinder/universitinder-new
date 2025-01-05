@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.matched.MatchedActivity
 import com.universitinder.app.md5
 import com.universitinder.app.models.UserState
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.universitinder.app.helpers.ActivityStarterHelper
 
 class MatchesViewModel(
     private val userController: UserController,

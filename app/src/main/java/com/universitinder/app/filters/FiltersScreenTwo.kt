@@ -47,7 +47,7 @@ import kotlin.text.toIntOrNull
 fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
     val uiState by filtersViewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(initialPage = 0)
-    var selectedTab by remember { mutableIntStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(1) }
 
     LaunchedEffect(key1 = selectedTab) {
         pagerState.animateScrollToPage(selectedTab)
@@ -76,12 +76,6 @@ fun FiltersScreenTwo(filtersViewModel: FiltersViewModel) {
                 )
                 LazyRow {
                     item {
-                        TextButton(
-                            onClick = { selectedTab = 0 },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = if(selectedTab == 0) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-                            )
-                        ) { Text(text = "Province")}
                         TextButton(
                             onClick = { selectedTab = 1 },
                             colors = ButtonDefaults.textButtonColors(

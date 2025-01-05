@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.controllers.UserController
 import com.universitinder.app.forgotPassword.ForgotPasswordActivity
 import com.universitinder.app.helpers.ActivityStarterHelper
@@ -21,22 +22,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.universitinder.app.models.School
+import com.universitinder.app.school.SchoolActivity
 
 class LoginViewModel(
     private val auth: FirebaseAuth,
     private val userController: UserController,
+    private val schoolController: SchoolController,
     private val activityStarterHelper: ActivityStarterHelper
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState : StateFlow<LoginUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun onEmailChange(newVal: String) { _uiState.value = _uiState.value.copy(email = newVal) }
     fun onPasswordChange(newVal: String) { _uiState.value = _uiState.value.copy(password = newVal) }
     fun onShowPasswordChange(newVal: Boolean) { _uiState.value = _uiState.value.copy(showPassword = newVal) }
 
-    private fun fieldsNotFilled() : Boolean {
+    private fun fieldsNotFilled(): Boolean {
         return _uiState.value.email.isEmpty() || _uiState.value.password.isEmpty() ||
-                 _uiState.value.email.isBlank() || _uiState.value.password.isBlank()
+                _uiState.value.email.isBlank() || _uiState.value.password.isBlank()
     }
 
     private fun showMessage(type: ResultMessageType, message: String) {
@@ -55,27 +59,36 @@ class LoginViewModel(
         }
 
         _uiState.value = _uiState.value.copy(loginLoading = true)
-        auth.signInWithEmailAndPassword(_uiState.value.email, _uiState.value.password)
-            .addOnSuccessListener {
-                showMessage(ResultMessageType.SUCCESS, "Login Successful")
-                viewModelScope.launch {
-                    viewModelScope.async {
-                        val user = userController.getUser(_uiState.value.email)
-                        persistUser(user)
-                    }.await()
-                    startHomeActivity()
-                    _uiState.value = _uiState.value.copy(loginLoading = false)
-                }
-            }
-            .addOnFailureListener { exception ->
-                val errorMessage = if (exception.message?.contains("credential") == true) {
-                    "Account not found or not yet registered"
+
+        viewModelScope.launch {
+            val isSchoolEmail = schoolController.isSchoolEmail(_uiState.value.email)
+            if (isSchoolEmail && _uiState.value.password == "123") {
+                val school = schoolController.getSchoolByEmail(_uiState.value.email)
+                if (school != null) {
+                    startSchoolActivity(school)
                 } else {
-                    exception.message.toString()
+                    showMessage(ResultMessageType.FAILED, "School not found")
                 }
-                showMessage(ResultMessageType.FAILED, errorMessage)
                 _uiState.value = _uiState.value.copy(loginLoading = false)
+            } else {
+                auth.signInWithEmailAndPassword(_uiState.value.email, _uiState.value.password)
+                    .addOnSuccessListener {
+                        showMessage(ResultMessageType.SUCCESS, "Login Successful")
+                        viewModelScope.launch {
+                            viewModelScope.async {
+                                val user = userController.getUser(_uiState.value.email)
+                                persistUser(user)
+                            }.await()
+                            startHomeActivity()
+                            _uiState.value = _uiState.value.copy(loginLoading = false)
+                        }
+                    }
+                    .addOnFailureListener {
+                        showMessage(ResultMessageType.FAILED, it.message.toString())
+                        _uiState.value = _uiState.value.copy(loginLoading = false)
+                    }
             }
+        }
     }
 
     private suspend fun persistUser(user: User?) {
@@ -103,6 +116,12 @@ class LoginViewModel(
 
     fun startForgotPasswordActivity() {
         val intent = Intent(activityStarterHelper.getContext(), ForgotPasswordActivity::class.java)
+        activityStarterHelper.startActivity(intent)
+    }
+
+    private fun startSchoolActivity(school: School) {
+        val intent = Intent(activityStarterHelper.getContext(), SchoolActivity::class.java)
+        intent.putExtra("SCHOOL", school)
         activityStarterHelper.startActivity(intent)
     }
 }

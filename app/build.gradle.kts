@@ -90,7 +90,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-analytics")
 
     // dependency for firebase authentication
@@ -126,4 +129,10 @@ dependencies {
     implementation ("io.github.ehsannarmani:compose-charts:0.0.16")
 
     implementation ("com.google.android.gms:play-services-location:21.1.0")
+    implementation ("com.google.firebase:firebase-database-ktx:20.3.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+
+    implementation ("com.google.firebase:firebase-auth:21.0.1")
+    implementation ("com.google.android.gms:play-services-auth:19.2.0")
+
 }

@@ -4,13 +4,13 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.UserController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.ResultMessage
 import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.User
 import com.universitinder.app.models.UserState
 import com.universitinder.app.preferences.PreferencesKey
 import com.universitinder.app.userDataStore
+import com.universitinder.app.helpers.ActivityStarterHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

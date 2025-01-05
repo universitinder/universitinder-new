@@ -17,7 +17,6 @@ data class SchoolInformationUiState (
     val street: String = "",
     val private: Boolean = false,
     val public: Boolean = false,
-    val minimum: Int = 0,
     val maximum: Int = 0,
     val affordability: Int = 0,
     val fetchingDataLoading: Boolean = false,

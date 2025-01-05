@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "299401388713",
+    "project_id": "universitinder-final",
+    "storage_bucket": "universitinder-final.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:299401388713:android:94fd00212643939b3ebfb8",
+        "android_client_info": {
+          "package_name": "com.universitinder.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3O7cL_rFkfZ4b52bea_MxukOYO_outcI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

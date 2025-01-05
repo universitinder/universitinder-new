@@ -40,7 +40,6 @@ class SchoolInformationViewModel(
                         email = school.email,
                         contactNumber = school.contactNumber,
                         link = school.link,
-                        minimum = school.minimum,
                         maximum = school.maximum,
                         affordability = school.affordability,
                         province = school.province,
@@ -83,7 +82,6 @@ class SchoolInformationViewModel(
     fun onMunicipalityOrCityMenuDismiss() { _uiState.value = _uiState.value.copy(municipalityOrCityMenuExpand = false) }
     fun onBarangayChange(newVal: String) { _uiState.value = _uiState.value.copy(barangay = newVal) }
     fun onStreetChange(newVal: String) { _uiState.value = _uiState.value.copy(street = newVal) }
-    fun onMinimumChange(newVal: String) { _uiState.value = _uiState.value.copy(minimum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt()) }
     fun onMaximumChange(newVal: String) {
         _uiState.value = _uiState.value.copy(maximum = if (newVal.isEmpty() || newVal.isBlank()) 0 else newVal.toInt())
         determineAffordability(_uiState.value.maximum)
@@ -133,7 +131,7 @@ class SchoolInformationViewModel(
                     contactNumber = _uiState.value.contactNumber,
                     private = _uiState.value.private,
                     public = _uiState.value.public,
-                    minimum = _uiState.value.minimum,
+
                     maximum = _uiState.value.maximum,
                     affordability = _uiState.value.affordability,
                     province = _uiState.value.province,

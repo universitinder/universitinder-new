@@ -4,10 +4,10 @@ import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
 import com.universitinder.app.school.SchoolActivity
 import com.universitinder.app.school.create.CreateSchoolActivity
+import com.universitinder.app.helpers.ActivityStarterHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

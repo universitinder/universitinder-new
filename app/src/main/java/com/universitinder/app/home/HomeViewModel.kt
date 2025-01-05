@@ -81,7 +81,7 @@ class HomeViewModel(
             _uiState.value = _uiState.value.copy(fetchingLoading = true)
             return
         }
-        
+
         if (ActivityCompat.checkSelfPermission(
                 application,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -110,7 +110,7 @@ class HomeViewModel(
 
     private fun isFilterClear(filter: Filter) : Boolean {
         return filter.affordability == 0 && !filter.has5YearCourse && !filter.has3YearCourse && !filter.has4YearCourse && !filter.has2YearCourse &&
-        !filter.public  && !filter.private && (filter.provinces.isEmpty() || filter.provinces.isBlank()) && (filter.cities.isEmpty() || filter.cities.isBlank()) &&
+                !filter.public  && !filter.private && (filter.provinces.isEmpty() || filter.provinces.isBlank()) && (filter.cities.isEmpty() || filter.cities.isBlank()) &&
                 (filter.courses.isBlank() || filter.courses.isEmpty()) && (filter.courseDuration.isEmpty() || filter.courses.isBlank())
     }
 
@@ -143,7 +143,7 @@ class HomeViewModel(
                         LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!)
                     )
                     // Filter out matched schools
-                    val filteredSchools = schools.filterNot { matchedSchools.contains(it.name) }
+                    val filteredSchools = filterMatchedSchools(schools, matchedSchools)
 
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
@@ -162,7 +162,7 @@ class HomeViewModel(
                     }
                     val schools = schoolController.getTopSchoolsTwo(LocationPoint(latitude = locationState.value?.latitude!!, longitude = locationState.value?.longitude!!))
                     // Filter out matched schools
-                    val filteredSchools = schools.filterNot { matchedSchools.contains(it.name) }
+                    val filteredSchools = filterMatchedSchools(schools, matchedSchools)
 
                     withContext(Dispatchers.Main) {
                         _uiState.value = _uiState.value.copy(
@@ -177,7 +177,11 @@ class HomeViewModel(
         }
     }
 
-    suspend  fun fetchImages(documentID: String) {
+    private fun filterMatchedSchools(schools: List<School>, matchedSchools: List<String>): List<School> {
+        return schools.filterNot { matchedSchools.contains(it.name) }
+    }
+
+    suspend fun fetchImages(documentID: String) {
         val storageRef = storage.reference
         // FETCH ALL IMAGES OF SCHOOL
         val listOfItems = storageRef.child("schools/$documentID").listAll().await()
@@ -186,19 +190,9 @@ class HomeViewModel(
             downloadURL
         }
         val mutableList = _uiState.value.images.toMutableList()
-        mutableList[_uiState.value.current  Index] = uris
+        mutableList[_uiState.value.currentIndex] = uris
         _uiState.value = _uiState.value.copy(images = mutableList.toList())
     }
-
-    // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO RIGHT
-    // HomeScreen - Line 86
-//    fun onSwipeRight(school: SchoolPlusImages) {
-//        _uiState.value = _uiState.value.copy(currentIndex = _uiState.value.currentIndex+1)
-//        viewModelScope.launch(Dispatchers.IO) {
-//            schoolController.addSchoolSwipeRightCount(school.id)
-//            if (currentUser != null && school.school != null) userController.addMatchedSchool(currentUser, school.school.name)
-//        }
-//    }
 
     // THIS IS THE FUNCTION WHEN SWIPING THE CARD TO RIGHT
     // HomeScreen - Line 86
@@ -218,12 +212,6 @@ class HomeViewModel(
             schoolController.addSchoolSwipeLeftCount(id)
         }
     }
-
-//    fun startSchoolProfileActivity(school: SchoolPlusImages) {
-//        val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
-//        intent.putExtra("school", school)
-//        activityStarterHelper.startActivity(intent)
-//    }
 
     fun startSchoolProfileActivityTwo(school: School) {
         val intent = Intent(activityStarterHelper.getContext(), SchoolProfileActivity::class.java)
@@ -257,7 +245,7 @@ class HomeViewModel(
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                viewModelScope.launch { 
+                viewModelScope.launch {
                     _locationState.emit(location)
                 }
             }
@@ -267,8 +255,8 @@ class HomeViewModel(
     private fun checkLocationEnabled() {
         val locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                               locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
         _uiState.value = _uiState.value.copy(
             isLocationEnabled = isLocationEnabled,
             fetchingLoading = !isLocationEnabled

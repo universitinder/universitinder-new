@@ -7,13 +7,13 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.universitinder.app.components.CourseDurationMap
 import com.universitinder.app.controllers.CourseController
 import com.universitinder.app.controllers.SchoolController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.COURSE_DURATION_INT_TO_STRING_MAP
 import com.universitinder.app.models.CourseDurations
 import com.universitinder.app.models.School
 import com.universitinder.app.models.UserState
 import com.universitinder.app.school.schoolCourses.createCourse.CreateCourseActivity
 import com.universitinder.app.school.schoolCourses.editCourse.EditCourseActivity
+import com.universitinder.app.helpers.ActivityStarterHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -5,13 +5,13 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
 import com.universitinder.app.models.SchoolAnalytics
 import com.universitinder.app.models.SchoolAnalyticsYears
 import com.universitinder.app.models.StudentByYear
 import com.universitinder.app.models.UserState
 import com.universitinder.app.models.UserType
+import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.school.schoolInformationNavigation.SchoolInformationNavigationActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

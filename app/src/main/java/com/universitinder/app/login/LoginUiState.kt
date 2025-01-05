@@ -9,4 +9,3 @@ data class LoginUiState(
     val resultMessage: ResultMessage = ResultMessage(),
     val loginLoading: Boolean = false
 )
-

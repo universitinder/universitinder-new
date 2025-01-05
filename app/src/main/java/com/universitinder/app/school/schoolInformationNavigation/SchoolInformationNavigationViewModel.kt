@@ -2,7 +2,6 @@ package com.universitinder.app.school.schoolInformationNavigation
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
 import com.universitinder.app.school.analytics.SchoolAnalyticsActivity
 import com.universitinder.app.school.location.SchoolLocationActivity
@@ -11,6 +10,7 @@ import com.universitinder.app.school.schoolFAQs.SchoolFAQsActivity
 import com.universitinder.app.school.schoolImages.SchoolImagesActivity
 import com.universitinder.app.school.schoolInformation.SchoolInformationActivity
 import com.universitinder.app.school.schoolMissionVision.SchoolMissionVisionActivity
+import com.universitinder.app.helpers.ActivityStarterHelper
 
 class SchoolInformationNavigationViewModel(
     private val school : School,

@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.universitinder.app.controllers.CourseController
 import com.universitinder.app.controllers.SchoolController
-import com.universitinder.app.helpers.ActivityStarterHelper
 import com.universitinder.app.models.School
 import com.universitinder.app.ui.theme.UniversitinderTheme
+import com.universitinder.app.helpers.ActivityStarterHelper
 
 class SchoolCoursesActivity : AppCompatActivity() {
     private lateinit var schoolCoursesViewModel: SchoolCoursesViewModel
