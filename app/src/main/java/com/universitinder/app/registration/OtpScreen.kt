@@ -13,14 +13,21 @@ import androidx.compose.ui.unit.sp
 fun OtpScreen(
     email: String,
     password: String,
-    onSuccess: () -> Unit,
+    onSuccess: () -> Unit,  // Function type with no parameter
     onBack: () -> Unit,
     viewModel: OtpViewModel
 ) {
     val uiState = viewModel.uiState.collectAsState().value
 
-    LaunchedEffect(Unit) {
-        viewModel.createAccount(email, password, onSuccess)
+    // Trigger account creation logic once
+    LaunchedEffect(email, password) {
+        viewModel.createAccount(
+            email = email,
+            password = password,
+            onSuccess = {
+                onSuccess() // Notify parent activity of success (close the activity)
+            }
+        )
     }
 
     Column(
@@ -70,7 +77,15 @@ fun OtpScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { viewModel.createAccount(email, password, onSuccess) },
+            onClick = {
+                viewModel.createAccount(
+                    email = email,
+                    password = password,
+                    onSuccess = {
+                        onSuccess() // Notify parent of success (close the activity)
+                    }
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = !uiState.isLoading
         ) {

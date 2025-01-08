@@ -1,6 +1,7 @@
 package com.universitinder.app.registration
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -30,24 +31,26 @@ class OtpViewModel(private val context: Context) : ViewModel() {
                 val result = auth.createUserWithEmailAndPassword(email, password).await()
                 result.user?.let { user ->
                     user.sendEmailVerification().await()
-                    
+
                     val userData = hashMapOf(
                         "email" to email,
                         "uid" to user.uid,
                         "createdAt" to ServerValue.TIMESTAMP,
                         "isVerified" to false
                     )
-                    
+
                     database.child("users")
                         .child(user.uid)
                         .setValue(userData)
                         .await()
-                    
+
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         errorMessage = "Verification email sent. Please check your inbox."
                     )
-                    onSuccess()
+
+                    // Notify success and delay before navigating to login
+                    onSuccess() // Close the current activity
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -57,4 +60,10 @@ class OtpViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
+
+    // Function to update the loading state
+    fun updateLoadingState(isLoading: Boolean) {
+        _uiState.value = _uiState.value.copy(isLoading = isLoading)
+    }
 }
+
