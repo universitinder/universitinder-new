@@ -77,7 +77,7 @@ class RegistrationViewModel(
             return showMessage(ResultMessageType.FAILED, "Please fill in all the fields")
         }
         if (!passwordMatching()) {
-            return showMessage(ResultMessageType.FAILED, "Passwords not Matching")
+            return showMessage(ResultMessageType.FAILED, "Passwords do not match. Try Again,")
         }
         if (!validatePassword(_uiState.value.password)) {
             return showMessage(ResultMessageType.FAILED, "Password requirements not met: 1 uppercase, 1 lowercase, 1 special character, 12 characters")

@@ -84,7 +84,7 @@ class LoginViewModel(
                         }
                     }
                     .addOnFailureListener {
-                        showMessage(ResultMessageType.FAILED, it.message.toString())
+                        showMessage(ResultMessageType.FAILED, "Incorrect email or password.")
                         _uiState.value = _uiState.value.copy(loginLoading = false)
                     }
             }

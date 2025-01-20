@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.universitinder.app.controllers.SchoolController
 import com.universitinder.app.md5
+import com.universitinder.app.models.ResultMessage
+import com.universitinder.app.models.ResultMessageType
 import com.universitinder.app.models.School
 import com.universitinder.app.models.SchoolAnalyticsYears
 import com.universitinder.app.models.StudentByYear
@@ -18,121 +20,206 @@ class SchoolAnalyticsViewModel(
     private val school: School,
     private val schoolController: SchoolController,
     val popActivity: () -> Unit
-) : ViewModel(){
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SchoolAnalyticsUiState())
-    val uiState : StateFlow<SchoolAnalyticsUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<SchoolAnalyticsUiState> = _uiState.asStateFlow()
 
     init {
         getAnalytics()
     }
 
     fun onFirstYearStudentsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(students = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(students = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFirstYearFacultyChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFirstYearApplicantsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFirstYearAdmittedChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFirstYearGraduatesChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
     }
 
     fun onSecondYearStudentsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(students = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(students = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onSecondYearFacultyChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onSecondYearApplicantsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onSecondYearAdmittedChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onSecondYearGraduatesChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
     }
 
     fun onThirdYearStudentsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(students = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(students = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onThirdYearFacultyChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onThirdYearApplicantsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onThirdYearAdmittedChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onThirdYearGraduatesChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
     }
 
     fun onFourthYearStudentsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(students = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(students = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFourthYearFacultyChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFourthYearApplicantsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFourthYearAdmittedChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFourthYearGraduatesChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
     }
 
     fun onFifthYearStudentsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(students = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(students = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFifthYearFacultyChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(faculty = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFifthYearApplicantsChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(applicants = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFifthYearAdmittedChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(admitted = if (newVal != "") newVal.toInt() else 0))
     }
+
     fun onFifthYearGraduatesChange(newVal: String) {
-        _uiState.value = _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
+        _uiState.value =
+            _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(graduates = if (newVal != "") newVal.toInt() else 0))
     }
 
     fun addYear(year: SchoolAnalyticsYears) {
         when (year) {
             SchoolAnalyticsYears.FIRST -> {
-                _uiState.value = _uiState.value.copy(firstYear = _uiState.value.firstYear.copy(
-                    studentByYear = _uiState.value.firstYear.studentByYear.plus(StudentByYear("", 0))
-                ))
+                _uiState.value = _uiState.value.copy(
+                    firstYear = _uiState.value.firstYear.copy(
+                        studentByYear = _uiState.value.firstYear.studentByYear.plus(
+                            StudentByYear(
+                                "",
+                                0
+                            )
+                        )
+                    )
+                )
             }
+
             SchoolAnalyticsYears.SECOND -> {
-                _uiState.value = _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(
-                    studentByYear = _uiState.value.secondYear.studentByYear.plus(StudentByYear("", 0))
-                ))
+                _uiState.value = _uiState.value.copy(
+                    secondYear = _uiState.value.secondYear.copy(
+                        studentByYear = _uiState.value.secondYear.studentByYear.plus(
+                            StudentByYear(
+                                "",
+                                0
+                            )
+                        )
+                    )
+                )
             }
+
             SchoolAnalyticsYears.THIRD -> {
-                _uiState.value = _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(
-                    studentByYear = _uiState.value.thirdYear.studentByYear.plus(StudentByYear("", 0))
-                ))
+                _uiState.value = _uiState.value.copy(
+                    thirdYear = _uiState.value.thirdYear.copy(
+                        studentByYear = _uiState.value.thirdYear.studentByYear.plus(
+                            StudentByYear(
+                                "",
+                                0
+                            )
+                        )
+                    )
+                )
             }
+
             SchoolAnalyticsYears.FOURTH -> {
-                _uiState.value = _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(
-                    studentByYear = _uiState.value.fourthYear.studentByYear.plus(StudentByYear("", 0))
-                ))
+                _uiState.value = _uiState.value.copy(
+                    fourthYear = _uiState.value.fourthYear.copy(
+                        studentByYear = _uiState.value.fourthYear.studentByYear.plus(
+                            StudentByYear(
+                                "",
+                                0
+                            )
+                        )
+                    )
+                )
             }
+
             SchoolAnalyticsYears.FIFTH -> {
-                _uiState.value = _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(
-                    studentByYear = _uiState.value.fifthYear.studentByYear.plus(StudentByYear("", 0))
-                ))
+                _uiState.value = _uiState.value.copy(
+                    fifthYear = _uiState.value.fifthYear.copy(
+                        studentByYear = _uiState.value.fifthYear.studentByYear.plus(
+                            StudentByYear(
+                                "",
+                                0
+                            )
+                        )
+                    )
+                )
             }
+
             else -> {}
         }
     }
@@ -168,6 +255,7 @@ class SchoolAnalyticsViewModel(
                     studentByYear = _uiState.value.fifthYear.studentByYear.filterIndexed { i, _ -> i != index }
                 ))
             }
+
             else -> {}
         }
     }
@@ -182,6 +270,7 @@ class SchoolAnalyticsViewModel(
                     }
                 ))
             }
+
             SchoolAnalyticsYears.SECOND -> {
                 _uiState.value = _uiState.value.copy(secondYear = _uiState.value.secondYear.copy(
                     studentByYear = _uiState.value.secondYear.studentByYear.mapIndexed { i, studentByYear ->
@@ -190,6 +279,7 @@ class SchoolAnalyticsViewModel(
                     }
                 ))
             }
+
             SchoolAnalyticsYears.THIRD -> {
                 _uiState.value = _uiState.value.copy(thirdYear = _uiState.value.thirdYear.copy(
                     studentByYear = _uiState.value.thirdYear.studentByYear.mapIndexed { i, studentByYear ->
@@ -198,6 +288,7 @@ class SchoolAnalyticsViewModel(
                     }
                 ))
             }
+
             SchoolAnalyticsYears.FOURTH -> {
                 _uiState.value = _uiState.value.copy(fourthYear = _uiState.value.fourthYear.copy(
                     studentByYear = _uiState.value.fourthYear.studentByYear.mapIndexed { i, studentByYear ->
@@ -206,6 +297,7 @@ class SchoolAnalyticsViewModel(
                     }
                 ))
             }
+
             SchoolAnalyticsYears.FIFTH -> {
                 _uiState.value = _uiState.value.copy(fifthYear = _uiState.value.fifthYear.copy(
                     studentByYear = _uiState.value.fifthYear.studentByYear.mapIndexed { i, studentByYear ->
@@ -214,6 +306,7 @@ class SchoolAnalyticsViewModel(
                     }
                 ))
             }
+
             else -> {}
         }
     }
@@ -264,6 +357,7 @@ class SchoolAnalyticsViewModel(
                     }
                 ))
             }
+
             else -> {}
         }
     }
@@ -273,11 +367,16 @@ class SchoolAnalyticsViewModel(
             val analytics = schoolController.getSchoolAnalytics(school.documentID)
             if (analytics.isNotEmpty()) {
                 analytics.forEach {
-                    if (it.year == SchoolAnalyticsYears.FIRST) _uiState.value = _uiState.value.copy(firstYear = it)
-                    if (it.year == SchoolAnalyticsYears.SECOND) _uiState.value = _uiState.value.copy(secondYear = it)
-                    if (it.year == SchoolAnalyticsYears.THIRD) _uiState.value = _uiState.value.copy(thirdYear = it)
-                    if (it.year == SchoolAnalyticsYears.FOURTH) _uiState.value = _uiState.value.copy(fourthYear = it)
-                    if (it.year == SchoolAnalyticsYears.FIFTH) _uiState.value = _uiState.value.copy(fifthYear = it)
+                    if (it.year == SchoolAnalyticsYears.FIRST) _uiState.value =
+                        _uiState.value.copy(firstYear = it)
+                    if (it.year == SchoolAnalyticsYears.SECOND) _uiState.value =
+                        _uiState.value.copy(secondYear = it)
+                    if (it.year == SchoolAnalyticsYears.THIRD) _uiState.value =
+                        _uiState.value.copy(thirdYear = it)
+                    if (it.year == SchoolAnalyticsYears.FOURTH) _uiState.value =
+                        _uiState.value.copy(fourthYear = it)
+                    if (it.year == SchoolAnalyticsYears.FIFTH) _uiState.value =
+                        _uiState.value.copy(fifthYear = it)
                 }
             }
         }
@@ -313,16 +412,24 @@ class SchoolAnalyticsViewModel(
             ),
         )
         viewModelScope.launch {
-            schoolController.setSchoolAnalytics(documentID = school.documentID, listOf(
-                _uiState.value.firstYear,
-                _uiState.value.secondYear,
-                _uiState.value.thirdYear,
-                _uiState.value.fourthYear,
-                _uiState.value.fifthYear
-            )
+            schoolController.setSchoolAnalytics(
+                documentID = school.documentID, listOf(
+                    _uiState.value.firstYear,
+                    _uiState.value.secondYear,
+                    _uiState.value.thirdYear,
+                    _uiState.value.fourthYear,
+                    _uiState.value.fifthYear
+                )
             )
             withContext(Dispatchers.Main) {
-                _uiState.value = _uiState.value.copy(saveLoading = false)
+                _uiState.value = _uiState.value.copy(
+                    saveLoading = false,
+                    resultMessage = ResultMessage(
+                        show = true,
+                        type = ResultMessageType.SUCCESS,
+                        message = "Successfully Saved"
+                    )
+                )
             }
         }
     }

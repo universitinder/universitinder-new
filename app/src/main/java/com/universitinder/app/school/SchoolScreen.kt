@@ -223,14 +223,14 @@ fun SchoolScreen(schoolViewModel: SchoolViewModel) {
                         when (uiState.activeTab) {
                             0 -> {
                                 val school = uiState.schoolPlusImages?.school
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Email", component = { EmailText(email = school!!.email) }) }
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "Link", component = { LinkText(link = school!!.link) }) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "School's Email", component = { EmailText(email = school!!.email) }) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfoComposable(label = "School's Website", component = { LinkText(link = school!!.link) }) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Contact Number", value = school!!.contactNumber) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Province", value = school!!.province) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Municipality/City", value = school!!.municipalityOrCity) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Barangay", value = school!!.barangay) }
                                 item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Street", value = school!!.street) }
-                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Tuition", value =  CurrencyFormatter.format(school!!.maximum.toDouble())) }
+                                item(span = { GridItemSpan(3) }) { SchoolBasicInfo(label = "Tuition Fee Range", value =  CurrencyFormatter.format(school!!.maximum.toDouble())) }
                                 item(span = { GridItemSpan(3) }) { AffordabilityIndicator(affordability = school!!.affordability) }
                             }
                             1 -> {

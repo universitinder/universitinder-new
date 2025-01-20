@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.round
 
 class SchoolViewModel(
     private val school: School,
@@ -73,68 +74,71 @@ class SchoolViewModel(
                 schoolAnalytics = SchoolAnalytics()
             )
         } else {
-            when(SchoolAnalyticsYears.valueOf(newVal)) {
-                SchoolAnalyticsYears.FIRST -> {
-                    _uiState.value = _uiState.value.copy(
-                        selectedYear = newVal,
-                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FIRST }
+            val selectedYear = SchoolAnalyticsYears.valueOf(newVal)
+            val selectedAnalytics = _uiState.value.schoolAnalyticsList.firstOrNull { it.year == selectedYear }
+
+            if (selectedAnalytics != null) {
+                val admissionRate = if (selectedAnalytics.applicants > 0) {
+                    round((selectedAnalytics.admitted.toFloat() / selectedAnalytics.applicants) * 100 * 100) / 100
+                } else {
+                    0.0f
+                }
+
+                val graduationRate = if (selectedAnalytics.students > 0) {
+                    round((selectedAnalytics.graduates.toFloat() / selectedAnalytics.students) * 100 * 100) / 100
+                } else {
+                    0.0f
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    selectedYear = newVal,
+                    schoolAnalytics = selectedAnalytics.copy(
+                        admissionRate = admissionRate,
+                        graduationRate = graduationRate
+                    )
+                )
+            } else if (selectedYear == SchoolAnalyticsYears.ALL) {
+                val aggregatedAnalytics = _uiState.value.schoolAnalyticsList.reduce { acc, analytics ->
+                    SchoolAnalytics(
+                        year = SchoolAnalyticsYears.ALL,
+                        students = acc.students + analytics.students,
+                        faculty = acc.faculty + analytics.faculty,
+                        admitted = acc.admitted + analytics.admitted,
+                        applicants = acc.applicants + analytics.applicants,
+                        graduates = acc.graduates + analytics.graduates
                     )
                 }
-                SchoolAnalyticsYears.SECOND -> {
-                    _uiState.value = _uiState.value.copy(
-                        selectedYear = newVal,
-                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.SECOND }
-                    )
-                }
-                SchoolAnalyticsYears.THIRD -> {
-                    _uiState.value = _uiState.value.copy(
-                        selectedYear = newVal,
-                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.THIRD }
-                    )
-                }
-                SchoolAnalyticsYears.FOURTH -> {
-                    _uiState.value = _uiState.value.copy(
-                        selectedYear = newVal,
-                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FOURTH }
-                    )
-                }
-                SchoolAnalyticsYears.FIFTH -> {
-                    _uiState.value = _uiState.value.copy(
-                        selectedYear = newVal,
-                        schoolAnalytics = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FIFTH }
-                    )
-                }
-                SchoolAnalyticsYears.ALL -> {
-                    val aggregatedAnalytics = _uiState.value.schoolAnalyticsList.reduce { acc, analytics ->
-                        SchoolAnalytics(
-                            year = SchoolAnalyticsYears.ALL,
-                            students = acc.students + analytics.students,
-                            faculty = acc.faculty + analytics.faculty,
-                            admitted = acc.admitted + analytics.admitted,
-                            applicants = acc.applicants + analytics.applicants,
-                            graduates = acc.graduates + analytics.graduates
+
+                val aggregatedStudentByYear = _uiState.value.schoolAnalyticsList
+                    .flatMap { it.studentByYear }
+                    .groupBy { it.year }
+                    .map { (year, studentList) ->
+                        StudentByYear(
+                            year = year,
+                            students = studentList.sumOf { it.students }
                         )
                     }
 
-                    val aggregatedStudentByYear = _uiState.value.schoolAnalyticsList
-                        .flatMap { it.studentByYear }
-                        .groupBy { it.year }
-                        .map { (year, studentList) ->
-                            StudentByYear(
-                                year = year,
-                                students = studentList.sumOf { it.students }
-                            )
-                        }
-
-                    _uiState.value = _uiState.value.copy(
-                        selectedYear = newVal,
-                        schoolAnalytics = aggregatedAnalytics.copy(
-                            admissionRate = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FIRST }.admissionRate,
-                            graduationRate = _uiState.value.schoolAnalyticsList.first { it.year == SchoolAnalyticsYears.FOURTH }.graduationRate,
-                            studentByYear = aggregatedStudentByYear
-                        )
-                    )
+                val admissionRate = if (aggregatedAnalytics.applicants > 0) {
+                    round((aggregatedAnalytics.admitted.toFloat() / aggregatedAnalytics.applicants) * 100 * 100) / 100
+                } else {
+                    0.0f
                 }
+
+                val graduationRate = if (aggregatedAnalytics.students > 0) {
+                    round((aggregatedAnalytics.graduates.toFloat() / aggregatedAnalytics.students) * 100 * 100) / 100
+                } else {
+                    0.0f
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    selectedYear = newVal,
+                    schoolAnalytics = aggregatedAnalytics.copy(
+                        admissionRate = admissionRate,
+                        graduationRate = graduationRate,
+                        studentByYear = aggregatedStudentByYear
+                    )
+                )
             }
         }
     }

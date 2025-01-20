@@ -132,7 +132,7 @@ fun SchoolProfileScreen(schoolProfileViewModel: SchoolProfileViewModel) {
             }
             item {
                 ListItem(
-                    overlineContent = { Text(text = "Tuition") },
+                    overlineContent = { Text(text = "Tuition Fee Range") },
                     headlineContent = { Text(text = CurrencyFormatter.format(uiState.school.maximum.toDouble())) }
                 )
             }
